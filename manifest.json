@@ -6,7 +6,10 @@
   "permissions": [
     "activeTab",
     "storage",
-    "contextMenus"
+    "contextMenus",
+    "cookies",
+    "identity",
+    "tabs"
   ],
   "host_permissions": [
     "https://*/*",
@@ -41,7 +44,7 @@
   },
   "web_accessible_resources": [
     {
-      "resources": ["socket/socket-client.js"],
+      "resources": ["socket/socket-client.js", "socket/socket.io.min.js", "lib/supabase.js", "lib/auth.js"],
       "matches": ["<all_urls>"]
     }
   ]

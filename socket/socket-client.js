@@ -21,11 +21,46 @@ class ExtensionSocketClient {
                 this.config.serverUrl = config.serverUrl;
             }
             
+            // Load and initialize authentication
+            await this.initializeAuth();
+            
             console.log('Initializing Socket.IO client for:', this.config.serverUrl);
             await this.connect();
         } catch (error) {
             console.error('Failed to initialize socket client:', error);
         }
+    }
+
+    async initializeAuth() {
+        try {
+            // Load auth script if not already loaded
+            if (typeof window !== 'undefined' && !window.SupabaseAuth) {
+                await this.loadAuthScript();
+            }
+            
+            // Initialize auth if available
+            if (typeof window !== 'undefined' && window.supabaseAuth) {
+                await window.supabaseAuth.initialize();
+            }
+        } catch (error) {
+            console.warn('Auth initialization failed:', error);
+            // Continue without auth for now, but warn user
+        }
+    }
+
+    async loadAuthScript() {
+        return new Promise((resolve, reject) => {
+            if (typeof window !== 'undefined' && window.SupabaseAuth) {
+                resolve();
+                return;
+            }
+
+            const script = document.createElement('script');
+            script.src = chrome.runtime.getURL('lib/auth.js');
+            script.onload = () => resolve();
+            script.onerror = () => reject(new Error('Failed to load Auth script'));
+            document.head.appendChild(script);
+        });
     }
 
     async connect() {
@@ -35,16 +70,46 @@ class ExtensionSocketClient {
         }
 
         try {
-            // Import socket.io client dynamically
-            const { io } = await import('https://cdn.socket.io/4.7.4/socket.io.esm.min.js');
+            // Load socket.io client script if not already loaded
+            if (typeof window !== 'undefined' && !window.io) {
+                await this.loadSocketIOScript();
+            }
             
-            this.socket = io(this.config.serverUrl, {
+            // Use the globally available io function
+            const io = window.io || (await this.getSocketIO());
+            
+            // Get authentication token if available
+            let authToken = null;
+            let userId = null;
+            try {
+                if (typeof window !== 'undefined' && window.supabaseAuth) {
+                    authToken = await window.supabaseAuth.getAccessToken();
+                    userId = await window.supabaseAuth.getUserId();
+                }
+            } catch (error) {
+                console.warn('Failed to get auth token for socket connection:', error);
+            }
+            
+            // Configure socket connection with auth
+            const socketConfig = {
                 reconnection: this.config.reconnection,
                 reconnectionDelay: this.config.reconnectionDelay,
                 reconnectionAttempts: this.config.reconnectionAttempts,
                 timeout: this.config.timeout,
                 transports: ['websocket', 'polling']
-            });
+            };
+
+            // Add auth token if available
+            if (authToken) {
+                socketConfig.auth = {
+                    token: authToken
+                };
+                console.log('Connecting to socket with authentication token for user:', userId);
+            } else {
+                console.warn('Connecting to socket WITHOUT authentication - this may be rejected by server');
+            }
+            
+            this.socket = io(this.config.serverUrl, socketConfig);
 
             this.setupEventListeners();
             console.log('Socket.IO client created');
@@ -54,14 +119,62 @@ class ExtensionSocketClient {
         }
     }
 
+    async loadSocketIOScript() {
+        return new Promise((resolve, reject) => {
+            if (typeof window !== 'undefined' && window.io) {
+                resolve();
+                return;
+            }
+
+            const script = document.createElement('script');
+            script.src = chrome.runtime.getURL('socket/socket.io.min.js');
+            script.onload = () => resolve();
+            script.onerror = () => reject(new Error('Failed to load Socket.IO script'));
+            document.head.appendChild(script);
+        });
+    }
+
+    async getSocketIO() {
+        // Fallback for non-browser environments
+        if (typeof window !== 'undefined' && window.io) {
+            return window.io;
+        }
+        
+        // If we're in a service worker or other context, try dynamic import as fallback
+        try {
+            const { io } = await import(chrome.runtime.getURL('socket/socket.io.min.js'));
+            return io;
+        } catch (error) {
+            console.error('Failed to load Socket.IO in this context:', error);
+            throw new Error('Socket.IO not available in this context');
+        }
+    }
+
     setupEventListeners() {
-        this.socket.on('connect', () => {
+        this.socket.on('connect', async () => {
             console.log('Connected to Socket.IO server');
             this.isConnected = true;
+            
+            // Get user info for connection event
+            let userId = null;
+            let userEmail = null;
+            try {
+                if (typeof window !== 'undefined' && window.supabaseAuth) {
+                    userId = await window.supabaseAuth.getUserId();
+                    const user = await window.supabaseAuth.getUser();
+                    userEmail = user?.email;
+                }
+            } catch (error) {
+                console.warn('Failed to get user info for connection event:', error);
+            }
+            
             this.emit('client_connected', { 
                 timestamp: new Date().toISOString(),
                 userAgent: navigator.userAgent,
-                extensionId: chrome.runtime.id
+                extensionId: chrome.runtime.id,
+                userId: userId,
+                userEmail: userEmail,
+                authenticated: !!userId
             });
         });
 

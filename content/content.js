@@ -72,7 +72,7 @@ async function handleHTMLExtraction(url) {
             content_length: htmlContent.length,
             extracted_at: extractedAt,
             user_agent: navigator.userAgent,
-            user_id: config.userId
+            user_id: await getUserId() // Get from authentication
         };
 
         // Try to emit to Socket.IO server (optional, non-blocking)
@@ -138,14 +138,32 @@ async function sendToSupabase(data) {
             throw new Error('Supabase configuration not found. Please configure your Supabase settings.');
         }
 
+        // Get authentication headers if available
+        let authHeaders = {
+            'Content-Type': 'application/json',
+            'apikey': config.anonKey,
+            'Prefer': 'return=representation'
+        };
+
+        // Try to get auth token from supabaseAuth if available
+        try {
+            if (typeof window !== 'undefined' && window.supabaseAuth && window.supabaseAuth.isAuthenticated()) {
+                const additionalHeaders = await window.supabaseAuth.getAuthHeaders();
+                authHeaders = { ...authHeaders, ...additionalHeaders };
+                console.log('Using authenticated request to Supabase');
+            } else {
+                // Use anon key as fallback
+                authHeaders['Authorization'] = `Bearer ${config.anonKey}`;
+                console.warn('Using anonymous request to Supabase - user not authenticated');
+            }
+        } catch (error) {
+            console.warn('Failed to get auth headers, using anon key:', error);
+            authHeaders['Authorization'] = `Bearer ${config.anonKey}`;
+        }
+
         const response = await fetch(`${config.url}/rest/v1/${config.tableName || 'html_extractions'}`, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${config.anonKey}`,
-                'apikey': config.anonKey,
-                'Prefer': 'return=representation'
-            },
+            headers: authHeaders,
             body: JSON.stringify(data)
         });
 
@@ -171,13 +189,30 @@ async function sendToSupabase(data) {
 
 async function getSupabaseConfig() {
     return new Promise((resolve) => {
-        chrome.storage.sync.get(['supabaseUrl', 'supabaseAnonKey', 'supabaseTableName', 'userId'], (result) => {
+        chrome.storage.sync.get(['supabaseUrl', 'supabaseAnonKey', 'supabaseTableName'], (result) => {
             resolve({
                 url: result.supabaseUrl,
                 anonKey: result.supabaseAnonKey,
-                tableName: result.supabaseTableName || 'html_extractions',
-                userId: result.userId
+                tableName: result.supabaseTableName || 'html_extractions'
             });
+        });
+    });
+}
+
+async function getUserId() {
+    try {
+        // Try to get user ID from authentication first
+        if (typeof window !== 'undefined' && window.supabaseAuth && window.supabaseAuth.isAuthenticated()) {
+            return await window.supabaseAuth.getUserId();
+        }
+    } catch (error) {
+        console.warn('Failed to get authenticated user ID:', error);
+    }
+    
+    // Fallback to stored user ID (legacy support)
+    return new Promise((resolve) => {
+        chrome.storage.sync.get(['userId'], (result) => {
+            resolve(result.userId || null);
         });
     });
 }
