@@ -15,19 +15,6 @@
 
         <form id="settingsForm" class="settings-form">
             <div class="form-group">
-                <label for="userId">User ID</label>
-                <input 
-                    type="text" 
-                    id="userId" 
-                    placeholder="your-username or email"
-                    required
-                >
-                <small class="help-text">
-                    A unique identifier to track your extractions (e.g., your name, email, or username)
-                </small>
-            </div>
-
-            <div class="form-group">
                 <label for="supabaseUrl">Supabase Project URL</label>
                 <input 
                     type="url" 
@@ -66,6 +53,19 @@
                 </small>
             </div>
 
+            <div class="form-group">
+                <label for="userId">User ID</label>
+                <input 
+                    type="text" 
+                    id="userId" 
+                    placeholder="Enter your unique user identifier"
+                    required
+                >
+                <small class="help-text">
+                    A unique identifier to track your extractions (e.g., your email, username, or UUID)
+                </small>
+            </div>
+
             <div class="form-actions">
                 <button type="submit" class="save-btn">Save Configuration</button>
                 <button type="button" id="testBtn" class="test-btn">Test Connection</button>
@@ -85,7 +85,6 @@
             <div class="code-block">
                 <pre><code>CREATE TABLE html_extractions (
   id BIGSERIAL PRIMARY KEY,
-  user_id TEXT NOT NULL,
   url TEXT NOT NULL,
   title TEXT,
   html_content TEXT NOT NULL,
@@ -94,15 +93,20 @@
   content_length INTEGER,
   extracted_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   user_agent TEXT,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  user_id UUID,
+  CONSTRAINT html_extractions_user_id_fkey 
+    FOREIGN KEY (user_id) REFERENCES auth.users (id) 
+    ON UPDATE CASCADE ON DELETE CASCADE
 );</code></pre>
                 <button class="copy-btn" onclick="copyToClipboard(this)">Copy SQL</button>
             </div>
 
             <ol start="2">
+                <li>Set a unique User ID above to identify your extractions</li>
                 <li>Enable Row Level Security (RLS) if needed for your use case</li>
                 <li>Get your Project URL and anon key from Supabase Dashboard → Settings → API</li>
-                <li>Enter your User ID and credentials above and click "Save Configuration"</li>
+                <li>Enter the credentials above and click "Save Configuration"</li>
             </ol>
         </div>
     </div>

@@ -22,9 +22,6 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const config = await getStoredConfig();
             
-            if (config.userId) {
-                document.getElementById('userId').value = config.userId;
-            }
             if (config.url) {
                 document.getElementById('supabaseUrl').value = config.url;
             }
@@ -34,6 +31,9 @@ document.addEventListener('DOMContentLoaded', () => {
             if (config.tableName) {
                 document.getElementById('supabaseTableName').value = config.tableName;
             }
+            if (config.userId) {
+                document.getElementById('userId').value = config.userId;
+            }
         } catch (error) {
             console.error('Failed to load configuration:', error);
         }
@@ -41,12 +41,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function saveConfiguration() {
         try {
-            const userId = document.getElementById('userId').value.trim();
             const url = document.getElementById('supabaseUrl').value.trim();
             const anonKey = document.getElementById('supabaseAnonKey').value.trim();
             const tableName = document.getElementById('supabaseTableName').value.trim() || 'html_extractions';
+            const userId = document.getElementById('userId').value.trim();
 
-            if (!userId || !url || !anonKey) {
+            if (!url || !anonKey || !userId) {
                 showStatus('error', 'Please fill in all required fields');
                 return;
             }
@@ -64,10 +64,10 @@ document.addEventListener('DOMContentLoaded', () => {
             // Save to Chrome storage
             await new Promise((resolve, reject) => {
                 chrome.storage.sync.set({
-                    userId: userId,
                     supabaseUrl: url,
                     supabaseAnonKey: anonKey,
-                    supabaseTableName: tableName
+                    supabaseTableName: tableName,
+                    userId: userId
                 }, () => {
                     if (chrome.runtime.lastError) {
                         reject(chrome.runtime.lastError);
@@ -138,12 +138,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function getStoredConfig() {
         return new Promise((resolve) => {
-            chrome.storage.sync.get(['userId', 'supabaseUrl', 'supabaseAnonKey', 'supabaseTableName'], (result) => {
+            chrome.storage.sync.get(['supabaseUrl', 'supabaseAnonKey', 'supabaseTableName', 'userId'], (result) => {
                 resolve({
-                    userId: result.userId || '',
                     url: result.supabaseUrl || '',
                     anonKey: result.supabaseAnonKey || '',
-                    tableName: result.supabaseTableName || 'html_extractions'
+                    tableName: result.supabaseTableName || 'html_extractions',
+                    userId: result.userId || ''
                 });
             });
         });
@@ -184,4 +184,4 @@ function copyToClipboard(button) {
             button.textContent = 'Copy SQL';
         }, 2000);
     });
-}
+} 

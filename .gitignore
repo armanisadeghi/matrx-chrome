@@ -17,13 +17,14 @@ Thumbs.db
 .idea/
 *.swp
 *.swo
-.history/
 
 # Node modules (if you add build tools later)
 node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+.history/
 
 # Environment files
 .env

@@ -8,10 +8,10 @@ chrome.runtime.onInstalled.addListener((details) => {
         
         // Set default configuration
         chrome.storage.sync.set({
-            userId: '',
             supabaseUrl: '',
             supabaseAnonKey: '',
-            supabaseTableName: 'html_extractions'
+            supabaseTableName: 'html_extractions',
+            userId: ''
         });
         
         // Open options page for initial setup
@@ -23,12 +23,12 @@ chrome.runtime.onInstalled.addListener((details) => {
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.action === 'getConfig') {
         // Get Supabase configuration
-        chrome.storage.sync.get(['userId', 'supabaseUrl', 'supabaseAnonKey', 'supabaseTableName'], (result) => {
+        chrome.storage.sync.get(['supabaseUrl', 'supabaseAnonKey', 'supabaseTableName', 'userId'], (result) => {
             sendResponse({
-                userId: result.userId,
                 url: result.supabaseUrl,
                 anonKey: result.supabaseAnonKey,
-                tableName: result.supabaseTableName || 'html_extractions'
+                tableName: result.supabaseTableName || 'html_extractions',
+                userId: result.userId
             });
         });
         return true; // Keep the message channel open
@@ -37,10 +37,10 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.action === 'saveConfig') {
         // Save Supabase configuration
         chrome.storage.sync.set({
-            userId: request.config.userId,
             supabaseUrl: request.config.url,
             supabaseAnonKey: request.config.anonKey,
-            supabaseTableName: request.config.tableName || 'html_extractions'
+            supabaseTableName: request.config.tableName || 'html_extractions',
+            userId: request.config.userId
         }, () => {
             sendResponse({ success: true });
         });

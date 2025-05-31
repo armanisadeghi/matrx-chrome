@@ -15,7 +15,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
 async function handleHTMLExtraction(url) {
     try {
-        // Get configuration first to ensure user_id is available
+        // Get configuration first to check if user_id is set
         const config = await getSupabaseConfig();
         
         if (!config.userId) {
@@ -33,7 +33,6 @@ async function handleHTMLExtraction(url) {
         
         // Prepare data for Supabase
         const extractionData = {
-            user_id: config.userId,
             url: url,
             title: pageTitle,
             html_content: htmlContent,
@@ -41,7 +40,8 @@ async function handleHTMLExtraction(url) {
             meta_keywords: metaKeywords,
             content_length: htmlContent.length,
             extracted_at: extractedAt,
-            user_agent: navigator.userAgent
+            user_agent: navigator.userAgent,
+            user_id: config.userId
         };
 
         // Send to Supabase
@@ -52,8 +52,7 @@ async function handleHTMLExtraction(url) {
                 success: true,
                 size: htmlContent.length,
                 title: pageTitle,
-                id: supabaseResult.id,
-                userId: config.userId
+                id: supabaseResult.id
             };
         } else {
             throw new Error(supabaseResult.error);
@@ -107,12 +106,12 @@ async function sendToSupabase(data) {
 
 async function getSupabaseConfig() {
     return new Promise((resolve) => {
-        chrome.storage.sync.get(['userId', 'supabaseUrl', 'supabaseAnonKey', 'supabaseTableName'], (result) => {
+        chrome.storage.sync.get(['supabaseUrl', 'supabaseAnonKey', 'supabaseTableName', 'userId'], (result) => {
             resolve({
-                userId: result.userId,
                 url: result.supabaseUrl,
                 anonKey: result.supabaseAnonKey,
-                tableName: result.supabaseTableName || 'html_extractions'
+                tableName: result.supabaseTableName || 'html_extractions',
+                userId: result.userId
             });
         });
     });

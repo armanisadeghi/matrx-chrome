@@ -6,11 +6,11 @@ A Chrome extension that extracts HTML content from web pages and stores it in a 
 
 - 🚀 **One-click HTML extraction** from any web page
 - 🗄️ **Supabase integration** for cloud storage
-- 👤 **User tracking** to identify who extracted content
 - 🎨 **Clean, modern UI** with intuitive controls
 - 🔧 **Easy configuration** through settings page
 - 📱 **Context menu** for quick access
 - 🔒 **Secure storage** of credentials in Chrome sync
+- 👤 **User tracking** with configurable user ID
 
 ## Installation
 
@@ -29,7 +29,6 @@ A Chrome extension that extracts HTML content from web pages and stores it in a 
    ```sql
    CREATE TABLE html_extractions (
      id BIGSERIAL PRIMARY KEY,
-     user_id TEXT NOT NULL,
      url TEXT NOT NULL,
      title TEXT,
      html_content TEXT NOT NULL,
@@ -38,7 +37,11 @@ A Chrome extension that extracts HTML content from web pages and stores it in a 
      content_length INTEGER,
      extracted_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
      user_agent TEXT,
-     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+     user_id UUID,
+     CONSTRAINT html_extractions_user_id_fkey 
+       FOREIGN KEY (user_id) REFERENCES auth.users (id) 
+       ON UPDATE CASCADE ON DELETE CASCADE
    );
    ```
 
@@ -53,10 +56,10 @@ A Chrome extension that extracts HTML content from web pages and stores it in a 
    - The extension will be installed and the settings page will open
 
 5. **Configure the extension**
-   - Enter your User ID (your name, email, or username for tracking)
    - Enter your Supabase Project URL
    - Enter your Supabase anon key
    - Set the table name (default: `html_extractions`)
+   - **Set your User ID** (any unique identifier like email, username, or UUID)
    - Click "Test Connection" to verify
    - Click "Save Configuration"
 
@@ -101,7 +104,6 @@ The extension creates records with the following structure:
 | Column | Type | Description |
 |--------|------|-------------|
 | `id` | BIGSERIAL | Primary key |
-| `user_id` | TEXT | User identifier for tracking who extracted the content |
 | `url` | TEXT | Page URL |
 | `title` | TEXT | Page title |
 | `html_content` | TEXT | Full HTML content |
@@ -111,14 +113,15 @@ The extension creates records with the following structure:
 | `extracted_at` | TIMESTAMP | Extraction timestamp |
 | `user_agent` | TEXT | Browser user agent |
 | `created_at` | TIMESTAMP | Record creation time |
+| `user_id` | UUID | User identifier for tracking |
 
 ## Security Notes
 
 - Your Supabase credentials are stored securely in Chrome's sync storage
 - The extension only requires access to the current tab (`activeTab` permission)
 - All communication with Supabase uses HTTPS
+- User ID helps track extractions without full authentication
 - Consider enabling Row Level Security (RLS) in Supabase for additional protection
-- User IDs help track and filter extractions by user
 
 ## Publishing to Chrome Web Store
 
@@ -160,11 +163,6 @@ To prepare for Chrome Web Store submission:
 
 ## Troubleshooting
 
-### "User ID not configured" error
-- Click Settings in the extension popup
-- Enter a User ID (your name, email, or username)
-- Save configuration and try again
-
 ### "Connection failed" in settings
 - Verify your Supabase URL is correct (should end with `.supabase.co`)
 - Check that your anon key is valid
@@ -173,6 +171,10 @@ To prepare for Chrome Web Store submission:
 ### "Table not found" error
 - Run the SQL command provided in setup instructions
 - Verify the table name matches your configuration
+
+### "User ID not configured" error
+- Open extension settings and set a unique User ID
+- This can be any identifier you choose (email, username, UUID, etc.)
 
 ### "Cannot extract content from Chrome internal pages"
 - This is expected - the extension cannot access Chrome's internal pages

@@ -15,9 +15,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         currentUrlSpan.textContent = 'Unable to get URL';
     }
 
-    // Check if user is configured
-    checkUserConfiguration();
-
     // Handle settings link click
     settingsLink.addEventListener('click', (e) => {
         e.preventDefault();
@@ -49,20 +46,14 @@ document.addEventListener('DOMContentLoaded', async () => {
             });
 
             if (response.success) {
-                showStatus('success', `Successfully extracted ${response.size} characters of HTML content for user: ${response.userId}!`);
+                showStatus('success', `Successfully extracted ${response.size} characters of HTML content!`);
             } else {
                 throw new Error(response.error || 'Failed to extract HTML');
             }
 
         } catch (error) {
             console.error('Extraction failed:', error);
-            
-            // Handle specific user configuration error
-            if (error.message.includes('User ID not configured')) {
-                showStatus('error', 'Please configure your User ID in Settings first.');
-            } else {
-                showStatus('error', `Error: ${error.message}`);
-            }
+            showStatus('error', `Error: ${error.message}`);
         } finally {
             // Reset button state
             extractBtn.disabled = false;
@@ -70,30 +61,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             btnLoader.style.display = 'none';
         }
     });
-
-    async function checkUserConfiguration() {
-        try {
-            const config = await getStoredConfig();
-            
-            if (!config.userId) {
-                showStatus('error', 'User ID not configured. Please click Settings to set it up.');
-            }
-        } catch (error) {
-            console.error('Failed to check configuration:', error);
-        }
-    }
-
-    function getStoredConfig() {
-        return new Promise((resolve) => {
-            chrome.storage.sync.get(['userId', 'supabaseUrl', 'supabaseAnonKey'], (result) => {
-                resolve({
-                    userId: result.userId || '',
-                    url: result.supabaseUrl || '',
-                    anonKey: result.supabaseAnonKey || ''
-                });
-            });
-        });
-    }
 
     function showStatus(type, message) {
         statusDiv.style.display = 'block';
