@@ -17,6 +17,7 @@ Thumbs.db
 .idea/
 *.swp
 *.swo
+.history/
 
 # Node modules (if you add build tools later)
 node_modules/
