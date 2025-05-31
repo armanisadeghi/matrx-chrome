@@ -1,16 +1,17 @@
-# HTML Extractor Chrome Extension
+# Matrx Chrome Extension
 
-A Chrome extension that extracts HTML content from web pages and stores it in a Supabase database.
+A Chrome extension for the Matrx platform that extracts web content and stores it in a Supabase database with real-time backend integration.
 
 ## Features
 
-- 🚀 **One-click HTML extraction** from any web page
+- 🚀 **One-click content extraction** from any web page
 - 🗄️ **Supabase integration** for cloud storage
 - 🎨 **Clean, modern UI** with intuitive controls
 - 🔧 **Easy configuration** through settings page
 - 📱 **Context menu** for quick access
 - 🔒 **Secure storage** of credentials in Chrome sync
 - 👤 **User tracking** with configurable user ID
+- ⚡ **Real-time communication** with Python backend via Socket.IO
 
 ## Installation
 
@@ -60,6 +61,7 @@ A Chrome extension that extracts HTML content from web pages and stores it in a 
    - Enter your Supabase anon key
    - Set the table name (default: `html_extractions`)
    - **Set your User ID** (any unique identifier like email, username, or UUID)
+   - Optionally configure Socket.IO server URL for real-time backend communication
    - Click "Test Connection" to verify
    - Click "Save Configuration"
 
@@ -67,13 +69,13 @@ A Chrome extension that extracts HTML content from web pages and stores it in a 
 
 ### Method 1: Extension Popup
 1. Navigate to any web page
-2. Click the extension icon in the toolbar
+2. Click the Matrx extension icon in the toolbar
 3. Click "Extract Current Page"
 4. View the extraction status and results
 
 ### Method 2: Context Menu
 1. Right-click anywhere on a web page
-2. Select "Extract HTML to Supabase"
+2. Select "Extract with Matrx"
 
 ## File Structure
 
@@ -92,8 +94,13 @@ matrx-chrome/
 │   ├── options.html       # Settings page
 │   ├── options.css        # Settings page styling
 │   └── options.js         # Settings functionality
+├── socket/
+│   └── socket-client.js   # Socket.IO client for real-time communication
 ├── icons/
-│   └── (icon files)       # Extension icons
+│   ├── icon16.png         # 16x16 extension icon
+│   ├── icon32.png         # 32x32 extension icon
+│   ├── icon48.png         # 48x48 extension icon
+│   └── icon128.png        # 128x128 extension icon
 └── README.md              # This file
 ```
 
@@ -115,23 +122,37 @@ The extension creates records with the following structure:
 | `created_at` | TIMESTAMP | Record creation time |
 | `user_id` | UUID | User identifier for tracking |
 
+## Real-time Backend Integration
+
+The extension supports real-time communication with your Python backend via Socket.IO:
+
+### Events sent to backend:
+- `html_extraction` - Main extraction event with full HTML content
+- `extraction_saved` - Confirmation of Supabase save
+- `extraction_error` - Error notifications
+
+### Events received from backend:
+- `html_extraction_processed` - Processing confirmation
+- `extraction_analysis_complete` - Analysis results
+- `server_message` - General messages
+
 ## Security Notes
 
 - Your Supabase credentials are stored securely in Chrome's sync storage
 - The extension only requires access to the current tab (`activeTab` permission)
 - All communication with Supabase uses HTTPS
 - User ID helps track extractions without full authentication
+- Socket.IO communication is optional and non-blocking
 - Consider enabling Row Level Security (RLS) in Supabase for additional protection
 
 ## Publishing to Chrome Web Store
 
 To prepare for Chrome Web Store submission:
 
-1. **Create proper icons** (replace placeholder icons in `icons/` folder)
-   - 16x16, 32x32, 48x48, 128x128 PNG files
+1. **Icons are ready** ✅ (16x16, 32x32, 48x48, 128x128 PNG files)
    
 2. **Update manifest.json**
-   - Update name, description, version as needed
+   - Update version as needed
    - Ensure all permissions are necessary
    
 3. **Test thoroughly**
@@ -153,12 +174,12 @@ To prepare for Chrome Web Store submission:
 ### Debugging
 - Open Chrome DevTools on any page to see content script console logs
 - Right-click extension icon → "Inspect popup" for popup debugging
-- Go to `chrome://extensions/` and click "background page" for background script logs
+- Go to `chrome://extensions/` and click "service worker" for background script logs
 
 ### Making Changes
 1. Make your code changes
 2. Go to `chrome://extensions/`
-3. Click the refresh icon on the extension
+3. Click the refresh icon on the Matrx extension
 4. Test your changes
 
 ## Troubleshooting
@@ -176,9 +197,18 @@ To prepare for Chrome Web Store submission:
 - Open extension settings and set a unique User ID
 - This can be any identifier you choose (email, username, UUID, etc.)
 
+### Socket.IO connection issues
+- Socket.IO is completely optional - extension works without it
+- Check that your Python backend is running on the configured URL
+- Use "Test Socket" button to verify connection
+
 ### "Cannot extract content from Chrome internal pages"
 - This is expected - the extension cannot access Chrome's internal pages
 - Try testing on a regular website like `https://example.com`
+
+## About Matrx
+
+Matrx is a comprehensive platform for web content analysis and data processing. This Chrome extension is part of the larger Matrx ecosystem, providing seamless web content extraction capabilities.
 
 ## Contributing
 

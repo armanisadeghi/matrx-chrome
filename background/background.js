@@ -1,10 +1,10 @@
-// Background service worker for HTML Extractor extension
-console.log('HTML Extractor background script loaded');
+// Background service worker for Matrx extension
+console.log('Matrx background script loaded');
 
 // Handle extension installation
 chrome.runtime.onInstalled.addListener((details) => {
     if (details.reason === 'install') {
-        console.log('HTML Extractor extension installed');
+        console.log('Matrx extension installed');
         
         // Set default configuration
         chrome.storage.sync.set({
@@ -52,7 +52,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 chrome.runtime.onInstalled.addListener(() => {
     chrome.contextMenus.create({
         id: 'extractHTML',
-        title: 'Extract HTML to Supabase',
+        title: 'Extract with Matrx',
         contexts: ['page']
     });
 });

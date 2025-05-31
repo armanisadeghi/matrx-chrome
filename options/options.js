@@ -162,7 +162,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function testSocketConnection() {
         try {
-            const socketServerUrl = document.getElementById('socketServerUrl').value.trim() || 'http://localhost:5000';
+            const socketServerUrl = document.getElementById('socketServerUrl').value.trim() || 'http://localhost:8000';
 
             // Validate URL format
             try {
@@ -223,7 +223,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     anonKey: result.supabaseAnonKey || '',
                     tableName: result.supabaseTableName || 'html_extractions',
                     userId: result.userId || '',
-                    socketServerUrl: result.socketServerUrl || 'http://localhost:5000'
+                    socketServerUrl: result.socketServerUrl || 'http://localhost:8000'
                 });
             });
         });

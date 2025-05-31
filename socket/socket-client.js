@@ -181,11 +181,11 @@ class ExtensionSocketClient {
             if (typeof chrome !== 'undefined' && chrome.storage) {
                 chrome.storage.sync.get(['socketServerUrl'], (result) => {
                     resolve({
-                        serverUrl: result.socketServerUrl || 'http://localhost:5000'
+                        serverUrl: result.socketServerUrl || 'http://localhost:8000'
                     });
                 });
             } else {
-                resolve({ serverUrl: 'http://localhost:5000' });
+                resolve({ serverUrl: 'http://localhost:8000' });
             }
         });
     }

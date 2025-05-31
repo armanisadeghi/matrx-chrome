@@ -1,30 +1,35 @@
 // Content script that runs on all web pages
-console.log('HTML Extractor content script loaded');
+console.log('Matrx content script loaded');
 
-// Initialize socket client
+// Initialize socket client (completely optional)
 let socketClient = null;
 
-// Import and initialize socket client
+// Try to initialize socket client, but don't let it break anything
 async function initializeSocket() {
     try {
-        // Import the socket client
+        // Import the socket client (non-blocking)
         await import(chrome.runtime.getURL('socket/socket-client.js'));
         
-        // Give it a moment to initialize
+        // Give it a moment to initialize, but don't wait for it
         setTimeout(() => {
-            if (window.ExtensionSocketClient) {
-                socketClient = new window.ExtensionSocketClient();
-                socketClient.initialize();
-                console.log('Socket client initialized in content script');
+            try {
+                if (window.ExtensionSocketClient) {
+                    socketClient = new window.ExtensionSocketClient();
+                    socketClient.initialize();
+                    console.log('Socket client initialized successfully');
+                }
+            } catch (error) {
+                console.warn('Socket client initialization failed, continuing without it:', error);
+                socketClient = null;
             }
         }, 100);
     } catch (error) {
-        console.warn('Socket client initialization failed:', error);
-        // Continue without socket functionality
+        console.warn('Socket import failed, continuing without socket functionality:', error);
+        socketClient = null;
     }
 }
 
-// Initialize socket when script loads
+// Initialize socket when script loads (but don't wait for it)
 initializeSocket();
 
 // Listen for messages from popup
@@ -70,21 +75,31 @@ async function handleHTMLExtraction(url) {
             user_id: config.userId
         };
 
-        // Emit to Socket.IO server BEFORE saving to Supabase
-        if (socketClient && socketClient.isConnected) {
-            console.log('Emitting extraction event to server...');
-            socketClient.emitHtmlExtraction(extractionData);
-        } else {
-            console.warn('Socket not connected, extraction will not be sent to backend');
+        // Try to emit to Socket.IO server (optional, non-blocking)
+        let socketConnected = false;
+        try {
+            if (socketClient && socketClient.isConnected) {
+                console.log('Emitting extraction event to server...');
+                socketClient.emitHtmlExtraction(extractionData);
+                socketConnected = true;
+            } else {
+                console.log('Socket not connected, skipping socket emission');
+            }
+        } catch (error) {
+            console.warn('Socket emission failed, continuing anyway:', error);
         }
 
-        // Send to Supabase
+        // Send to Supabase (this is the core functionality that must work)
         const supabaseResult = await sendToSupabase(extractionData);
         
         if (supabaseResult.success) {
-            // Emit successful save event to socket
-            if (socketClient && socketClient.isConnected) {
-                socketClient.emitExtractionSaved(extractionData, supabaseResult);
+            // Try to emit successful save event to socket (optional)
+            try {
+                if (socketClient && socketClient.isConnected) {
+                    socketClient.emitExtractionSaved(extractionData, supabaseResult);
+                }
+            } catch (error) {
+                console.warn('Socket save emission failed:', error);
             }
 
             return {
@@ -92,7 +107,7 @@ async function handleHTMLExtraction(url) {
                 size: htmlContent.length,
                 title: pageTitle,
                 id: supabaseResult.id,
-                socketConnected: socketClient ? socketClient.isConnected : false
+                socketConnected: socketConnected
             };
         } else {
             throw new Error(supabaseResult.error);
@@ -101,9 +116,13 @@ async function handleHTMLExtraction(url) {
     } catch (error) {
         console.error('HTML extraction failed:', error);
         
-        // Emit error event to socket
-        if (socketClient && socketClient.isConnected) {
-            socketClient.emitExtractionError(error, url);
+        // Try to emit error event to socket (optional)
+        try {
+            if (socketClient && socketClient.isConnected) {
+                socketClient.emitExtractionError(error, url);
+            }
+        } catch (socketError) {
+            console.warn('Socket error emission failed:', socketError);
         }
         
         throw error;
@@ -163,69 +182,85 @@ async function getSupabaseConfig() {
     });
 }
 
-// Listen for socket messages from background script
+// Listen for socket messages from background script (optional)
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.action === 'socketMessage') {
-        console.log('Received socket message:', request.type, request.data);
-        
-        // Handle different types of socket messages
-        switch (request.type) {
-            case 'extraction_processed':
-                handleExtractionProcessed(request.data);
-                break;
-            case 'analysis_complete':
-                handleAnalysisComplete(request.data);
-                break;
-            default:
-                console.log('Unknown socket message type:', request.type);
+        try {
+            console.log('Received socket message:', request.type, request.data);
+            
+            // Handle different types of socket messages
+            switch (request.type) {
+                case 'extraction_processed':
+                    handleExtractionProcessed(request.data);
+                    break;
+                case 'analysis_complete':
+                    handleAnalysisComplete(request.data);
+                    break;
+                default:
+                    console.log('Unknown socket message type:', request.type);
+            }
+        } catch (error) {
+            console.warn('Socket message handling failed:', error);
         }
     }
 });
 
 function handleExtractionProcessed(data) {
-    // Could show a notification or update UI
-    console.log('Extraction processed by Python backend:', data);
-    
-    // Example: Show a subtle notification
-    if (data.success) {
-        showNotification('✅ Page processed successfully by backend', 'success');
+    try {
+        // Could show a notification or update UI
+        console.log('Extraction processed by Python backend:', data);
+        
+        // Example: Show a subtle notification
+        if (data.success) {
+            showNotification('✅ Page processed successfully by backend', 'success');
+        }
+    } catch (error) {
+        console.warn('Extraction processed handler failed:', error);
     }
 }
 
 function handleAnalysisComplete(data) {
-    console.log('Analysis complete:', data);
-    showNotification('🔍 Analysis complete', 'info');
+    try {
+        console.log('Analysis complete:', data);
+        showNotification('🔍 Analysis complete', 'info');
+    } catch (error) {
+        console.warn('Analysis complete handler failed:', error);
+    }
 }
 
 function showNotification(message, type = 'info') {
-    // Create a simple notification overlay
-    const notification = document.createElement('div');
-    notification.textContent = message;
-    notification.style.cssText = `
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        padding: 12px 20px;
-        background: ${type === 'success' ? '#22c55e' : type === 'error' ? '#ef4444' : '#3b82f6'};
-        color: white;
-        border-radius: 8px;
-        font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-        font-size: 14px;
-        z-index: 10000;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-        transition: all 0.3s ease;
-    `;
-    
-    document.body.appendChild(notification);
-    
-    // Remove after 3 seconds
-    setTimeout(() => {
-        notification.style.opacity = '0';
-        notification.style.transform = 'translateX(100%)';
+    try {
+        // Create a simple notification overlay
+        const notification = document.createElement('div');
+        notification.textContent = message;
+        notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 12px 20px;
+            background: ${type === 'success' ? '#22c55e' : type === 'error' ? '#ef4444' : '#3b82f6'};
+            color: white;
+            border-radius: 8px;
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            font-size: 14px;
+            z-index: 10000;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+        `;
+        
+        document.body.appendChild(notification);
+        
+        // Remove after 3 seconds
         setTimeout(() => {
-            if (notification.parentNode) {
-                notification.parentNode.removeChild(notification);
-            }
-        }, 300);
-    }, 3000);
+            notification.style.opacity = '0';
+            notification.style.transform = 'translateX(100%)';
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.parentNode.removeChild(notification);
+                }
+            }, 300);
+        }, 3000);
+    } catch (error) {
+        console.warn('Notification display failed:', error);
+    }
 } 
