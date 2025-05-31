@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTML Extractor</title>
+    <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>HTML Extractor</h1>
+            <p class="subtitle">Extract and store page content</p>
+        </div>
+        
+        <div class="content">
+            <button id="extractBtn" class="extract-btn">
+                <span class="btn-text">Extract Current Page</span>
+                <span class="btn-loader" style="display: none;">Extracting...</span>
+            </button>
+            
+            <div class="status" id="status" style="display: none;">
+                <div class="status-message" id="statusMessage"></div>
+            </div>
+            
+            <div class="info">
+                <div class="info-item">
+                    <span class="label">Current URL:</span>
+                    <span class="value" id="currentUrl">Loading...</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <a href="#" id="settingsLink">Settings</a>
+        </div>
+    </div>
+    
+    <script src="popup.js"></script>
+</body>
+</html> 

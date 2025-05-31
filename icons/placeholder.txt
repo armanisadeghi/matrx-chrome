@@ -1,0 +1,27 @@
+ICON PLACEHOLDER
+
+For now, the extension will work without icons, but Chrome will show a default icon.
+
+To create proper icons for Chrome Web Store submission, you need:
+
+- icon16.png (16x16 pixels)
+- icon32.png (32x32 pixels) 
+- icon48.png (48x48 pixels)
+- icon128.png (128x128 pixels)
+
+You can:
+1. Design icons using tools like Figma, Canva, or Photoshop
+2. Use online icon generators
+3. Use AI tools to generate icons
+4. Find free icons on sites like Iconify or Feather Icons
+
+Icon suggestions:
+- A simple HTML tag symbol ("</>")
+- A database/storage icon
+- A download/extract arrow icon
+- Combination of HTML and database symbols
+
+Make sure icons are:
+- Clear and recognizable at small sizes
+- Consistent in style across all sizes
+- Follow Chrome extension icon guidelines 

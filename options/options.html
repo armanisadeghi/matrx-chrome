@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTML Extractor - Settings</title>
+    <link rel="stylesheet" href="options.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>HTML Extractor Settings</h1>
+            <p class="subtitle">Configure your Supabase database connection</p>
+        </div>
+
+        <form id="settingsForm" class="settings-form">
+            <div class="form-group">
+                <label for="supabaseUrl">Supabase Project URL</label>
+                <input 
+                    type="url" 
+                    id="supabaseUrl" 
+                    placeholder="https://your-project.supabase.co"
+                    required
+                >
+                <small class="help-text">
+                    Find this in your Supabase project settings under "API"
+                </small>
+            </div>
+
+            <div class="form-group">
+                <label for="supabaseAnonKey">Supabase Anon Key</label>
+                <input 
+                    type="password" 
+                    id="supabaseAnonKey" 
+                    placeholder="Enter your anon/public key"
+                    required
+                >
+                <small class="help-text">
+                    The public anon key from your Supabase project API settings
+                </small>
+            </div>
+
+            <div class="form-group">
+                <label for="supabaseTableName">Table Name</label>
+                <input 
+                    type="text" 
+                    id="supabaseTableName" 
+                    placeholder="html_extractions"
+                    value="html_extractions"
+                >
+                <small class="help-text">
+                    The table where HTML data will be stored (default: html_extractions)
+                </small>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="save-btn">Save Configuration</button>
+                <button type="button" id="testBtn" class="test-btn">Test Connection</button>
+            </div>
+        </form>
+
+        <div class="status" id="status" style="display: none;">
+            <div class="status-message" id="statusMessage"></div>
+        </div>
+
+        <div class="setup-instructions">
+            <h2>Setup Instructions</h2>
+            <ol>
+                <li>Create a new table in your Supabase database with the following SQL:</li>
+            </ol>
+            
+            <div class="code-block">
+                <pre><code>CREATE TABLE html_extractions (
+  id BIGSERIAL PRIMARY KEY,
+  url TEXT NOT NULL,
+  title TEXT,
+  html_content TEXT NOT NULL,
+  meta_description TEXT,
+  meta_keywords TEXT,
+  content_length INTEGER,
+  extracted_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  user_agent TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);</code></pre>
+                <button class="copy-btn" onclick="copyToClipboard(this)">Copy SQL</button>
+            </div>
+
+            <ol start="2">
+                <li>Enable Row Level Security (RLS) if needed for your use case</li>
+                <li>Get your Project URL and anon key from Supabase Dashboard → Settings → API</li>
+                <li>Enter the credentials above and click "Save Configuration"</li>
+            </ol>
+        </div>
+    </div>
+
+    <script src="options.js"></script>
+</body>
+</html> 
