@@ -25,7 +25,7 @@ yarn-debug.log*
 yarn-error.log*
 
 .history/
-
+.dev/
 # Environment files
 .env
 .env.local

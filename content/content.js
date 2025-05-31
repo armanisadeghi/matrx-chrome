@@ -34,6 +34,11 @@ initializeSocket();
 
 // Listen for messages from popup
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    if (request.action === 'ping') {
+        sendResponse({ success: true, message: 'Content script is ready' });
+        return true;
+    }
+    
     if (request.action === 'extractHTML') {
         handleHTMLExtraction(request.url)
             .then(result => sendResponse(result))
@@ -42,18 +47,27 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         // Keep the message channel open for async response
         return true;
     }
+    
+    if (request.action === 'copyFullHTML') {
+        handleFullHTMLCopy()
+            .then(result => sendResponse(result))
+            .catch(error => sendResponse({ success: false, error: error.message }));
+        
+        return true;
+    }
+    
+    if (request.action === 'copySmartHTML') {
+        handleSmartHTMLCopy()
+            .then(result => sendResponse(result))
+            .catch(error => sendResponse({ success: false, error: error.message }));
+        
+        return true;
+    }
 });
 
 async function handleHTMLExtraction(url) {
     try {
-        // Get configuration first to check if user_id is set
-        const config = await getSupabaseConfig();
-        
-        if (!config.userId) {
-            throw new Error('User ID not configured. Please set your User ID in extension settings.');
-        }
-
-        // Extract HTML content
+        // Extract HTML content (this always works)
         const htmlContent = document.documentElement.outerHTML;
         const pageTitle = document.title;
         const extractedAt = new Date().toISOString();
@@ -62,7 +76,15 @@ async function handleHTMLExtraction(url) {
         const metaDescription = document.querySelector('meta[name="description"]')?.content || '';
         const metaKeywords = document.querySelector('meta[name="keywords"]')?.content || '';
         
-        // Prepare data for Supabase
+        // Try to get user ID, but don't require it
+        let userId = null;
+        try {
+            userId = await getUserId();
+        } catch (error) {
+            console.warn('Could not get user ID, continuing without it:', error);
+        }
+        
+        // Prepare data for Supabase (if available)
         const extractionData = {
             url: url,
             title: pageTitle,
@@ -72,7 +94,7 @@ async function handleHTMLExtraction(url) {
             content_length: htmlContent.length,
             extracted_at: extractedAt,
             user_agent: navigator.userAgent,
-            user_id: await getUserId() // Get from authentication
+            user_id: userId // Can be null
         };
 
         // Try to emit to Socket.IO server (optional, non-blocking)
@@ -89,8 +111,14 @@ async function handleHTMLExtraction(url) {
             console.warn('Socket emission failed, continuing anyway:', error);
         }
 
-        // Send to Supabase (this is the core functionality that must work)
-        const supabaseResult = await sendToSupabase(extractionData);
+        // Try to send to Supabase (optional, the core functionality should work even if this fails)
+        let supabaseResult = { success: false, error: 'Supabase not configured' };
+        try {
+            supabaseResult = await sendToSupabase(extractionData);
+        } catch (error) {
+            console.warn('Supabase upload failed, continuing anyway:', error);
+            supabaseResult = { success: false, error: error.message };
+        }
         
         if (supabaseResult.success) {
             // Try to emit successful save event to socket (optional)
@@ -107,10 +135,22 @@ async function handleHTMLExtraction(url) {
                 size: htmlContent.length,
                 title: pageTitle,
                 id: supabaseResult.id,
-                socketConnected: socketConnected
+                socketConnected: socketConnected,
+                savedToDatabase: true
             };
         } else {
-            throw new Error(supabaseResult.error);
+            // Even if database save fails, we still extracted the HTML successfully
+            console.warn('Database save failed, but extraction was successful:', supabaseResult.error);
+            
+            return {
+                success: true,
+                size: htmlContent.length,
+                title: pageTitle,
+                id: 'not-saved',
+                socketConnected: socketConnected,
+                savedToDatabase: false,
+                warning: `HTML extracted successfully but not saved to database: ${supabaseResult.error}`
+            };
         }
         
     } catch (error) {
@@ -135,7 +175,11 @@ async function sendToSupabase(data) {
         const config = await getSupabaseConfig();
         
         if (!config.url || !config.anonKey) {
-            throw new Error('Supabase configuration not found. Please configure your Supabase settings.');
+            console.warn('Supabase configuration not found - skipping database save');
+            return {
+                success: false,
+                error: 'Supabase not configured. Please configure your Supabase settings to save extractions to database.'
+            };
         }
 
         // Get authentication headers if available
@@ -154,7 +198,7 @@ async function sendToSupabase(data) {
             } else {
                 // Use anon key as fallback
                 authHeaders['Authorization'] = `Bearer ${config.anonKey}`;
-                console.warn('Using anonymous request to Supabase - user not authenticated');
+                console.log('Using anonymous request to Supabase');
             }
         } catch (error) {
             console.warn('Failed to get auth headers, using anon key:', error);
@@ -169,10 +213,15 @@ async function sendToSupabase(data) {
 
         if (!response.ok) {
             const errorText = await response.text();
-            throw new Error(`Supabase error: ${response.status} - ${errorText}`);
+            console.error('Supabase API error:', response.status, errorText);
+            return {
+                success: false,
+                error: `Database error: ${response.status} - ${errorText}`
+            };
         }
 
         const result = await response.json();
+        console.log('Successfully saved to Supabase:', result[0]?.id);
         return {
             success: true,
             id: result[0]?.id || 'unknown'
@@ -203,18 +252,26 @@ async function getUserId() {
     try {
         // Try to get user ID from authentication first
         if (typeof window !== 'undefined' && window.supabaseAuth && window.supabaseAuth.isAuthenticated()) {
-            return await window.supabaseAuth.getUserId();
+            const authUserId = await window.supabaseAuth.getUserId();
+            if (authUserId) {
+                return authUserId;
+            }
         }
     } catch (error) {
         console.warn('Failed to get authenticated user ID:', error);
     }
     
     // Fallback to stored user ID (legacy support)
-    return new Promise((resolve) => {
-        chrome.storage.sync.get(['userId'], (result) => {
-            resolve(result.userId || null);
+    try {
+        return new Promise((resolve) => {
+            chrome.storage.sync.get(['userId'], (result) => {
+                resolve(result.userId || null);
+            });
         });
-    });
+    } catch (error) {
+        console.warn('Failed to get stored user ID:', error);
+        return null;
+    }
 }
 
 // Listen for socket messages from background script (optional)
@@ -298,4 +355,165 @@ function showNotification(message, type = 'info') {
     } catch (error) {
         console.warn('Notification display failed:', error);
     }
+}
+
+async function handleFullHTMLCopy() {
+    try {
+        const htmlContent = document.documentElement.outerHTML;
+        
+        return {
+            success: true,
+            html: htmlContent,
+            size: htmlContent.length
+        };
+    } catch (error) {
+        console.error('Full HTML copy failed:', error);
+        throw error;
+    }
+}
+
+async function handleSmartHTMLCopy() {
+    try {
+        const smartHTML = extractSmartHTML();
+        
+        return {
+            success: true,
+            html: smartHTML,
+            size: smartHTML.length
+        };
+    } catch (error) {
+        console.error('Smart HTML copy failed:', error);
+        throw error;
+    }
+}
+
+function extractSmartHTML() {
+    // Create a clone of the document to manipulate without affecting the original
+    const docClone = document.cloneNode(true);
+    
+    // Remove scripts and other unwanted elements
+    const elementsToRemove = [
+        'script',
+        'noscript', 
+        'style',
+        'link[rel="stylesheet"]',
+        'meta[name="viewport"]',
+        'meta[charset]',
+        'meta[http-equiv]',
+        'meta[name="generator"]',
+        'meta[name="robots"]',
+        'title' // Keep title in head but we'll add it back in a cleaner way
+    ];
+    
+    elementsToRemove.forEach(selector => {
+        const elements = docClone.querySelectorAll(selector);
+        elements.forEach(el => el.remove());
+    });
+    
+    // Remove comments
+    removeComments(docClone);
+    
+    // Clean up head - keep only essential meta tags
+    const head = docClone.querySelector('head');
+    if (head) {
+        // Keep only essential meta tags
+        const essentialMeta = head.querySelectorAll('meta[name="description"], meta[name="keywords"], meta[property^="og:"], meta[name="twitter:"], meta[name="author"]');
+        const title = document.querySelector('title');
+        
+        // Clear head and add back only essential elements
+        head.innerHTML = '';
+        
+        // Add back title
+        if (title) {
+            const newTitle = docClone.createElement('title');
+            newTitle.textContent = title.textContent;
+            head.appendChild(newTitle);
+        }
+        
+        // Add back essential meta tags
+        essentialMeta.forEach(meta => {
+            head.appendChild(meta.cloneNode(true));
+        });
+    }
+    
+    // Remove empty attributes and clean up body
+    const body = docClone.querySelector('body');
+    if (body) {
+        cleanupElement(body);
+    }
+    
+    // Remove data attributes that are typically not needed for content
+    const allElements = docClone.querySelectorAll('*');
+    allElements.forEach(el => {
+        // Remove data attributes except for important ones
+        Array.from(el.attributes).forEach(attr => {
+            if (attr.name.startsWith('data-') && 
+                !attr.name.startsWith('data-id') && 
+                !attr.name.startsWith('data-content') &&
+                !attr.name.startsWith('data-src')) {
+                el.removeAttribute(attr.name);
+            }
+        });
+        
+        // Remove event handlers
+        Array.from(el.attributes).forEach(attr => {
+            if (attr.name.startsWith('on')) {
+                el.removeAttribute(attr.name);
+            }
+        });
+        
+        // Remove empty class and id attributes
+        if (el.getAttribute('class') === '') {
+            el.removeAttribute('class');
+        }
+        if (el.getAttribute('id') === '') {
+            el.removeAttribute('id');
+        }
+    });
+    
+    return docClone.documentElement.outerHTML;
+}
+
+function removeComments(node) {
+    const walker = document.createTreeWalker(
+        node,
+        NodeFilter.SHOW_COMMENT,
+        null,
+        false
+    );
+    
+    const comments = [];
+    let comment;
+    while (comment = walker.nextNode()) {
+        comments.push(comment);
+    }
+    
+    comments.forEach(comment => {
+        comment.parentNode.removeChild(comment);
+    });
+}
+
+function cleanupElement(element) {
+    // Remove empty text nodes and unnecessary whitespace
+    const childNodes = Array.from(element.childNodes);
+    childNodes.forEach(node => {
+        if (node.nodeType === Node.TEXT_NODE) {
+            // Trim whitespace and remove if empty
+            node.textContent = node.textContent.trim();
+            if (node.textContent === '') {
+                node.remove();
+            }
+        } else if (node.nodeType === Node.ELEMENT_NODE) {
+            // Recursively clean child elements
+            cleanupElement(node);
+            
+            // Remove elements that are empty and not self-closing
+            const selfClosingTags = ['img', 'br', 'hr', 'input', 'meta', 'link'];
+            if (!selfClosingTags.includes(node.tagName.toLowerCase()) && 
+                node.innerHTML.trim() === '' && 
+                !node.hasAttributes()) {
+                node.remove();
+            }
+        }
+    });
 } 

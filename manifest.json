@@ -9,7 +9,9 @@
     "contextMenus",
     "cookies",
     "identity",
-    "tabs"
+    "tabs",
+    "clipboardWrite",
+    "scripting"
   ],
   "host_permissions": [
     "https://*/*",
