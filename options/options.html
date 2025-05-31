@@ -66,9 +66,23 @@
                 </small>
             </div>
 
+            <div class="form-group">
+                <label for="socketServerUrl">Socket.IO Server URL</label>
+                <input 
+                    type="url" 
+                    id="socketServerUrl" 
+                    placeholder="http://localhost:8000"
+                    value="http://localhost:8000"
+                >
+                <small class="help-text">
+                    URL of your Python backend Socket.IO server (leave default for local development)
+                </small>
+            </div>
+
             <div class="form-actions">
                 <button type="submit" class="save-btn">Save Configuration</button>
                 <button type="button" id="testBtn" class="test-btn">Test Connection</button>
+                <button type="button" id="testSocketBtn" class="test-btn">Test Socket</button>
             </div>
         </form>
 

@@ -1,6 +1,32 @@
 // Content script that runs on all web pages
 console.log('HTML Extractor content script loaded');
 
+// Initialize socket client
+let socketClient = null;
+
+// Import and initialize socket client
+async function initializeSocket() {
+    try {
+        // Import the socket client
+        await import(chrome.runtime.getURL('socket/socket-client.js'));
+        
+        // Give it a moment to initialize
+        setTimeout(() => {
+            if (window.ExtensionSocketClient) {
+                socketClient = new window.ExtensionSocketClient();
+                socketClient.initialize();
+                console.log('Socket client initialized in content script');
+            }
+        }, 100);
+    } catch (error) {
+        console.warn('Socket client initialization failed:', error);
+        // Continue without socket functionality
+    }
+}
+
+// Initialize socket when script loads
+initializeSocket();
+
 // Listen for messages from popup
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.action === 'extractHTML') {
@@ -44,15 +70,29 @@ async function handleHTMLExtraction(url) {
             user_id: config.userId
         };
 
+        // Emit to Socket.IO server BEFORE saving to Supabase
+        if (socketClient && socketClient.isConnected) {
+            console.log('Emitting extraction event to server...');
+            socketClient.emitHtmlExtraction(extractionData);
+        } else {
+            console.warn('Socket not connected, extraction will not be sent to backend');
+        }
+
         // Send to Supabase
         const supabaseResult = await sendToSupabase(extractionData);
         
         if (supabaseResult.success) {
+            // Emit successful save event to socket
+            if (socketClient && socketClient.isConnected) {
+                socketClient.emitExtractionSaved(extractionData, supabaseResult);
+            }
+
             return {
                 success: true,
                 size: htmlContent.length,
                 title: pageTitle,
-                id: supabaseResult.id
+                id: supabaseResult.id,
+                socketConnected: socketClient ? socketClient.isConnected : false
             };
         } else {
             throw new Error(supabaseResult.error);
@@ -60,6 +100,12 @@ async function handleHTMLExtraction(url) {
         
     } catch (error) {
         console.error('HTML extraction failed:', error);
+        
+        // Emit error event to socket
+        if (socketClient && socketClient.isConnected) {
+            socketClient.emitExtractionError(error, url);
+        }
+        
         throw error;
     }
 }
@@ -115,4 +161,71 @@ async function getSupabaseConfig() {
             });
         });
     });
+}
+
+// Listen for socket messages from background script
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    if (request.action === 'socketMessage') {
+        console.log('Received socket message:', request.type, request.data);
+        
+        // Handle different types of socket messages
+        switch (request.type) {
+            case 'extraction_processed':
+                handleExtractionProcessed(request.data);
+                break;
+            case 'analysis_complete':
+                handleAnalysisComplete(request.data);
+                break;
+            default:
+                console.log('Unknown socket message type:', request.type);
+        }
+    }
+});
+
+function handleExtractionProcessed(data) {
+    // Could show a notification or update UI
+    console.log('Extraction processed by Python backend:', data);
+    
+    // Example: Show a subtle notification
+    if (data.success) {
+        showNotification('✅ Page processed successfully by backend', 'success');
+    }
+}
+
+function handleAnalysisComplete(data) {
+    console.log('Analysis complete:', data);
+    showNotification('🔍 Analysis complete', 'info');
+}
+
+function showNotification(message, type = 'info') {
+    // Create a simple notification overlay
+    const notification = document.createElement('div');
+    notification.textContent = message;
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 12px 20px;
+        background: ${type === 'success' ? '#22c55e' : type === 'error' ? '#ef4444' : '#3b82f6'};
+        color: white;
+        border-radius: 8px;
+        font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+        font-size: 14px;
+        z-index: 10000;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        transition: all 0.3s ease;
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Remove after 3 seconds
+    setTimeout(() => {
+        notification.style.opacity = '0';
+        notification.style.transform = 'translateX(100%)';
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.parentNode.removeChild(notification);
+            }
+        }, 300);
+    }, 3000);
 } 
