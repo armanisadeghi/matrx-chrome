@@ -22,9 +22,6 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const config = await getStoredConfig();
             
-            if (config.userId) {
-                document.getElementById('userId').value = config.userId;
-            }
             if (config.url) {
                 document.getElementById('supabaseUrl').value = config.url;
             }
@@ -41,12 +38,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function saveConfiguration() {
         try {
-            const userId = document.getElementById('userId').value.trim();
             const url = document.getElementById('supabaseUrl').value.trim();
             const anonKey = document.getElementById('supabaseAnonKey').value.trim();
             const tableName = document.getElementById('supabaseTableName').value.trim() || 'html_extractions';
 
-            if (!userId || !url || !anonKey) {
+            if (!url || !anonKey) {
                 showStatus('error', 'Please fill in all required fields');
                 return;
             }
@@ -64,7 +60,6 @@ document.addEventListener('DOMContentLoaded', () => {
             // Save to Chrome storage
             await new Promise((resolve, reject) => {
                 chrome.storage.sync.set({
-                    userId: userId,
                     supabaseUrl: url,
                     supabaseAnonKey: anonKey,
                     supabaseTableName: tableName
@@ -138,9 +133,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function getStoredConfig() {
         return new Promise((resolve) => {
-            chrome.storage.sync.get(['userId', 'supabaseUrl', 'supabaseAnonKey', 'supabaseTableName'], (result) => {
+            chrome.storage.sync.get(['supabaseUrl', 'supabaseAnonKey', 'supabaseTableName'], (result) => {
                 resolve({
-                    userId: result.userId || '',
                     url: result.supabaseUrl || '',
                     anonKey: result.supabaseAnonKey || '',
                     tableName: result.supabaseTableName || 'html_extractions'
@@ -184,4 +178,4 @@ function copyToClipboard(button) {
             button.textContent = 'Copy SQL';
         }, 2000);
     });
-}
+} 
