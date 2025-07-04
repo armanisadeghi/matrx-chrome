@@ -44,8 +44,23 @@
             </div>
             
             <div class="ai-response" id="aiResponse" style="display: none;">
-                <div class="ai-response-header">AI Content:</div>
+                <div class="ai-response-header">AI Processing Results:</div>
+                
+                <div class="ai-tabs">
+                    <button class="ai-tab active" data-tab="ai_content">🤖 AI Content</button>
+                    <button class="ai-tab" data-tab="ai_research_content">🔍 Research</button>
+                    <button class="ai-tab" data-tab="markdown_renderable">📝 Markdown</button>
+                </div>
+                
                 <div class="ai-response-content" id="aiResponseContent"></div>
+                <div class="ai-response-actions">
+                    <button id="copyAiBtn" class="ai-action-btn">📋 Copy Current</button>
+                    <div class="expand-buttons">
+                        <button id="expandAiContentBtn" class="ai-expand-btn">📖 AI Content</button>
+                        <button id="expandResearchBtn" class="ai-expand-btn">📖 Research</button>
+                        <button id="expandMarkdownBtn" class="ai-expand-btn">📖 Markdown</button>
+                    </div>
+                </div>
             </div>
             
             <div class="info">
