@@ -2,10 +2,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     const extractBtn = document.getElementById('extractBtn');
     const copyFullBtn = document.getElementById('copyFullBtn');
     const copySmartBtn = document.getElementById('copySmartBtn');
+    const testApiBtn = document.getElementById('testApiBtn');
+    const testApiSmartBtn = document.getElementById('testApiSmartBtn');
     const statusDiv = document.getElementById('status');
     const statusMessage = document.getElementById('statusMessage');
     const currentUrlSpan = document.getElementById('currentUrl');
     const settingsLink = document.getElementById('settingsLink');
+    const aiResponseDiv = document.getElementById('aiResponse');
+    const aiResponseContent = document.getElementById('aiResponseContent');
 
     // Get current tab URL
     try {
@@ -132,6 +136,150 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     });
 
+    // Handle test API button click
+    testApiBtn.addEventListener('click', async () => {
+        try {
+            setButtonLoading(testApiBtn, true);
+            showStatus('loading', 'Processing with AI...');
+            hideAiResponse();
+
+            const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+            
+            if (tab.url.startsWith('chrome://') || tab.url.startsWith('chrome-extension://')) {
+                throw new Error('Cannot access content from Chrome internal pages');
+            }
+
+            // Ensure content script is available
+            await ensureContentScript(tab.id);
+
+            // Get HTML content from the current page
+            const htmlResponse = await chrome.tabs.sendMessage(tab.id, { 
+                action: 'copyFullHTML'
+            });
+
+            if (!htmlResponse || !htmlResponse.success) {
+                throw new Error(htmlResponse?.error || 'Failed to get HTML content');
+            }
+
+            // Prepare API request data
+            const apiData = {
+                taskName: "parse_html",
+                taskData: {
+                    html_content: htmlResponse.html,
+                    page_url: tab.url
+                }
+            };
+
+            // Make API request
+            const apiResponse = await fetch('https://8000-jatindotpy-matrxscraper-iklzanw3l2b.ws-us120.gitpod.io/execute_task/default_service', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(apiData)
+            });
+
+            if (!apiResponse.ok) {
+                throw new Error(`API request failed: ${apiResponse.status} ${apiResponse.statusText}`);
+            }
+
+            const result = await apiResponse.json();
+
+            if (!result.success) {
+                throw new Error(result.message || 'API processing failed');
+            }
+
+            // Extract ai_content from response.response.data.ai_content
+            const aiContent = result.response?.data?.[0]?.ai_content;
+            
+            if (aiContent) {
+                showAiResponse(aiContent);
+                showStatus('success', 'AI processing completed successfully!');
+            } else {
+                throw new Error('No AI content found in response');
+            }
+
+        } catch (error) {
+            console.error('API test failed:', error);
+            showStatus('error', `Error: ${error.message}`);
+            hideAiResponse();
+        } finally {
+            setButtonLoading(testApiBtn, false);
+        }
+    });
+
+    // Handle test API smart button click
+    testApiSmartBtn.addEventListener('click', async () => {
+        try {
+            setButtonLoading(testApiSmartBtn, true);
+            showStatus('loading', 'Processing with AI (Smart HTML)...');
+            hideAiResponse();
+
+            const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+            
+            if (tab.url.startsWith('chrome://') || tab.url.startsWith('chrome-extension://')) {
+                throw new Error('Cannot access content from Chrome internal pages');
+            }
+
+            // Ensure content script is available
+            await ensureContentScript(tab.id);
+
+            // Get Smart HTML content from the current page
+            const htmlResponse = await chrome.tabs.sendMessage(tab.id, { 
+                action: 'copySmartHTML'
+            });
+
+            if (!htmlResponse || !htmlResponse.success) {
+                throw new Error(htmlResponse?.error || 'Failed to get smart HTML content');
+            }
+
+            // Prepare API request data
+            const apiData = {
+                taskName: "parse_html",
+                taskData: {
+                    html_content: htmlResponse.html,
+                    page_url: tab.url
+                }
+            };
+
+            // Make API request
+            const apiResponse = await fetch('https://8000-jatindotpy-matrxscraper-iklzanw3l2b.ws-us120.gitpod.io/execute_task/default_service', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(apiData)
+            });
+
+            if (!apiResponse.ok) {
+                throw new Error(`API request failed: ${apiResponse.status} ${apiResponse.statusText}`);
+            }
+
+            const result = await apiResponse.json();
+
+            if (!result.success) {
+                throw new Error(result.message || 'API processing failed');
+            }
+
+            // Extract ai_content from response.response.data.ai_content
+            const aiContent = result.response?.data?.[0]?.ai_content;
+            
+            if (aiContent) {
+                showAiResponse(aiContent);
+                showStatus('success', 'AI processing (Smart HTML) completed successfully!');
+            } else {
+                throw new Error('No AI content found in response');
+            }
+
+        } catch (error) {
+            console.error('API smart test failed:', error);
+            showStatus('error', `Error: ${error.message}`);
+            hideAiResponse();
+        } finally {
+            setButtonLoading(testApiSmartBtn, false);
+        }
+    });
+
     async function ensureContentScript(tabId) {
         try {
             // Try to ping the content script
@@ -172,5 +320,15 @@ document.addEventListener('DOMContentLoaded', async () => {
                 statusDiv.style.display = 'none';
             }, 3000);
         }
+    }
+
+    function showAiResponse(content) {
+        aiResponseContent.textContent = content;
+        aiResponseDiv.style.display = 'block';
+    }
+
+    function hideAiResponse() {
+        aiResponseDiv.style.display = 'none';
+        aiResponseContent.textContent = '';
     }
 }); 
