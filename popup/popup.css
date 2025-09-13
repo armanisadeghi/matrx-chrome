@@ -185,6 +185,18 @@ body {
     border: 1px solid rgba(255, 255, 255, 0.5);
 }
 
+.copy-btn-custom-smart {
+    background: linear-gradient(135deg, rgba(249, 115, 22, 0.95) 0%, rgba(234, 88, 12, 0.85) 100%);
+    border: 1px solid rgba(249, 115, 22, 0.3);
+    color: white;
+}
+
+.copy-btn-custom-smart:hover {
+    background: linear-gradient(135deg, rgba(249, 115, 22, 1) 0%, rgba(234, 88, 12, 0.95) 100%);
+    border: 1px solid rgba(249, 115, 22, 0.5);
+    color: white;
+}
+
 .test-api-btn {
     background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
     border: none;
@@ -222,6 +234,16 @@ body {
 .test-api-btn-smart:hover {
     background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
     box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
+}
+
+.test-api-btn-custom-smart {
+    background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+    box-shadow: 0 2px 8px rgba(249, 115, 22, 0.3);
+}
+
+.test-api-btn-custom-smart:hover {
+    background: linear-gradient(135deg, #ea580c 0%, #dc2626 100%);
+    box-shadow: 0 4px 12px rgba(249, 115, 22, 0.4);
 }
 
 .ai-response {
@@ -330,8 +352,8 @@ body {
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 6px;
-    padding: 6px 10px;
-    font-size: 10px;
+    padding: 5px 6px;
+    font-size: 8px;
     font-weight: 500;
     color: rgba(255, 255, 255, 0.9);
     cursor: pointer;

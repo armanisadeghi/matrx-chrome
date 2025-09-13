@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Matrx - Markdown Content</title>
+    <link rel="stylesheet" href="markdown-viewer.css">
+    <script src="https://cdn.jsdelivr.net/npm/marked@9.1.6/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.5/dist/purify.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📝 Matrx - Markdown Content</h1>
+            <p class="subtitle">AI-processed markdown content from your webpage</p>
+            <div class="header-actions">
+                <button id="toggleView" class="toggle-btn">🔄 Toggle Raw/Rendered</button>
+                <button id="copyBtn" class="copy-btn">📋 Copy Content</button>
+            </div>
+        </div>
+        
+        <div class="content-wrapper">
+            <div id="renderedContent" class="rendered-content">
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>Loading markdown content...</p>
+                </div>
+            </div>
+            
+            <div id="rawContent" class="raw-content" style="display: none;">
+                <pre><code id="rawMarkdown"></code></pre>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>Powered by <a href="https://marked.js.org/" target="_blank">Marked.js</a> & <a href="https://cure53.de/purify" target="_blank">DOMPurify</a></p>
+        </div>
+    </div>
+    
+    <script src="markdown-viewer.js"></script>
+</body>
+</html> 

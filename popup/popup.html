@@ -29,6 +29,11 @@
                 <span class="btn-loader" style="display: none;">Copying...</span>
             </button>
             
+            <button id="copyCustomSmartBtn" class="copy-btn copy-btn-custom-smart">
+                <span class="btn-text">🎯 Copy Custom Smart HTML</span>
+                <span class="btn-loader" style="display: none;">Copying...</span>
+            </button>
+            
             <button id="testApiBtn" class="test-api-btn">
                 <span class="btn-text">🤖 Test AI Processing</span>
                 <span class="btn-loader" style="display: none;">Processing...</span>
@@ -36,6 +41,11 @@
             
             <button id="testApiSmartBtn" class="test-api-btn test-api-btn-smart">
                 <span class="btn-text">✨ Test AI (Smart HTML)</span>
+                <span class="btn-loader" style="display: none;">Processing...</span>
+            </button>
+            
+            <button id="testApiCustomSmartBtn" class="test-api-btn test-api-btn-custom-smart">
+                <span class="btn-text">🎯 Test AI (Custom Smart HTML)</span>
                 <span class="btn-loader" style="display: none;">Processing...</span>
             </button>
             
@@ -50,6 +60,8 @@
                     <button class="ai-tab active" data-tab="ai_content">🤖 AI Content</button>
                     <button class="ai-tab" data-tab="ai_research_content">🔍 Research</button>
                     <button class="ai-tab" data-tab="markdown_renderable">📝 Markdown</button>
+                    <button class="ai-tab" data-tab="organized_data">📊 JSON Data</button>
+                    <button class="ai-tab" data-tab="full_response">🔧 Full Response</button>
                 </div>
                 
                 <div class="ai-response-content" id="aiResponseContent"></div>
@@ -59,6 +71,8 @@
                         <button id="expandAiContentBtn" class="ai-expand-btn">📖 AI Content</button>
                         <button id="expandResearchBtn" class="ai-expand-btn">📖 Research</button>
                         <button id="expandMarkdownBtn" class="ai-expand-btn">📖 Markdown</button>
+                        <button id="expandJsonBtn" class="ai-expand-btn">📖 JSON Data</button>
+                        <button id="expandFullResponseBtn" class="ai-expand-btn">📖 Full Response</button>
                     </div>
                 </div>
             </div>

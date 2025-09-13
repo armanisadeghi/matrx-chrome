@@ -63,6 +63,14 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         
         return true;
     }
+    
+    if (request.action === 'copyCustomSmartHTML') {
+        handleCustomSmartHTMLCopy()
+            .then(result => sendResponse(result))
+            .catch(error => sendResponse({ success: false, error: error.message }));
+        
+        return true;
+    }
 });
 
 async function handleHTMLExtraction(url) {
@@ -387,6 +395,21 @@ async function handleSmartHTMLCopy() {
     }
 }
 
+async function handleCustomSmartHTMLCopy() {
+    try {
+        const customSmartHTML = extractCustomSmartHTML();
+        
+        return {
+            success: true,
+            html: customSmartHTML,
+            size: customSmartHTML.length
+        };
+    } catch (error) {
+        console.error('Custom Smart HTML copy failed:', error);
+        throw error;
+    }
+}
+
 function extractSmartHTML() {
     // Create a clone of the document to manipulate without affecting the original
     const docClone = document.cloneNode(true);
@@ -472,6 +495,113 @@ function extractSmartHTML() {
     });
     
     return docClone.documentElement.outerHTML;
+}
+
+function extractCustomSmartHTML() {
+    // First, look for div with class="entry-content"
+    const entryContentDiv = document.querySelector('div.entry-content');
+    
+    if (!entryContentDiv) {
+        // If entry-content not found, fall back to regular Smart HTML
+        console.log('entry-content div not found, falling back to Smart HTML');
+        return extractSmartHTML();
+    }
+    
+    console.log('Found entry-content div, extracting custom content');
+    
+    // Clone the entry-content div to manipulate without affecting original
+    const entryClone = entryContentDiv.cloneNode(true);
+    
+    // Look for div with id="related-content" within the cloned content
+    const relatedContentDiv = entryClone.querySelector('div[id="related-content"]');
+    
+    if (relatedContentDiv) {
+        console.log('Found related-content div, removing it and everything after');
+        // Remove the related-content div and all its siblings that come after it
+        let currentElement = relatedContentDiv;
+        while (currentElement) {
+            const nextSibling = currentElement.nextSibling;
+            currentElement.remove();
+            currentElement = nextSibling;
+        }
+    }
+    
+    // Apply the same smart cleaning as regular Smart HTML
+    cleanupCustomElement(entryClone);
+    
+    // Create a minimal HTML document with just the custom content
+    const customDoc = document.implementation.createHTMLDocument('Custom Content');
+    
+    // Add essential meta tags to head
+    const head = customDoc.querySelector('head');
+    const title = document.querySelector('title');
+    if (title) {
+        const newTitle = customDoc.createElement('title');
+        newTitle.textContent = title.textContent;
+        head.appendChild(newTitle);
+    }
+    
+    // Add essential meta tags from original document
+    const essentialMeta = document.querySelectorAll('meta[name="description"], meta[name="keywords"], meta[property^="og:"], meta[name="twitter:"], meta[name="author"]');
+    essentialMeta.forEach(meta => {
+        head.appendChild(meta.cloneNode(true));
+    });
+    
+    // Replace body content with our custom content
+    const body = customDoc.querySelector('body');
+    body.innerHTML = '';
+    body.appendChild(entryClone);
+    
+    return customDoc.documentElement.outerHTML;
+}
+
+function cleanupCustomElement(element) {
+    // Remove scripts and other unwanted elements from the custom content
+    const elementsToRemove = [
+        'script',
+        'noscript', 
+        'style'
+    ];
+    
+    elementsToRemove.forEach(selector => {
+        const elements = element.querySelectorAll(selector);
+        elements.forEach(el => el.remove());
+    });
+    
+    // Remove comments
+    removeComments(element);
+    
+    // Remove data attributes and event handlers (same as Smart HTML)
+    const allElements = element.querySelectorAll('*');
+    allElements.forEach(el => {
+        // Remove data attributes except for important ones
+        Array.from(el.attributes).forEach(attr => {
+            if (attr.name.startsWith('data-') && 
+                !attr.name.startsWith('data-id') && 
+                !attr.name.startsWith('data-content') &&
+                !attr.name.startsWith('data-src')) {
+                el.removeAttribute(attr.name);
+            }
+        });
+        
+        // Remove event handlers
+        Array.from(el.attributes).forEach(attr => {
+            if (attr.name.startsWith('on')) {
+                el.removeAttribute(attr.name);
+            }
+        });
+        
+        // Remove empty class and id attributes
+        if (el.getAttribute('class') === '') {
+            el.removeAttribute('class');
+        }
+        if (el.getAttribute('id') === '') {
+            el.removeAttribute('id');
+        }
+    });
+    
+    // Clean up empty elements and whitespace
+    cleanupElement(element);
 }
 
 function removeComments(node) {
