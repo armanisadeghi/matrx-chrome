@@ -79,6 +79,35 @@ body {
     line-height: 1.4;
 }
 
+.help-text a {
+    color: #667eea;
+    text-decoration: none;
+}
+
+.help-text a:hover {
+    text-decoration: underline;
+}
+
+.form-section {
+    margin-top: 40px;
+    padding-top: 30px;
+    border-top: 2px solid #e1e5e9;
+}
+
+.form-section h3 {
+    color: #333;
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.section-description {
+    color: #6c757d;
+    font-size: 14px;
+    margin-bottom: 25px;
+    line-height: 1.5;
+}
+
 .form-actions {
     display: flex;
     gap: 12px;

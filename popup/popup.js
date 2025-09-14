@@ -6,6 +6,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     const testApiBtn = document.getElementById('testApiBtn');
     const testApiSmartBtn = document.getElementById('testApiSmartBtn');
     const testApiCustomSmartBtn = document.getElementById('testApiCustomSmartBtn');
+    const geminiExtractFullBtn = document.getElementById('geminiExtractFullBtn');
+    const geminiExtractSmartBtn = document.getElementById('geminiExtractSmartBtn');
+    const geminiExtractCustomBtn = document.getElementById('geminiExtractCustomBtn');
+    const geminiResponseDiv = document.getElementById('geminiResponse');
+    const geminiResponseContent = document.getElementById('geminiResponseContent');
+    const copyGeminiBtn = document.getElementById('copyGeminiBtn');
+    const expandGeminiBtn = document.getElementById('expandGeminiBtn');
     const statusDiv = document.getElementById('status');
     const statusMessage = document.getElementById('statusMessage');
     const currentUrlSpan = document.getElementById('currentUrl');
@@ -28,6 +35,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         full_response: ''
     };
     let currentActiveTab = 'ai_content';
+    let currentGeminiContent = '';
+    let geminiClient = null;
 
     // Get current tab URL and load saved data
     try {
@@ -36,6 +45,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         
         // Try to load saved AI data for this URL
         await loadSavedAiData(tab.url);
+        
+        // Initialize Gemini client
+        await initializeGeminiClient();
     } catch (error) {
         currentUrlSpan.textContent = 'Unable to get URL';
     }
@@ -521,6 +533,51 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     });
 
+    // Handle Gemini extract full HTML button click
+    geminiExtractFullBtn.addEventListener('click', async () => {
+        await handleGeminiExtraction('full');
+    });
+
+    // Handle Gemini extract smart HTML button click
+    geminiExtractSmartBtn.addEventListener('click', async () => {
+        await handleGeminiExtraction('smart');
+    });
+
+    // Handle Gemini extract custom HTML button click
+    geminiExtractCustomBtn.addEventListener('click', async () => {
+        await handleGeminiExtraction('custom');
+    });
+
+    // Handle copy Gemini content button click
+    copyGeminiBtn.addEventListener('click', async () => {
+        try {
+            if (currentGeminiContent) {
+                await navigator.clipboard.writeText(currentGeminiContent);
+                
+                // Show temporary feedback
+                const originalText = copyGeminiBtn.textContent;
+                copyGeminiBtn.textContent = '✅ Copied!';
+                copyGeminiBtn.disabled = true;
+                
+                setTimeout(() => {
+                    copyGeminiBtn.textContent = originalText;
+                    copyGeminiBtn.disabled = false;
+                }, 1500);
+            }
+        } catch (error) {
+            console.error('Failed to copy Gemini content:', error);
+        }
+    });
+
+    // Handle expand Gemini content button click
+    expandGeminiBtn.addEventListener('click', () => {
+        if (currentGeminiContent) {
+            openSingleContentInNewTab('Gemini Extracted Content', currentGeminiContent);
+        } else {
+            alert('No extracted content available');
+        }
+    });
+
     async function ensureContentScript(tabId) {
         try {
             // Try to ping the content script
@@ -980,5 +1037,132 @@ document.addEventListener('DOMContentLoaded', async () => {
         } catch (error) {
             console.error('Failed to load saved AI data:', error);
         }
+    }
+
+    // Gemini-specific functions
+    async function initializeGeminiClient() {
+        try {
+            // Load Gemini client script
+            await loadGeminiScript();
+            
+            if (window.GeminiClient) {
+                geminiClient = new window.GeminiClient();
+                const initialized = await geminiClient.initialize();
+                
+                if (!initialized) {
+                    console.warn('Gemini client not configured - API key missing');
+                    // Update UI to show configuration needed
+                    updateGeminiButtonsState(false);
+                } else {
+                    console.log('Gemini client initialized successfully');
+                    updateGeminiButtonsState(true);
+                }
+            }
+        } catch (error) {
+            console.error('Failed to initialize Gemini client:', error);
+            updateGeminiButtonsState(false);
+        }
+    }
+
+    function loadGeminiScript() {
+        return new Promise((resolve, reject) => {
+            if (window.GeminiClient) {
+                resolve();
+                return;
+            }
+
+            const script = document.createElement('script');
+            script.src = chrome.runtime.getURL('lib/gemini-client.js');
+            script.onload = () => resolve();
+            script.onerror = () => reject(new Error('Failed to load Gemini client script'));
+            document.head.appendChild(script);
+        });
+    }
+
+    function updateGeminiButtonsState(enabled) {
+        const buttons = [geminiExtractFullBtn, geminiExtractSmartBtn, geminiExtractCustomBtn];
+        buttons.forEach(btn => {
+            if (btn) {
+                btn.disabled = !enabled;
+                if (!enabled) {
+                    btn.title = 'Configure Gemini API key in settings to enable';
+                } else {
+                    btn.title = '';
+                }
+            }
+        });
+    }
+
+    async function handleGeminiExtraction(type) {
+        if (!geminiClient || !geminiClient.isConfigured()) {
+            showStatus('error', 'Gemini API key not configured. Please add your API key in settings.');
+            return;
+        }
+
+        const button = type === 'full' ? geminiExtractFullBtn : 
+                      type === 'smart' ? geminiExtractSmartBtn : 
+                      geminiExtractCustomBtn;
+
+        try {
+            setButtonLoading(button, true);
+            showStatus('loading', `Extracting content with Gemini AI (${type} HTML)...`);
+            hideGeminiResponse();
+
+            const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+            
+            if (tab.url.startsWith('chrome://') || tab.url.startsWith('chrome-extension://')) {
+                throw new Error('Cannot access content from Chrome internal pages');
+            }
+
+            // Ensure content script is available
+            await ensureContentScript(tab.id);
+
+            // Get HTML content based on type
+            let action;
+            switch (type) {
+                case 'full':
+                    action = 'copyFullHTML';
+                    break;
+                case 'smart':
+                    action = 'copySmartHTML';
+                    break;
+                case 'custom':
+                    action = 'copyCustomSmartHTML';
+                    break;
+                default:
+                    throw new Error('Invalid extraction type');
+            }
+
+            const htmlResponse = await chrome.tabs.sendMessage(tab.id, { action });
+
+            if (!htmlResponse || !htmlResponse.success) {
+                throw new Error(htmlResponse?.error || `Failed to get ${type} HTML content`);
+            }
+
+            // Extract content using Gemini
+            const extractedContent = await geminiClient.extractContentFromHTML(htmlResponse.html);
+            
+            currentGeminiContent = extractedContent;
+            showGeminiResponse(extractedContent);
+            showStatus('success', `Successfully extracted ${extractedContent.length} characters of clean text!`);
+
+        } catch (error) {
+            console.error(`Gemini ${type} extraction failed:`, error);
+            showStatus('error', `Error: ${error.message}`);
+            hideGeminiResponse();
+        } finally {
+            setButtonLoading(button, false);
+        }
+    }
+
+    function showGeminiResponse(content) {
+        geminiResponseDiv.style.display = 'block';
+        geminiResponseContent.textContent = content;
+    }
+
+    function hideGeminiResponse() {
+        geminiResponseDiv.style.display = 'none';
+        geminiResponseContent.textContent = '';
+        currentGeminiContent = '';
     }
 }); 

@@ -49,6 +49,28 @@
                 <span class="btn-loader" style="display: none;">Processing...</span>
             </button>
             
+            <div class="gemini-section">
+                <div class="section-header">
+                    <h3>🤖 Gemini AI Content Extraction</h3>
+                    <p>Extract clean, readable text using Google's Gemini AI</p>
+                </div>
+                
+                <button id="geminiExtractFullBtn" class="gemini-btn gemini-btn-full">
+                    <span class="btn-text">🤖 Extract Clean Text (Full HTML)</span>
+                    <span class="btn-loader" style="display: none;">Extracting...</span>
+                </button>
+                
+                <button id="geminiExtractSmartBtn" class="gemini-btn gemini-btn-smart">
+                    <span class="btn-text">✨ Extract Clean Text (Smart HTML)</span>
+                    <span class="btn-loader" style="display: none;">Extracting...</span>
+                </button>
+                
+                <button id="geminiExtractCustomBtn" class="gemini-btn gemini-btn-custom">
+                    <span class="btn-text">🎯 Extract Clean Text (Custom HTML)</span>
+                    <span class="btn-loader" style="display: none;">Extracting...</span>
+                </button>
+            </div>
+            
             <div class="status" id="status" style="display: none;">
                 <div class="status-message" id="statusMessage"></div>
             </div>
@@ -74,6 +96,15 @@
                         <button id="expandJsonBtn" class="ai-expand-btn">📖 JSON Data</button>
                         <button id="expandFullResponseBtn" class="ai-expand-btn">📖 Full Response</button>
                     </div>
+                </div>
+            </div>
+            
+            <div class="gemini-response" id="geminiResponse" style="display: none;">
+                <div class="gemini-response-header">🤖 Extracted Clean Text:</div>
+                <div class="gemini-response-content" id="geminiResponseContent"></div>
+                <div class="gemini-response-actions">
+                    <button id="copyGeminiBtn" class="gemini-action-btn">📋 Copy Clean Text</button>
+                    <button id="expandGeminiBtn" class="gemini-action-btn">📖 View Full Text</button>
                 </div>
             </div>
             

@@ -352,6 +352,9 @@ document.addEventListener('DOMContentLoaded', () => {
             if (config.socketServerUrl) {
                 document.getElementById('socketServerUrl').value = config.socketServerUrl;
             }
+            if (config.geminiApiKey) {
+                document.getElementById('geminiApiKey').value = config.geminiApiKey;
+            }
         } catch (error) {
             console.error('Failed to load configuration:', error);
         }
@@ -363,6 +366,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const anonKey = document.getElementById('supabaseAnonKey').value.trim();
             const tableName = document.getElementById('supabaseTableName').value.trim() || 'html_extractions';
             const socketServerUrl = document.getElementById('socketServerUrl').value.trim() || 'http://localhost:8000';
+            const geminiApiKey = document.getElementById('geminiApiKey').value.trim();
 
             if (!url || !anonKey) {
                 showStatus('error', 'Please fill in all required fields');
@@ -386,7 +390,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     supabaseUrl: url,
                     supabaseAnonKey: anonKey,
                     supabaseTableName: tableName,
-                    socketServerUrl: socketServerUrl
+                    socketServerUrl: socketServerUrl,
+                    geminiApiKey: geminiApiKey
                 }, () => {
                     if (chrome.runtime.lastError) {
                         reject(chrome.runtime.lastError);
@@ -541,12 +546,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function getStoredConfig() {
         return new Promise((resolve) => {
-            chrome.storage.sync.get(['supabaseUrl', 'supabaseAnonKey', 'supabaseTableName', 'socketServerUrl'], (result) => {
+            chrome.storage.sync.get(['supabaseUrl', 'supabaseAnonKey', 'supabaseTableName', 'socketServerUrl', 'geminiApiKey'], (result) => {
                 resolve({
                     url: result.supabaseUrl || '',
                     anonKey: result.supabaseAnonKey || '',
                     tableName: result.supabaseTableName || 'html_extractions',
-                    socketServerUrl: result.socketServerUrl || 'http://localhost:8000'
+                    socketServerUrl: result.socketServerUrl || 'http://localhost:8000',
+                    geminiApiKey: result.geminiApiKey || ''
                 });
             });
         });
