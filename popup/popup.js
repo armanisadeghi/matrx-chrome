@@ -13,6 +13,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     const geminiResponseContent = document.getElementById('geminiResponseContent');
     const copyGeminiBtn = document.getElementById('copyGeminiBtn');
     const expandGeminiBtn = document.getElementById('expandGeminiBtn');
+    
+    // Gemini cached results elements
+    const geminiSavedResults = document.getElementById('geminiSavedResults');
+    const geminiSavedContent = document.getElementById('geminiSavedContent');
+    const geminiCacheTime = document.getElementById('geminiCacheTime');
+    const copyGeminiSavedBtn = document.getElementById('copyGeminiSavedBtn');
+    const expandGeminiSavedBtn = document.getElementById('expandGeminiSavedBtn');
+    const refreshGeminiBtn = document.getElementById('refreshGeminiBtn');
     const statusDiv = document.getElementById('status');
     const statusMessage = document.getElementById('statusMessage');
     const currentUrlSpan = document.getElementById('currentUrl');
@@ -38,18 +46,28 @@ document.addEventListener('DOMContentLoaded', async () => {
     let currentGeminiContent = '';
     let geminiClient = null;
     let templateLoader = null;
+    let currentUrl = '';
+    let savedGeminiData = null;
 
     // Get current tab URL and load saved data
     try {
         const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-        currentUrlSpan.textContent = tab.url;
+        currentUrl = tab.url;
+        currentUrlSpan.textContent = currentUrl;
         
         // Try to load saved AI data for this URL
-        await loadSavedAiData(tab.url);
+        await loadSavedAiData(currentUrl);
+        
+        // Try to load saved Gemini data for this URL
+        await loadSavedGeminiData(currentUrl);
         
         // Initialize Gemini client and template loader
         await initializeGeminiClient();
         templateLoader = new TemplateLoader();
+        
+        // Initialize tab system
+        initializeTabSystem();
+        
     } catch (error) {
         currentUrlSpan.textContent = 'Unable to get URL';
     }
@@ -1148,4 +1166,191 @@ document.addEventListener('DOMContentLoaded', async () => {
         geminiResponseContent.textContent = '';
         currentGeminiContent = '';
     }
+
+    // Tab System Functions
+    function initializeTabSystem() {
+        console.log('Initializing tab system');
+        
+        // Add event listeners to tab buttons
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const tabId = e.target.dataset.tab;
+                switchTab(tabId);
+            });
+        });
+        
+        // Add event listeners to cached Gemini buttons
+        if (copyGeminiSavedBtn) {
+            copyGeminiSavedBtn.addEventListener('click', () => copyGeminiSaved());
+        }
+        
+        if (expandGeminiSavedBtn) {
+            expandGeminiSavedBtn.addEventListener('click', () => expandGeminiSaved());
+        }
+        
+        if (refreshGeminiBtn) {
+            refreshGeminiBtn.addEventListener('click', () => refreshGeminiData());
+        }
+    }
+    
+    function switchTab(tabId) {
+        console.log('Switching to tab:', tabId);
+        
+        // Update tab buttons
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.classList.remove('active');
+            if (btn.dataset.tab === tabId) {
+                btn.classList.add('active');
+            }
+        });
+        
+        // Update tab panes
+        document.querySelectorAll('.tab-pane').forEach(pane => {
+            pane.classList.remove('active');
+        });
+        
+        const targetPane = document.getElementById(tabId);
+        if (targetPane) {
+            targetPane.classList.add('active');
+        }
+    }
+
+    // Gemini Local Storage Functions
+    async function loadSavedGeminiData(url) {
+        try {
+            const storageKey = `matrx_gemini_${btoa(url).slice(0, 50)}`;
+            const result = await chrome.storage.local.get([storageKey]);
+            
+            if (result[storageKey]) {
+                const data = result[storageKey];
+                
+                // Check if data is not too old (24 hours)
+                const twentyFourHours = 24 * 60 * 60 * 1000;
+                if (Date.now() - data.timestamp < twentyFourHours) {
+                    savedGeminiData = data;
+                    showSavedGeminiResults(data);
+                    console.log('Loaded saved Gemini data for URL:', url);
+                } else {
+                    // Remove expired data
+                    await chrome.storage.local.remove([storageKey]);
+                    console.log('Removed expired Gemini data for URL:', url);
+                }
+            }
+        } catch (error) {
+            console.error('Failed to load saved Gemini data:', error);
+        }
+    }
+    
+    async function saveGeminiData(url, content, extractionType) {
+        try {
+            const storageKey = `matrx_gemini_${btoa(url).slice(0, 50)}`;
+            const dataToSave = {
+                content: content,
+                extractionType: extractionType,
+                url: url,
+                timestamp: Date.now()
+            };
+            
+            await chrome.storage.local.set({ [storageKey]: dataToSave });
+            savedGeminiData = dataToSave;
+            showSavedGeminiResults(dataToSave);
+            console.log('Saved Gemini data for URL:', url);
+        } catch (error) {
+            console.error('Failed to save Gemini data:', error);
+        }
+    }
+    
+    function showSavedGeminiResults(data) {
+        if (!geminiSavedResults || !data) return;
+        
+        // Show the saved results section
+        geminiSavedResults.style.display = 'block';
+        
+        // Set content (truncated for preview)
+        const previewContent = data.content.length > 200 
+            ? data.content.substring(0, 200) + '...' 
+            : data.content;
+        geminiSavedContent.textContent = previewContent;
+        
+        // Set cache time
+        const cacheDate = new Date(data.timestamp);
+        const timeAgo = getTimeAgo(data.timestamp);
+        geminiCacheTime.textContent = `Cached ${timeAgo} (${data.extractionType})`;
+        geminiCacheTime.title = `Full timestamp: ${cacheDate.toLocaleString()}`;
+    }
+    
+    function hideSavedGeminiResults() {
+        if (geminiSavedResults) {
+            geminiSavedResults.style.display = 'none';
+        }
+    }
+    
+    function getTimeAgo(timestamp) {
+        const now = Date.now();
+        const diff = now - timestamp;
+        
+        const minutes = Math.floor(diff / (1000 * 60));
+        const hours = Math.floor(diff / (1000 * 60 * 60));
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        
+        if (days > 0) return `${days} day${days > 1 ? 's' : ''} ago`;
+        if (hours > 0) return `${hours} hour${hours > 1 ? 's' : ''} ago`;
+        if (minutes > 0) return `${minutes} minute${minutes > 1 ? 's' : ''} ago`;
+        return 'just now';
+    }
+    
+    async function copyGeminiSaved() {
+        if (!savedGeminiData) return;
+        
+        try {
+            await navigator.clipboard.writeText(savedGeminiData.content);
+            
+            const originalText = copyGeminiSavedBtn.textContent;
+            copyGeminiSavedBtn.textContent = '✅ Copied!';
+            copyGeminiSavedBtn.disabled = true;
+            
+            setTimeout(() => {
+                copyGeminiSavedBtn.textContent = originalText;
+                copyGeminiSavedBtn.disabled = false;
+            }, 1500);
+        } catch (error) {
+            console.error('Failed to copy saved Gemini content:', error);
+        }
+    }
+    
+    function expandGeminiSaved() {
+        if (!savedGeminiData) return;
+        
+        openGeminiContentViewer(savedGeminiData.content);
+    }
+    
+    async function refreshGeminiData() {
+        // Hide saved results and clear cached data
+        hideSavedGeminiResults();
+        
+        if (savedGeminiData) {
+            try {
+                const storageKey = `matrx_gemini_${btoa(currentUrl).slice(0, 50)}`;
+                await chrome.storage.local.remove([storageKey]);
+                savedGeminiData = null;
+                
+                showStatus('success', 'Cached Gemini data cleared. You can now extract fresh content.');
+            } catch (error) {
+                console.error('Failed to clear cached Gemini data:', error);
+                showStatus('error', 'Failed to clear cached data');
+            }
+        }
+    }
+    
+    // Override the existing handleGeminiExtraction to include saving
+    const originalHandleGeminiExtraction = handleGeminiExtraction;
+    handleGeminiExtraction = async function(type) {
+        // Call the original function
+        await originalHandleGeminiExtraction.call(this, type);
+        
+        // If extraction was successful and we have content, save it
+        if (currentGeminiContent && currentUrl) {
+            await saveGeminiData(currentUrl, currentGeminiContent, type);
+        }
+    };
 }); 
