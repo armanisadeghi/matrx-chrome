@@ -37,6 +37,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     let currentActiveTab = 'ai_content';
     let currentGeminiContent = '';
     let geminiClient = null;
+    let templateLoader = null;
 
     // Get current tab URL and load saved data
     try {
@@ -46,8 +47,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Try to load saved AI data for this URL
         await loadSavedAiData(tab.url);
         
-        // Initialize Gemini client
+        // Initialize Gemini client and template loader
         await initializeGeminiClient();
+        templateLoader = new TemplateLoader();
     } catch (error) {
         currentUrlSpan.textContent = 'Unable to get URL';
     }
@@ -874,121 +876,25 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    function openSingleContentInNewTab(contentType, content) {
+    async function openSingleContentInNewTab(contentType, content) {
         console.log('Opening single content in new tab:', contentType);
         
         try {
-            // Create simple HTML with just the single content
-            const htmlContent = `<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Matrx - ${contentType}</title>
-    <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 40px 20px;
-            line-height: 1.6;
-            color: #333;
-            background: #f8fafc;
-        }
-        .header {
-            text-align: center;
-            margin-bottom: 40px;
-            padding-bottom: 20px;
-            border-bottom: 2px solid #667eea;
-        }
-        .header h1 {
-            color: #667eea;
-            margin: 0;
-            font-size: 28px;
-        }
-        .header p {
-            color: #64748b;
-            margin: 10px 0 0 0;
-            font-size: 14px;
-        }
-        .content {
-            background: white;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-            white-space: pre-wrap;
-            word-wrap: break-word;
-            border: 1px solid #e2e8f0;
-            min-height: 400px;
-            font-size: 14px;
-            line-height: 1.6;
-        }
-        .actions {
-            margin-top: 30px;
-            text-align: center;
-        }
-        .copy-btn {
-            background: #667eea;
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 500;
-            transition: background 0.2s;
-        }
-        .copy-btn:hover {
-            background: #5a67d8;
-        }
-        .copy-btn:disabled {
-            background: #22c55e;
-            cursor: not-allowed;
-        }
-    </style>
-</head>
-<body>
-    <div class="header">
-        <h1>🤖 Matrx - ${contentType}</h1>
-        <p>AI-processed content from your webpage</p>
-    </div>
-    
-    <div class="content" id="content">${content.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</div>
-    
-    <div class="actions">
-        <button class="copy-btn" onclick="copyContent()">📋 Copy Content</button>
-    </div>
-
-    <script>
-        const content = ${JSON.stringify(content)};
-        
-        async function copyContent() {
-            try {
-                await navigator.clipboard.writeText(content);
-                
-                const btn = document.querySelector('.copy-btn');
-                const originalText = btn.textContent;
-                btn.textContent = '✅ Copied!';
-                btn.disabled = true;
-                
-                setTimeout(() => {
-                    btn.textContent = originalText;
-                    btn.disabled = false;
-                }, 2000);
-            } catch (error) {
-                console.error('Failed to copy:', error);
-                alert('Failed to copy content');
+            if (!templateLoader) {
+                throw new Error('Template loader not initialized');
             }
-        }
-    </script>
-</body>
-</html>`;
+
+            // Create HTML using template
+            const htmlContent = await templateLoader.createBlobDocument('single-content', {
+                contentType: contentType,
+                content: content
+            });
             
             // Create blob URL
             const blob = new Blob([htmlContent], { type: 'text/html' });
             const url = URL.createObjectURL(blob);
             
-            console.log('Opening tab with URL:', url);
+            console.log('Opening single content tab with URL:', url);
             chrome.tabs.create({ url: url });
             
         } catch (error) {
@@ -1014,430 +920,23 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    function openDualViewContentViewer(contentType, textContent, markdownContent) {
+    async function openDualViewContentViewer(contentType, textContent, markdownContent) {
         console.log('Opening dual view content viewer:', contentType);
         
         try {
-            // Parse the markdown content to HTML first
-            function parseSimpleMarkdown(markdown) {
-                let html = markdown;
-                
-                // Escape HTML first
-                html = html.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-                
-                // Headers
-                html = html.replace(/^# (.+)$/gm, '<h1>$1</h1>');
-                html = html.replace(/^## (.+)$/gm, '<h2>$1</h2>');
-                html = html.replace(/^### (.+)$/gm, '<h3>$1</h3>');
-                html = html.replace(/^#### (.+)$/gm, '<h4>$1</h4>');
-                
-                // Bold
-                html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
-                
-                // Links
-                html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>');
-                
-                // Lists
-                html = html.replace(/^- (.+)$/gm, '<li>$1</li>');
-                html = html.replace(/((<li>.*<\/li>\s*)+)/g, '<ul>$1</ul>');
-                
-                // Paragraphs
-                html = html.replace(/\n\s*\n/g, '</p><p>');
-                html = '<p>' + html + '</p>';
-                
-                // Clean up
-                html = html.replace(/<p>\s*<\/p>/g, '');
-                html = html.replace(/<p>\s*(<h[1-6]>)/g, '$1');
-                html = html.replace(/(<\/h[1-6]>)\s*<\/p>/g, '$1');
-                html = html.replace(/<p>\s*(<ul>)/g, '$1');
-                html = html.replace(/(<\/ul>)\s*<\/p>/g, '$1');
-                
-                return html;
+            if (!templateLoader) {
+                throw new Error('Template loader not initialized');
             }
-            
-            // Pre-render the formatted content
-            const formattedHtml = parseSimpleMarkdown(markdownContent);
-            
-            // Create simple HTML with both views using URL hash navigation (no JavaScript needed!)
-            const htmlContent = `<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Matrx - ${contentType}</title>
-    <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            margin: 0; padding: 0;
-            background: linear-gradient(135deg, #4285F4 0%, #34A853 100%);
-            min-height: 100vh;
-        }
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-        .header {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 16px;
-            padding: 30px;
-            margin-bottom: 30px;
-            text-align: center;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-        .header h1 {
-            color: white;
-            font-size: 28px;
-            margin: 0 0 10px 0;
-        }
-        .subtitle {
-            color: rgba(255, 255, 255, 0.8);
-            font-size: 14px;
-            margin-bottom: 20px;
-        }
-        .header-actions {
-            display: flex;
-            gap: 15px;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-        .view-toggle, .copy-btn {
-            background: rgba(255, 255, 255, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            border-radius: 8px;
-            padding: 12px 20px;
-            color: white;
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-decoration: none;
-        }
-        .view-toggle:hover, .copy-btn:hover {
-            background: rgba(255, 255, 255, 0.3);
-            border-color: rgba(255, 255, 255, 0.5);
-            transform: translateY(-2px);
-        }
-        .content-wrapper {
-            flex: 1;
-            background: white;
-            border-radius: 16px;
-            overflow: hidden;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-        .content-view {
-            padding: 40px;
-            min-height: 500px;
-            max-height: 80vh;
-            overflow-y: auto;
-            display: none;
-        }
-        .text-view {
-            background: #f8fafc;
-            color: #374151;
-            white-space: pre-wrap;
-            word-wrap: break-word;
-            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
-            font-size: 14px;
-            line-height: 1.6;
-        }
-        .formatted-view {
-            background: white;
-        }
-        .formatted-view h1, .formatted-view h2, .formatted-view h3, .formatted-view h4 {
-            color: #1e293b;
-            font-weight: 700;
-            margin-top: 2em;
-            margin-bottom: 1em;
-            line-height: 1.3;
-        }
-        .formatted-view h1 {
-            font-size: 2.5em;
-            border-bottom: 3px solid #4285F4;
-            padding-bottom: 0.5em;
-            margin-top: 0;
-        }
-        .formatted-view h2 {
-            font-size: 2em;
-            border-bottom: 2px solid #e2e8f0;
-            padding-bottom: 0.3em;
-        }
-        .formatted-view h3 {
-            font-size: 1.5em;
-            color: #475569;
-        }
-        .formatted-view h4 {
-            font-size: 1.25em;
-            color: #64748b;
-        }
-        .formatted-view p {
-            margin-bottom: 1.5em;
-            line-height: 1.7;
-            color: #374151;
-        }
-        .formatted-view ul, .formatted-view ol {
-            margin-bottom: 1.5em;
-            padding-left: 2em;
-        }
-        .formatted-view li {
-            margin-bottom: 0.5em;
-            line-height: 1.6;
-        }
-        .formatted-view a {
-            color: #4285F4;
-            text-decoration: none;
-            border-bottom: 1px solid transparent;
-            transition: border-color 0.2s ease;
-        }
-        .formatted-view a:hover {
-            border-bottom-color: #4285F4;
-        }
-        .formatted-view strong {
-            font-weight: 700;
-            color: #1e293b;
-        }
-        
-        /* Pure CSS view switching using :target pseudo-class */
-        #textContent:target, #formattedContent:target {
-            display: block;
-        }
-        
-        /* Default to text view when no hash */
-        body:not(:has(#textContent:target)):not(:has(#formattedContent:target)) #textContent {
-            display: block;
-        }
-        
-        /* Fallback for browsers that don't support :has() */
-        @supports not selector(:has(*)) {
-            #textContent {
-                display: block;
-            }
-            #textContent:target ~ #formattedContent {
-                display: none;
-            }
-            #formattedContent:target {
-                display: block;
-            }
-            #formattedContent:target ~ #textContent {
-                display: none;
-            }
-        }
-        
-        /* Button active states based on current target */
-        .view-toggle {
-            background: rgba(255, 255, 255, 0.2);
-            border-color: rgba(255, 255, 255, 0.3);
-        }
-        
-        #textContent:target ~ .header .text-toggle,
-        body:not(:has(#textContent:target)):not(:has(#formattedContent:target)) .text-toggle {
-            background: rgba(255, 255, 255, 0.4);
-            border-color: rgba(255, 255, 255, 0.6);
-        }
-        
-        #formattedContent:target ~ .header .formatted-toggle {
-            background: rgba(255, 255, 255, 0.4);
-            border-color: rgba(255, 255, 255, 0.6);
-        }
-        
-        /* Fallback button states for browsers without :has() */
-        @supports not selector(:has(*)) {
-            .text-toggle {
-                background: rgba(255, 255, 255, 0.4);
-                border-color: rgba(255, 255, 255, 0.6);
-            }
-            #formattedContent:target ~ .header .text-toggle {
-                background: rgba(255, 255, 255, 0.2);
-                border-color: rgba(255, 255, 255, 0.3);
-            }
-            #formattedContent:target ~ .header .formatted-toggle {
-                background: rgba(255, 255, 255, 0.4);
-                border-color: rgba(255, 255, 255, 0.6);
-            }
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <!-- Content sections come first so :target works properly -->
-        <div id="textContent" class="content-view text-view">${textContent.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</div>
-        <div id="formattedContent" class="content-view formatted-view">${formattedHtml}</div>
-        
-        <div class="header">
-            <h1>🤖 Matrx - ${contentType}</h1>
-            <p class="subtitle">AI-extracted clean text with dual viewing modes</p>
-            <div class="header-actions">
-                <a href="#textContent" class="view-toggle text-toggle">📝 Text View</a>
-                <a href="#formattedContent" class="view-toggle formatted-toggle">🎨 Formatted View</a>
-                <button class="copy-btn" id="copyBtn">📋 Copy Content</button>
-            </div>
-        </div>
-        
-        <div class="content-wrapper">
-            <!-- Content is positioned here visually but defined above for :target -->
-        </div>
-    </div>
 
-    <!-- Hidden textareas for copying content -->
-    <textarea id="textContentCopy" style="position: absolute; left: -9999px; opacity: 0;">${textContent.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</textarea>
-    <textarea id="formattedContentCopy" style="position: absolute; left: -9999px; opacity: 0;"></textarea>
-    
-    <script>
-        // Debug current state
-        console.log('Page loaded. Current hash:', window.location.hash);
-        console.log('Text content visible:', document.getElementById('textContent').offsetHeight > 0);
-        console.log('Formatted content visible:', document.getElementById('formattedContent').offsetHeight > 0);
-        
-        // Set up formatted content copy text (plain text from HTML)
-        document.getElementById('formattedContentCopy').value = document.getElementById('formattedContent').textContent || document.getElementById('formattedContent').innerText || '';
-        
-        // Listen for hash changes
-        window.addEventListener('hashchange', function() {
-            console.log('Hash changed to:', window.location.hash);
-            console.log('Text content visible:', document.getElementById('textContent').offsetHeight > 0);
-            console.log('Formatted content visible:', document.getElementById('formattedContent').offsetHeight > 0);
-        });
-        
-        // Add copy functionality using DOM events (CSP compliant)
-        document.addEventListener('DOMContentLoaded', function() {
-            const copyBtn = document.getElementById('copyBtn');
-            if (copyBtn) {
-                copyBtn.addEventListener('click', function() {
-                    console.log('Copy button clicked. Current hash:', window.location.hash);
-                    
-                    try {
-                        let textareaId;
-                        if (window.location.hash === '#formattedContent') {
-                            textareaId = 'formattedContentCopy';
-                            console.log('Copying formatted content');
-                        } else {
-                            textareaId = 'textContentCopy';
-                            console.log('Copying text content');
-                        }
-                        
-                        const textarea = document.getElementById(textareaId);
-                        if (textarea) {
-                            // Select and copy using the old-school method (CSP compliant)
-                            textarea.select();
-                            textarea.setSelectionRange(0, 99999); // For mobile devices
-                            
-                            const successful = document.execCommand('copy');
-                            
-                            if (successful) {
-                                const originalText = copyBtn.textContent;
-                                copyBtn.textContent = '✅ Copied!';
-                                
-                                setTimeout(() => {
-                                    copyBtn.textContent = originalText;
-                                }, 2000);
-                            } else {
-                                throw new Error('execCommand failed');
-                            }
-                        }
-                    } catch (error) {
-                        console.error('Failed to copy:', error);
-                        
-                        // Fallback: try modern clipboard API
-                        const contentToCopy = window.location.hash === '#formattedContent' 
-                            ? document.getElementById('formattedContent').textContent
-                            : ${JSON.stringify(textContent)};
-                            
-                        if (navigator.clipboard && navigator.clipboard.writeText) {
-                            navigator.clipboard.writeText(contentToCopy).then(() => {
-                                const originalText = copyBtn.textContent;
-                                copyBtn.textContent = '✅ Copied!';
-                                
-                                setTimeout(() => {
-                                    copyBtn.textContent = originalText;
-                                }, 2000);
-                            }).catch(err => {
-                                console.error('Clipboard API also failed:', err);
-                                copyBtn.textContent = '❌ Failed';
-                                setTimeout(() => copyBtn.textContent = '📋 Copy Content', 2000);
-                            });
-                        } else {
-                            copyBtn.textContent = '❌ Failed';
-                            setTimeout(() => copyBtn.textContent = '📋 Copy Content', 2000);
-                        }
-                    }
-                });
-            }
-        });
-        
-        // Immediate execution since DOMContentLoaded might have already fired
-        if (document.readyState === 'loading') {
-            // Document still loading, wait for DOMContentLoaded
-        } else {
-            // Document already loaded, execute immediately
-            const copyBtn = document.getElementById('copyBtn');
-            if (copyBtn) {
-                copyBtn.addEventListener('click', function() {
-                    console.log('Copy button clicked. Current hash:', window.location.hash);
-                    
-                    try {
-                        let textareaId;
-                        if (window.location.hash === '#formattedContent') {
-                            textareaId = 'formattedContentCopy';
-                            console.log('Copying formatted content');
-                        } else {
-                            textareaId = 'textContentCopy';
-                            console.log('Copying text content');
-                        }
-                        
-                        const textarea = document.getElementById(textareaId);
-                        if (textarea) {
-                            textarea.select();
-                            textarea.setSelectionRange(0, 99999);
-                            
-                            const successful = document.execCommand('copy');
-                            
-                            if (successful) {
-                                const originalText = copyBtn.textContent;
-                                copyBtn.textContent = '✅ Copied!';
-                                
-                                setTimeout(() => {
-                                    copyBtn.textContent = originalText;
-                                }, 2000);
-                            } else {
-                                throw new Error('execCommand failed');
-                            }
-                        }
-                    } catch (error) {
-                        console.error('Failed to copy:', error);
-                        
-                        const contentToCopy = window.location.hash === '#formattedContent' 
-                            ? document.getElementById('formattedContent').textContent
-                            : ${JSON.stringify(textContent)};
-                            
-                        if (navigator.clipboard && navigator.clipboard.writeText) {
-                            navigator.clipboard.writeText(contentToCopy).then(() => {
-                                const originalText = copyBtn.textContent;
-                                copyBtn.textContent = '✅ Copied!';
-                                
-                                setTimeout(() => {
-                                    copyBtn.textContent = originalText;
-                                }, 2000);
-                            }).catch(err => {
-                                console.error('Clipboard API also failed:', err);
-                                copyBtn.textContent = '❌ Failed';
-                                setTimeout(() => copyBtn.textContent = '📋 Copy Content', 2000);
-                            });
-                        } else {
-                            copyBtn.textContent = '❌ Failed';
-                            setTimeout(() => copyBtn.textContent = '📋 Copy Content', 2000);
-                        }
-                    }
-                });
-            }
-        }
-    </script>
-</body>
-</html>`;
+            // Parse the markdown content to HTML using the template loader's function
+            const formattedHtml = templateLoader.parseSimpleMarkdown(markdownContent);
+            
+            // Create HTML using template
+            const htmlContent = await templateLoader.createBlobDocument('dual-view-content', {
+                contentType: contentType,
+                textContent: textContent,
+                formattedHtml: formattedHtml
+            });
             
             // Create blob URL
             const blob = new Blob([htmlContent], { type: 'text/html' });

@@ -46,7 +46,16 @@
   },
   "web_accessible_resources": [
     {
-      "resources": ["socket/socket-client.js", "socket/socket.io.min.js", "lib/supabase.js", "lib/auth.js", "lib/gemini-client.js", "components/*"],
+      "resources": [
+        "socket/socket-client.js", 
+        "socket/socket.io.min.js", 
+        "lib/supabase.js", 
+        "lib/auth.js", 
+        "lib/gemini-client.js", 
+        "components/*",
+        "templates/*",
+        "popup/template-loader.js"
+      ],
       "matches": ["<all_urls>"]
     }
   ]

@@ -1,0 +1,282 @@
+<!-- Shared CSS styles for all Matrx templates -->
+<style>
+:root {
+    --matrx-primary: #4285F4;
+    --matrx-secondary: #34A853;
+    --matrx-purple: #667eea;
+    --matrx-purple-dark: #764ba2;
+    --matrx-orange: #f97316;
+    --matrx-orange-dark: #ea580c;
+    --matrx-green: #22c55e;
+    --matrx-green-dark: #16a34a;
+    --matrx-red: #ef4444;
+    --matrx-blue: #3b82f6;
+    
+    --matrx-bg-gradient: linear-gradient(135deg, var(--matrx-primary) 0%, var(--matrx-secondary) 100%);
+    --matrx-text-white: #ffffff;
+    --matrx-text-white-80: rgba(255, 255, 255, 0.8);
+    --matrx-text-white-60: rgba(255, 255, 255, 0.6);
+    --matrx-text-dark: #374151;
+    --matrx-text-dark-light: #64748b;
+    --matrx-text-dark-lighter: #94a3b8;
+    
+    --matrx-glass-bg: rgba(255, 255, 255, 0.1);
+    --matrx-glass-border: rgba(255, 255, 255, 0.2);
+    --matrx-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    --matrx-shadow-hover: 0 4px 12px rgba(66, 133, 244, 0.4);
+    
+    --matrx-border-radius: 8px;
+    --matrx-border-radius-large: 16px;
+    --matrx-spacing-sm: 8px;
+    --matrx-spacing-md: 15px;
+    --matrx-spacing-lg: 20px;
+    --matrx-spacing-xl: 30px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    margin: 0;
+    padding: 0;
+    background: var(--matrx-bg-gradient);
+    min-height: 100vh;
+    color: var(--matrx-text-dark);
+}
+
+.matrx-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: var(--matrx-spacing-lg);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.matrx-header {
+    background: var(--matrx-glass-bg);
+    border-radius: var(--matrx-border-radius-large);
+    padding: var(--matrx-spacing-xl);
+    margin-bottom: var(--matrx-spacing-xl);
+    text-align: center;
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--matrx-glass-border);
+}
+
+.matrx-header h1 {
+    color: var(--matrx-text-white);
+    font-size: 28px;
+    margin: 0 0 10px 0;
+    font-weight: 700;
+}
+
+.matrx-header .subtitle {
+    color: var(--matrx-text-white-80);
+    font-size: 14px;
+    margin-bottom: var(--matrx-spacing-lg);
+}
+
+.matrx-header-actions {
+    display: flex;
+    gap: var(--matrx-spacing-md);
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.matrx-btn {
+    background: var(--matrx-glass-bg);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: var(--matrx-border-radius);
+    padding: 12px 20px;
+    color: var(--matrx-text-white);
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.matrx-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: translateY(-2px);
+}
+
+.matrx-btn:disabled {
+    background: var(--matrx-glass-bg);
+    border-color: rgba(34, 197, 94, 0.5);
+    cursor: not-allowed;
+    transform: none;
+}
+
+.matrx-content-wrapper {
+    flex: 1;
+    background: var(--matrx-text-white);
+    border-radius: var(--matrx-border-radius-large);
+    overflow: hidden;
+    box-shadow: var(--matrx-shadow);
+    border: 1px solid var(--matrx-glass-border);
+}
+
+.matrx-content-view {
+    padding: 40px;
+    min-height: 500px;
+    max-height: 80vh;
+    overflow-y: auto;
+    display: none;
+}
+
+.matrx-text-view {
+    background: #f8fafc;
+    color: var(--matrx-text-dark);
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.matrx-formatted-view {
+    background: var(--matrx-text-white);
+}
+
+/* Formatted content styles */
+.matrx-formatted-view h1, 
+.matrx-formatted-view h2, 
+.matrx-formatted-view h3, 
+.matrx-formatted-view h4 {
+    color: #1e293b;
+    font-weight: 700;
+    margin-top: 2em;
+    margin-bottom: 1em;
+    line-height: 1.3;
+}
+
+.matrx-formatted-view h1 {
+    font-size: 2.5em;
+    border-bottom: 3px solid var(--matrx-primary);
+    padding-bottom: 0.5em;
+    margin-top: 0;
+}
+
+.matrx-formatted-view h2 {
+    font-size: 2em;
+    border-bottom: 2px solid #e2e8f0;
+    padding-bottom: 0.3em;
+}
+
+.matrx-formatted-view h3 {
+    font-size: 1.5em;
+    color: #475569;
+}
+
+.matrx-formatted-view h4 {
+    font-size: 1.25em;
+    color: var(--matrx-text-dark-light);
+}
+
+.matrx-formatted-view p {
+    margin-bottom: 1.5em;
+    line-height: 1.7;
+    color: var(--matrx-text-dark);
+}
+
+.matrx-formatted-view ul, 
+.matrx-formatted-view ol {
+    margin-bottom: 1.5em;
+    padding-left: 2em;
+}
+
+.matrx-formatted-view li {
+    margin-bottom: 0.5em;
+    line-height: 1.6;
+}
+
+.matrx-formatted-view a {
+    color: var(--matrx-primary);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.2s ease;
+}
+
+.matrx-formatted-view a:hover {
+    border-bottom-color: var(--matrx-primary);
+}
+
+.matrx-formatted-view strong {
+    font-weight: 700;
+    color: #1e293b;
+}
+
+/* CSS-only view switching using :target pseudo-class */
+#textContent:target, 
+#formattedContent:target {
+    display: block;
+}
+
+/* Default to text view when no hash */
+body:not(:has(#textContent:target)):not(:has(#formattedContent:target)) #textContent {
+    display: block;
+}
+
+/* Fallback for browsers that don't support :has() */
+@supports not selector(:has(*)) {
+    #textContent {
+        display: block;
+    }
+    #textContent:target ~ #formattedContent {
+        display: none;
+    }
+    #formattedContent:target {
+        display: block;
+    }
+    #formattedContent:target ~ #textContent {
+        display: none;
+    }
+}
+
+/* Button active states based on current target */
+.matrx-view-toggle {
+    background: var(--matrx-glass-bg);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+#textContent:target ~ .matrx-header .matrx-text-toggle,
+body:not(:has(#textContent:target)):not(:has(#formattedContent:target)) .matrx-text-toggle {
+    background: rgba(255, 255, 255, 0.4);
+    border-color: rgba(255, 255, 255, 0.6);
+}
+
+#formattedContent:target ~ .matrx-header .matrx-formatted-toggle {
+    background: rgba(255, 255, 255, 0.4);
+    border-color: rgba(255, 255, 255, 0.6);
+}
+
+/* Fallback button states for browsers without :has() */
+@supports not selector(:has(*)) {
+    .matrx-text-toggle {
+        background: rgba(255, 255, 255, 0.4);
+        border-color: rgba(255, 255, 255, 0.6);
+    }
+    #formattedContent:target ~ .matrx-header .matrx-text-toggle {
+        background: var(--matrx-glass-bg);
+        border-color: rgba(255, 255, 255, 0.3);
+    }
+    #formattedContent:target ~ .matrx-header .matrx-formatted-toggle {
+        background: rgba(255, 255, 255, 0.4);
+        border-color: rgba(255, 255, 255, 0.6);
+    }
+}
+
+/* Hidden textareas for copying */
+.matrx-hidden-textarea {
+    position: absolute;
+    left: -9999px;
+    opacity: 0;
+}
+</style>

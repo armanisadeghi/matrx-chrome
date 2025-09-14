@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Matrx - {{contentType}}</title>
+    <!-- Shared styles will be inlined by template loader -->
+</head>
+<body>
+    <div class="matrx-container">
+        <!-- Content sections come first so :target works properly -->
+        <div id="textContent" class="matrx-content-view matrx-text-view">{{textContent}}</div>
+        <div id="formattedContent" class="matrx-content-view matrx-formatted-view">{{formattedHtml}}</div>
+        
+        <div class="matrx-header">
+            <h1>🤖 Matrx - {{contentType}}</h1>
+            <p class="subtitle">AI-extracted clean text with dual viewing modes</p>
+            <div class="matrx-header-actions">
+                <a href="#textContent" class="matrx-btn matrx-view-toggle matrx-text-toggle">📝 Text View</a>
+                <a href="#formattedContent" class="matrx-btn matrx-view-toggle matrx-formatted-toggle">🎨 Formatted View</a>
+                <button class="matrx-btn" id="copyBtn">📋 Copy Content</button>
+            </div>
+        </div>
+        
+        <div class="matrx-content-wrapper">
+            <!-- Content is positioned here visually but defined above for :target -->
+        </div>
+    </div>
+
+    <!-- Hidden textareas for copying content -->
+    <textarea id="textContentCopy" class="matrx-hidden-textarea">{{textContent}}</textarea>
+    <textarea id="formattedContentCopy" class="matrx-hidden-textarea"></textarea>
+    
+    <script>
+        // Debug current state
+        console.log('Page loaded. Current hash:', window.location.hash);
+        console.log('Text content visible:', document.getElementById('textContent').offsetHeight > 0);
+        console.log('Formatted content visible:', document.getElementById('formattedContent').offsetHeight > 0);
+        
+        // Set up formatted content copy text (plain text from HTML)
+        document.getElementById('formattedContentCopy').value = document.getElementById('formattedContent').textContent || document.getElementById('formattedContent').innerText || '';
+        
+        // Listen for hash changes
+        window.addEventListener('hashchange', function() {
+            console.log('Hash changed to:', window.location.hash);
+            console.log('Text content visible:', document.getElementById('textContent').offsetHeight > 0);
+            console.log('Formatted content visible:', document.getElementById('formattedContent').offsetHeight > 0);
+        });
+        
+        // Copy functionality using DOM events (CSP compliant)
+        function setupCopyButton() {
+            const copyBtn = document.getElementById('copyBtn');
+            if (copyBtn) {
+                copyBtn.addEventListener('click', function() {
+                    console.log('Copy button clicked. Current hash:', window.location.hash);
+                    
+                    try {
+                        let textareaId;
+                        if (window.location.hash === '#formattedContent') {
+                            textareaId = 'formattedContentCopy';
+                            console.log('Copying formatted content');
+                        } else {
+                            textareaId = 'textContentCopy';
+                            console.log('Copying text content');
+                        }
+                        
+                        const textarea = document.getElementById(textareaId);
+                        if (textarea) {
+                            // Select and copy using the old-school method (CSP compliant)
+                            textarea.select();
+                            textarea.setSelectionRange(0, 99999); // For mobile devices
+                            
+                            const successful = document.execCommand('copy');
+                            
+                            if (successful) {
+                                const originalText = copyBtn.textContent;
+                                copyBtn.textContent = '✅ Copied!';
+                                
+                                setTimeout(() => {
+                                    copyBtn.textContent = originalText;
+                                }, 2000);
+                            } else {
+                                throw new Error('execCommand failed');
+                            }
+                        }
+                    } catch (error) {
+                        console.error('Failed to copy:', error);
+                        
+                        // Fallback: try modern clipboard API
+                        const contentToCopy = window.location.hash === '#formattedContent' 
+                            ? document.getElementById('formattedContent').textContent
+                            : document.getElementById('textContentCopy').value;
+                            
+                        if (navigator.clipboard && navigator.clipboard.writeText) {
+                            navigator.clipboard.writeText(contentToCopy).then(() => {
+                                const originalText = copyBtn.textContent;
+                                copyBtn.textContent = '✅ Copied!';
+                                
+                                setTimeout(() => {
+                                    copyBtn.textContent = originalText;
+                                }, 2000);
+                            }).catch(err => {
+                                console.error('Clipboard API also failed:', err);
+                                copyBtn.textContent = '❌ Failed';
+                                setTimeout(() => copyBtn.textContent = '📋 Copy Content', 2000);
+                            });
+                        } else {
+                            copyBtn.textContent = '❌ Failed';
+                            setTimeout(() => copyBtn.textContent = '📋 Copy Content', 2000);
+                        }
+                    }
+                });
+            }
+        }
+        
+        // Set up copy functionality
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', setupCopyButton);
+        } else {
+            setupCopyButton();
+        }
+    </script>
+</body>
+</html>
