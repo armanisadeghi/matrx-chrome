@@ -84,11 +84,18 @@
             transform: translateY(-1px);
         }
         
-        .copy-btn:disabled {
-            background: #22c55e;
-            cursor: not-allowed;
-            transform: none;
-        }
+            .copy-btn:disabled {
+                background: #22c55e;
+                cursor: not-allowed;
+                transform: none;
+            }
+            
+            /* Copy feedback animations */
+            @keyframes pulse {
+                0% { transform: scale(1); }
+                50% { transform: scale(1.1); }
+                100% { transform: scale(1.05); }
+            }
     </style>
 </head>
 <body>
@@ -105,25 +112,71 @@
 
     <script>
         // Content will be injected by template loader
-        const content = "{{content}}";
+        const content = `{{content}}`;
         
         async function copyContent() {
-            try {
-                await navigator.clipboard.writeText(content);
-                
-                const btn = document.querySelector('.copy-btn');
-                const originalText = btn.textContent;
-                btn.textContent = '✅ Copied!';
-                btn.disabled = true;
-                
-                setTimeout(() => {
-                    btn.textContent = originalText;
-                    btn.disabled = false;
-                }, 2000);
-            } catch (error) {
-                console.error('Failed to copy:', error);
-                alert('Failed to copy content');
+            const btn = document.querySelector('.copy-btn');
+            
+            if (!content) {
+                showCopyFeedback(btn, '❌ No Content', 'error');
+                return;
             }
+            
+            try {
+                // Use modern clipboard API as primary method
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    await navigator.clipboard.writeText(content);
+                    showCopyFeedback(btn, '✅ Copied!', 'success');
+                    console.log('Content copied via Clipboard API');
+                } else {
+                    // Fallback: create temporary textarea
+                    const tempTextarea = document.createElement('textarea');
+                    tempTextarea.value = content;
+                    tempTextarea.style.position = 'fixed';
+                    tempTextarea.style.left = '-9999px';
+                    tempTextarea.style.top = '-9999px';
+                    document.body.appendChild(tempTextarea);
+                    
+                    tempTextarea.select();
+                    tempTextarea.setSelectionRange(0, 99999);
+                    
+                    const successful = document.execCommand('copy');
+                    document.body.removeChild(tempTextarea);
+                    
+                    if (successful) {
+                        showCopyFeedback(btn, '✅ Copied!', 'success');
+                        console.log('Content copied via execCommand');
+                    } else {
+                        throw new Error('execCommand failed');
+                    }
+                }
+            } catch (error) {
+                console.error('Copy failed:', error);
+                showCopyFeedback(btn, '❌ Failed', 'error');
+            }
+        }
+        
+        // Enhanced feedback with animation
+        function showCopyFeedback(button, text, type) {
+            const originalText = button.textContent;
+            const originalColor = button.style.color;
+            
+            // Update button text and color
+            button.textContent = text;
+            button.style.color = type === 'success' ? '#22c55e' : '#ef4444';
+            button.style.transform = 'scale(1.05)';
+            button.disabled = true;
+            
+            // Add pulse animation
+            button.style.animation = 'pulse 0.3s ease-in-out';
+            
+            setTimeout(() => {
+                button.textContent = originalText;
+                button.style.color = originalColor;
+                button.style.transform = 'scale(1)';
+                button.style.animation = '';
+                button.disabled = false;
+            }, 2000);
         }
     </script>
 </body>

@@ -98,7 +98,10 @@ body {
     cursor: pointer;
     transition: all 0.3s ease;
     text-decoration: none;
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
 }
 
 .matrx-btn:hover {
@@ -112,6 +115,19 @@ body {
     border-color: rgba(34, 197, 94, 0.5);
     cursor: not-allowed;
     transform: none;
+}
+
+.matrx-btn-icon {
+    width: 16px;
+    height: 16px;
+    fill: currentColor;
+    flex-shrink: 0;
+    transition: transform 0.2s ease;
+    pointer-events: none;
+}
+
+.matrx-btn:hover .matrx-btn-icon {
+    transform: scale(1.1);
 }
 
 .matrx-content-wrapper {
@@ -278,5 +294,27 @@ body:not(:has(#textContent:target)):not(:has(#formattedContent:target)) .matrx-t
     position: absolute;
     left: -9999px;
     opacity: 0;
+}
+
+/* Copy feedback animations */
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1.05); }
+}
+
+@keyframes copySuccess {
+    0% { 
+        background: var(--matrx-primary);
+        transform: scale(1);
+    }
+    50% { 
+        background: var(--matrx-green);
+        transform: scale(1.1);
+    }
+    100% { 
+        background: var(--matrx-green);
+        transform: scale(1.05);
+    }
 }
 </style>

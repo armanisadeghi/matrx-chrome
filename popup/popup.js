@@ -68,16 +68,29 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Initialize tab system
         initializeTabSystem();
         
+        // Prevent initial layout shifts
+        stabilizeInitialLayout();
+        
     } catch (error) {
         currentUrlSpan.textContent = 'Unable to get URL';
     }
 
-    // Handle settings link click
-    settingsLink.addEventListener('click', (e) => {
+    // Handle settings buttons click
+    const headerSettingsBtn = document.getElementById('headerSettingsBtn');
+    
+    function openSettings(e) {
         e.preventDefault();
         chrome.runtime.openOptionsPage();
         window.close();
-    });
+    }
+    
+    if (settingsLink) {
+        settingsLink.addEventListener('click', openSettings);
+    }
+    
+    if (headerSettingsBtn) {
+        headerSettingsBtn.addEventListener('click', openSettings);
+    }
 
     // Handle expand AI content buttons click
     expandAiContentBtn.addEventListener('click', () => {
@@ -949,18 +962,26 @@ document.addEventListener('DOMContentLoaded', async () => {
             // Parse the markdown content to HTML using the template loader's function
             const formattedHtml = templateLoader.parseSimpleMarkdown(markdownContent);
             
-            // Create HTML using template
+            // Get formatted text (plain text from HTML) for copying
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = formattedHtml;
+            const formattedText = tempDiv.textContent || tempDiv.innerText || '';
+            
+            // Create HTML using template with encoded content for reliable copying
             const htmlContent = await templateLoader.createBlobDocument('dual-view-content', {
                 contentType: contentType,
                 textContent: textContent,
-                formattedHtml: formattedHtml
+                formattedHtml: formattedHtml,
+                formattedText: formattedText,
+                textContentEncoded: encodeURIComponent(textContent),
+                formattedTextEncoded: encodeURIComponent(formattedText)
             });
             
             // Create blob URL
             const blob = new Blob([htmlContent], { type: 'text/html' });
             const url = URL.createObjectURL(blob);
             
-            console.log('Opening dual view content tab');
+            console.log('Opening dual view content tab with enhanced copy functionality');
             chrome.tabs.create({ url: url });
             
         } catch (error) {
@@ -1174,7 +1195,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Add event listeners to tab buttons
         document.querySelectorAll('.tab-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
-                const tabId = e.target.dataset.tab;
+                const tabId = e.currentTarget.dataset.tab;
+                console.log('Tab clicked:', tabId, 'Target:', e.target.tagName, 'CurrentTarget:', e.currentTarget.tagName);
                 switchTab(tabId);
             });
         });
@@ -1196,6 +1218,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     function switchTab(tabId) {
         console.log('Switching to tab:', tabId);
         
+        // Prevent layout shifts during tab switching
+        const container = document.querySelector('.tab-content');
+        if (container) {
+            container.style.minHeight = container.offsetHeight + 'px';
+        }
+        
         // Update tab buttons
         document.querySelectorAll('.tab-btn').forEach(btn => {
             btn.classList.remove('active');
@@ -1212,6 +1240,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         const targetPane = document.getElementById(tabId);
         if (targetPane) {
             targetPane.classList.add('active');
+            
+            // Reset min-height after animation
+            setTimeout(() => {
+                if (container) {
+                    container.style.minHeight = '';
+                }
+            }, 250);
         }
     }
 
@@ -1342,6 +1377,37 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
     
+    // Prevent initial layout shifts
+    function stabilizeInitialLayout() {
+        // Set fixed dimensions for tab navigation to prevent reflow
+        const tabNavigation = document.querySelector('.tab-navigation');
+        if (tabNavigation) {
+            tabNavigation.style.minHeight = '35px';
+        }
+        
+        // Set minimum heights for content areas
+        const tabContent = document.querySelector('.tab-content');
+        if (tabContent) {
+            tabContent.style.minHeight = '400px';
+        }
+        
+        // Ensure all buttons have consistent dimensions
+        document.querySelectorAll('button').forEach(btn => {
+            if (!btn.style.minHeight) {
+                btn.style.minHeight = btn.offsetHeight + 'px';
+            }
+        });
+        
+        // Remove stabilization after initial render
+        setTimeout(() => {
+            if (tabNavigation) tabNavigation.style.minHeight = '';
+            if (tabContent) tabContent.style.minHeight = '';
+            document.querySelectorAll('button').forEach(btn => {
+                btn.style.minHeight = '';
+            });
+        }, 100);
+    }
+
     // Override the existing handleGeminiExtraction to include saving
     const originalHandleGeminiExtraction = handleGeminiExtraction;
     handleGeminiExtraction = async function(type) {

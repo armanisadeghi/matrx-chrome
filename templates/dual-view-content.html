@@ -13,12 +13,32 @@
         <div id="formattedContent" class="matrx-content-view matrx-formatted-view">{{formattedHtml}}</div>
         
         <div class="matrx-header">
-            <h1>🤖 Matrx - {{contentType}}</h1>
+            <h1>
+                <svg style="width: 20px; height: 20px; fill: currentColor; vertical-align: middle; margin-right: 8px;" viewBox="0 0 24 24">
+                    <path d="M12,2A2,2 0 0,1 14,4C14,4.74 13.6,5.39 13,5.73V7A1,1 0 0,0 14,8H16A1,1 0 0,0 17,7V5.73C16.4,5.39 16,4.74 16,4A2,2 0 0,1 18,2A2,2 0 0,1 20,4C20,4.74 19.6,5.39 19,5.73V7A3,3 0 0,1 16,10H15V16A1,1 0 0,0 16,17H18A1,1 0 0,0 19,16V14.27C19.6,13.93 20,13.28 20,12.5A2,2 0 0,1 22,14.5A2,2 0 0,1 20,16.5C20,17.24 19.6,17.89 19,18.23V16A3,3 0 0,1 16,19H8A3,3 0 0,1 5,16V18.23C4.4,17.89 4,17.24 4,16.5A2,2 0 0,1 2,14.5A2,2 0 0,1 4,12.5C4,13.28 4.4,13.93 5,14.27V16A1,1 0 0,0 6,17H8A1,1 0 0,0 9,16V10H8A3,3 0 0,1 5,7V5.73C4.4,5.39 4,4.74 4,4A2,2 0 0,1 6,2A2,2 0 0,1 8,4C8,4.74 7.6,5.39 7,5.73V7A1,1 0 0,0 8,8H10A1,1 0 0,0 11,7V5.73C10.4,5.39 10,4.74 10,4A2,2 0 0,1 12,2Z"/>
+                </svg>
+                Matrx - {{contentType}}
+            </h1>
             <p class="subtitle">AI-extracted clean text with dual viewing modes</p>
             <div class="matrx-header-actions">
-                <a href="#textContent" class="matrx-btn matrx-view-toggle matrx-text-toggle">📝 Text View</a>
-                <a href="#formattedContent" class="matrx-btn matrx-view-toggle matrx-formatted-toggle">🎨 Formatted View</a>
-                <button class="matrx-btn" id="copyBtn">📋 Copy Content</button>
+                <a href="#textContent" class="matrx-btn matrx-view-toggle matrx-text-toggle">
+                    <svg class="matrx-btn-icon" viewBox="0 0 24 24">
+                        <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                    </svg>
+                    Text View
+                </a>
+                <a href="#formattedContent" class="matrx-btn matrx-view-toggle matrx-formatted-toggle">
+                    <svg class="matrx-btn-icon" viewBox="0 0 24 24">
+                        <path d="M12,15.5A3.5,3.5 0 0,1 8.5,12A3.5,3.5 0 0,1 12,8.5A3.5,3.5 0 0,1 15.5,12A3.5,3.5 0 0,1 12,15.5M19.43,12.97C19.47,12.65 19.5,12.33 19.5,12C19.5,11.67 19.47,11.34 19.43,11L21.54,9.37C21.73,9.22 21.78,8.95 21.66,8.73L19.66,5.27C19.54,5.05 19.27,4.96 19.05,5.05L16.56,6.05C16.04,5.66 15.5,5.32 14.87,5.07L14.5,2.42C14.46,2.18 14.25,2 14,2H10C9.75,2 9.54,2.18 9.5,2.42L9.13,5.07C8.5,5.32 7.96,5.66 7.44,6.05L4.95,5.05C4.73,4.96 4.46,5.05 4.34,5.27L2.34,8.73C2.22,8.95 2.27,9.22 2.46,9.37L4.57,11C4.53,11.34 4.5,11.67 4.5,12C4.5,12.33 4.53,12.65 4.57,12.97L2.46,14.63C2.27,14.78 2.21,15.05 2.34,15.27L4.34,18.73C4.46,18.95 4.73,19.03 4.95,18.95L7.44,17.94C7.96,18.34 8.5,18.68 9.13,18.93L9.5,21.58C9.54,21.82 9.75,22 10,22H14C14.25,22 14.46,21.82 14.5,21.58L14.87,18.93C15.5,18.68 16.04,18.34 16.56,17.94L19.05,18.95C19.27,19.03 19.54,18.95 19.66,18.73L21.66,15.27C21.78,15.05 21.73,14.78 21.54,14.63L19.43,12.97Z"/>
+                    </svg>
+                    Formatted View
+                </a>
+                <button class="matrx-btn" id="copyBtn">
+                    <svg class="matrx-btn-icon" viewBox="0 0 24 24">
+                        <path d="M19,21H8V7H19M19,5H8A2,2 0 0,0 6,7V21A2,2 0 0,0 8,23H19A2,2 0 0,0 21,21V7A2,2 0 0,0 19,5M16,1H4A2,2 0 0,0 2,3V17H4V3H16V1Z"/>
+                    </svg>
+                    Copy Content
+                </button>
             </div>
         </div>
         
@@ -27,98 +47,115 @@
         </div>
     </div>
 
-    <!-- Hidden textareas for copying content -->
-    <textarea id="textContentCopy" class="matrx-hidden-textarea">{{textContent}}</textarea>
-    <textarea id="formattedContentCopy" class="matrx-hidden-textarea"></textarea>
+    <!-- Content data will be stored in JavaScript variables for reliable copying -->
     
-    <script>
-        // Debug current state
-        console.log('Page loaded. Current hash:', window.location.hash);
-        console.log('Text content visible:', document.getElementById('textContent').offsetHeight > 0);
-        console.log('Formatted content visible:', document.getElementById('formattedContent').offsetHeight > 0);
-        
-        // Set up formatted content copy text (plain text from HTML)
-        document.getElementById('formattedContentCopy').value = document.getElementById('formattedContent').textContent || document.getElementById('formattedContent').innerText || '';
-        
-        // Listen for hash changes
-        window.addEventListener('hashchange', function() {
-            console.log('Hash changed to:', window.location.hash);
-            console.log('Text content visible:', document.getElementById('textContent').offsetHeight > 0);
-            console.log('Formatted content visible:', document.getElementById('formattedContent').offsetHeight > 0);
-        });
-        
-        // Copy functionality using DOM events (CSP compliant)
-        function setupCopyButton() {
-            const copyBtn = document.getElementById('copyBtn');
-            if (copyBtn) {
-                copyBtn.addEventListener('click', function() {
-                    console.log('Copy button clicked. Current hash:', window.location.hash);
+        <script>
+            // Store content in JavaScript variables for reliable access
+            const CONTENT_DATA = {
+                textContent: decodeURIComponent(`{{textContentEncoded}}`),
+                formattedText: decodeURIComponent(`{{formattedTextEncoded}}`)
+            };
+            
+            console.log('Matrx Dual View loaded. Hash:', window.location.hash);
+            console.log('Content data loaded:', {
+                textLength: CONTENT_DATA.textContent.length,
+                formattedLength: CONTENT_DATA.formattedText.length
+            });
+            
+            // Enhanced copy functionality with better reliability and feedback
+            function setupCopyButton() {
+                const copyBtn = document.getElementById('copyBtn');
+                if (!copyBtn) return;
+                
+                copyBtn.addEventListener('click', async function(e) {
+                    e.preventDefault();
+                    console.log('Copy button clicked. Current view:', window.location.hash);
+                    console.log('Available content:', {
+                        textContent: CONTENT_DATA.textContent ? CONTENT_DATA.textContent.substring(0, 100) + '...' : 'EMPTY',
+                        formattedText: CONTENT_DATA.formattedText ? CONTENT_DATA.formattedText.substring(0, 100) + '...' : 'EMPTY'
+                    });
+                    
+                    // Determine which content to copy
+                    const isFormattedView = window.location.hash === '#formattedContent';
+                    const contentToCopy = isFormattedView ? CONTENT_DATA.formattedText : CONTENT_DATA.textContent;
+                    
+                    console.log('Content to copy length:', contentToCopy ? contentToCopy.length : 0);
+                    
+                    if (!contentToCopy || contentToCopy.length === 0) {
+                        console.error('No content available to copy');
+                        showCopyFeedback(copyBtn, '❌ No Content', 'error');
+                        return;
+                    }
                     
                     try {
-                        let textareaId;
-                        if (window.location.hash === '#formattedContent') {
-                            textareaId = 'formattedContentCopy';
-                            console.log('Copying formatted content');
+                        // Use modern clipboard API as primary method
+                        if (navigator.clipboard && navigator.clipboard.writeText) {
+                            await navigator.clipboard.writeText(contentToCopy);
+                            showCopyFeedback(copyBtn, '✅ Copied!', 'success');
+                            console.log('Content copied via Clipboard API');
                         } else {
-                            textareaId = 'textContentCopy';
-                            console.log('Copying text content');
-                        }
-                        
-                        const textarea = document.getElementById(textareaId);
-                        if (textarea) {
-                            // Select and copy using the old-school method (CSP compliant)
-                            textarea.select();
-                            textarea.setSelectionRange(0, 99999); // For mobile devices
+                            // Fallback: create temporary textarea
+                            const tempTextarea = document.createElement('textarea');
+                            tempTextarea.value = contentToCopy;
+                            tempTextarea.style.position = 'fixed';
+                            tempTextarea.style.left = '-9999px';
+                            tempTextarea.style.top = '-9999px';
+                            document.body.appendChild(tempTextarea);
+                            
+                            tempTextarea.select();
+                            tempTextarea.setSelectionRange(0, 99999);
                             
                             const successful = document.execCommand('copy');
+                            document.body.removeChild(tempTextarea);
                             
                             if (successful) {
-                                const originalText = copyBtn.textContent;
-                                copyBtn.textContent = '✅ Copied!';
-                                
-                                setTimeout(() => {
-                                    copyBtn.textContent = originalText;
-                                }, 2000);
+                                showCopyFeedback(copyBtn, '✅ Copied!', 'success');
+                                console.log('Content copied via execCommand');
                             } else {
                                 throw new Error('execCommand failed');
                             }
                         }
                     } catch (error) {
-                        console.error('Failed to copy:', error);
-                        
-                        // Fallback: try modern clipboard API
-                        const contentToCopy = window.location.hash === '#formattedContent' 
-                            ? document.getElementById('formattedContent').textContent
-                            : document.getElementById('textContentCopy').value;
-                            
-                        if (navigator.clipboard && navigator.clipboard.writeText) {
-                            navigator.clipboard.writeText(contentToCopy).then(() => {
-                                const originalText = copyBtn.textContent;
-                                copyBtn.textContent = '✅ Copied!';
-                                
-                                setTimeout(() => {
-                                    copyBtn.textContent = originalText;
-                                }, 2000);
-                            }).catch(err => {
-                                console.error('Clipboard API also failed:', err);
-                                copyBtn.textContent = '❌ Failed';
-                                setTimeout(() => copyBtn.textContent = '📋 Copy Content', 2000);
-                            });
-                        } else {
-                            copyBtn.textContent = '❌ Failed';
-                            setTimeout(() => copyBtn.textContent = '📋 Copy Content', 2000);
-                        }
+                        console.error('Copy failed:', error);
+                        showCopyFeedback(copyBtn, '❌ Failed', 'error');
                     }
                 });
             }
-        }
-        
-        // Set up copy functionality
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', setupCopyButton);
-        } else {
-            setupCopyButton();
-        }
-    </script>
+            
+            // Enhanced feedback with animation
+            function showCopyFeedback(button, text, type) {
+                const originalText = button.textContent;
+                const originalColor = button.style.color;
+                
+                // Update button text and color
+                button.textContent = text;
+                button.style.color = type === 'success' ? '#22c55e' : '#ef4444';
+                button.style.transform = 'scale(1.05)';
+                button.disabled = true;
+                
+                // Add pulse animation
+                button.style.animation = 'pulse 0.3s ease-in-out';
+                
+                setTimeout(() => {
+                    button.textContent = originalText;
+                    button.style.color = originalColor;
+                    button.style.transform = 'scale(1)';
+                    button.style.animation = '';
+                    button.disabled = false;
+                }, 2000);
+            }
+            
+            // Initialize when DOM is ready
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', setupCopyButton);
+            } else {
+                setupCopyButton();
+            }
+            
+            // Debug hash changes
+            window.addEventListener('hashchange', function() {
+                console.log('View switched to:', window.location.hash);
+            });
+        </script>
 </body>
 </html>
