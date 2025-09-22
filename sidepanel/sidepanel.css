@@ -1311,6 +1311,9 @@ body {
     border-radius: 8px;
     border: 1px solid rgba(255, 255, 255, 0.2);
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 200px);
 }
 
 .header-structure-header {
@@ -1320,6 +1323,7 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    flex-shrink: 0;
 }
 
 .header-structure-header h4 {
@@ -1369,8 +1373,9 @@ body {
 
 .header-structure-content {
     padding: 16px;
-    max-height: 500px;
+    flex: 1;
     overflow-y: auto;
+    min-height: 0;
 }
 
 .header-outline {
@@ -1446,6 +1451,7 @@ body {
     display: flex;
     justify-content: space-around;
     text-align: center;
+    flex-shrink: 0;
 }
 
 .stat-item {
@@ -1504,6 +1510,9 @@ body {
     border-radius: 8px;
     border: 1px solid rgba(255, 255, 255, 0.2);
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 200px);
 }
 
 .link-structure-header, .image-structure-header {
@@ -1513,6 +1522,7 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    flex-shrink: 0;
 }
 
 .link-structure-header h4, .image-structure-header h4 {
@@ -1562,8 +1572,9 @@ body {
 
 .link-structure-content, .image-structure-content {
     padding: 16px;
-    max-height: 500px;
+    flex: 1;
     overflow-y: auto;
+    min-height: 0;
 }
 
 .link-list, .image-list {
@@ -1664,6 +1675,7 @@ body {
     display: flex;
     justify-content: space-around;
     text-align: center;
+    flex-shrink: 0;
 }
 
 .no-links-message, .no-images-message {
