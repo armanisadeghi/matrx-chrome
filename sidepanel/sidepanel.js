@@ -164,9 +164,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         currentUrlSpan.textContent = 'Unable to get URL';
     }
 
-    // Handle settings buttons click
-    const headerSettingsBtn = document.getElementById('headerSettingsBtn');
-    
+    // Handle settings button click
     function openSettings(e) {
         e.preventDefault();
         chrome.runtime.openOptionsPage();
@@ -175,10 +173,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     if (settingsLink) {
         settingsLink.addEventListener('click', openSettings);
-    }
-    
-    if (headerSettingsBtn) {
-        headerSettingsBtn.addEventListener('click', openSettings);
     }
 
     // Handle expand AI content buttons click
@@ -805,7 +799,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     expandGeminiBtn.addEventListener('click', () => {
         if (currentGeminiContent) {
             // Format Gemini content as markdown and open in markdown tab
-            const markdownContent = `# Extracted Content\n\n${currentGeminiContent}`;
+            const markdownContent = currentGeminiContent;
             openMarkdownViewer(markdownContent);
         } else {
             showStatus('error', 'No extracted content available');
@@ -1983,7 +1977,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     function handleExpandCustomRange() {
         if (currentCustomRangeContent) {
             // Format custom range content as markdown and open in markdown tab
-            const markdownContent = `# Custom Range Extracted Content\n\n${currentCustomRangeContent}`;
+            const markdownContent = currentCustomRangeContent;
             openMarkdownViewer(markdownContent);
         } else {
             showStatus('error', 'No custom range content available');
@@ -2123,7 +2117,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     function handleViewGeminiMarkdown() {
         if (currentGeminiContent && currentGeminiContent.trim()) {
             // Format Gemini content as markdown
-            const markdownContent = `# Extracted Content\n\n${currentGeminiContent}`;
+            const markdownContent = currentGeminiContent;
             openMarkdownViewer(markdownContent);
         } else {
             showStatus('error', 'No Gemini content available');
@@ -2142,12 +2136,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
         // 2. Second priority: Current Gemini content
         else if (currentGeminiContent && currentGeminiContent.trim()) {
-            contentToLoad = `# Extracted Content\n\n${currentGeminiContent}`;
+            contentToLoad = currentGeminiContent;
             title = 'Gemini Extracted Content';
         }
         // 3. Third priority: Saved Gemini data
         else if (savedGeminiData && savedGeminiData.content && savedGeminiData.content.trim()) {
-            contentToLoad = `# Extracted Content\n\n${savedGeminiData.content}`;
+            contentToLoad = savedGeminiData.content;
             title = 'Saved Gemini Content';
         }
         

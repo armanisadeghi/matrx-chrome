@@ -28,72 +28,6 @@ body {
     overflow-y: auto;
 }
 
-.header {
-    margin-bottom: 12px;
-    flex-shrink: 0;
-}
-
-.header-content {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    position: relative;
-}
-
-.header-text {
-    flex: 1;
-    text-align: center;
-}
-
-.header h1 {
-    color: white;
-    font-size: 18px;
-    font-weight: 600;
-    margin-bottom: 2px;
-}
-
-.subtitle {
-    color: rgba(255, 255, 255, 0.8);
-    font-size: 12px;
-    font-weight: 400;
-}
-
-/* Header Settings Button */
-.header-settings-btn {
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 8px;
-    padding: 6px;
-    color: rgba(255, 255, 255, 0.8);
-    cursor: pointer;
-    transition: all 0.2s ease;
-    backdrop-filter: blur(10px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 32px;
-    height: 32px;
-    flex-shrink: 0;
-}
-
-.header-settings-btn:hover {
-    background: rgba(255, 255, 255, 0.2);
-    border-color: rgba(255, 255, 255, 0.4);
-    color: white;
-    transform: scale(1.05);
-}
-
-.header-settings-icon {
-    width: 18px;
-    height: 18px;
-    fill: currentColor;
-    transition: transform 0.3s ease;
-}
-
-.header-settings-btn:hover .header-settings-icon {
-    transform: rotate(90deg);
-}
-
 /* Tab Navigation - Adapted for side panel */
 .tab-navigation {
     display: grid;
@@ -1063,9 +997,6 @@ body {
     border-radius: 8px;
     border: 1px solid rgba(255, 255, 255, 0.2);
     overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    height: calc(100vh - 200px);
 }
 
 .markdown-header {
@@ -1075,7 +1006,6 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    flex-shrink: 0;
 }
 
 .markdown-header h4 {
@@ -1130,22 +1060,16 @@ body {
 .markdown-content-view {
     display: none;
     padding: 16px;
-    flex: 1;
-    overflow-y: auto;
-    min-height: 0;
 }
 
 .markdown-content-view.active {
-    display: flex;
-    flex-direction: column;
+    display: block;
 }
 
 .markdown-rendered-content {
     color: white;
     font-size: 12px;
     line-height: 1.6;
-    flex: 1;
-    overflow-y: auto;
 }
 
 /* Markdown styling within the side panel */
@@ -1303,8 +1227,6 @@ body {
     white-space: pre-wrap;
     word-wrap: break-word;
     overflow-x: auto;
-    flex: 1;
-    overflow-y: auto;
 }
 
 /* Header Structure Tab Styles */
@@ -1321,9 +1243,6 @@ body {
     border-radius: 8px;
     border: 1px solid rgba(255, 255, 255, 0.2);
     overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    height: calc(100vh - 200px);
 }
 
 .header-structure-header {
@@ -1383,9 +1302,6 @@ body {
 
 .header-structure-content {
     padding: 16px;
-    flex: 1;
-    overflow-y: auto;
-    min-height: 0;
 }
 
 .header-outline {
@@ -1461,7 +1377,6 @@ body {
     display: flex;
     justify-content: space-around;
     text-align: center;
-    flex-shrink: 0;
 }
 
 .stat-item {
@@ -1520,9 +1435,6 @@ body {
     border-radius: 8px;
     border: 1px solid rgba(255, 255, 255, 0.2);
     overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    height: calc(100vh - 200px);
 }
 
 .link-structure-header, .image-structure-header {
@@ -1532,7 +1444,6 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    flex-shrink: 0;
 }
 
 .link-structure-header h4, .image-structure-header h4 {
@@ -1582,9 +1493,6 @@ body {
 
 .link-structure-content, .image-structure-content {
     padding: 16px;
-    flex: 1;
-    overflow-y: auto;
-    min-height: 0;
 }
 
 .link-list, .image-list {
@@ -1706,7 +1614,6 @@ body {
     display: flex;
     justify-content: space-around;
     text-align: center;
-    flex-shrink: 0;
 }
 
 .no-links-message, .no-images-message {
