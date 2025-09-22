@@ -99,6 +99,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     const imageRefreshBtn = document.getElementById('imageRefreshBtn');
     const imageSmartModeBtn = document.getElementById('imageSmartModeBtn');
     const imageFullModeBtn = document.getElementById('imageFullModeBtn');
+
+    // Summary Generator elements
+    const summaryStatus = document.getElementById('summaryStatus');
+    const summaryContainer = document.getElementById('summaryContainer');
+    const summaryContent = document.getElementById('summaryContent');
+    const summaryCopyBtn = document.getElementById('summaryCopyBtn');
+    const summaryRefreshBtn = document.getElementById('summaryRefreshBtn');
+    const generateSummaryBtn = document.getElementById('generateSummaryBtn');
     
     // Store all AI data formats
     let currentAiData = {
@@ -121,6 +129,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     let currentHeaderStructure = null;
     let currentLinkStructure = null;
     let currentImageStructure = null;
+    let currentSummaryContent = null;
     let linkAnalysisMode = 'smart'; // 'smart' or 'full'
     let imageAnalysisMode = 'smart'; // 'smart' or 'full'
 
@@ -149,6 +158,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         
         // Try to load saved Gemini data for this URL
         await loadSavedGeminiData(currentUrl);
+        
+        // Try to load saved summary data for this URL
+        await loadSavedSummaryData(currentUrl);
         
         // Try to load saved custom range markers for this domain
         await loadSavedCustomRangeMarkers(currentDomain);
@@ -386,6 +398,19 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     if (imageFullModeBtn) {
         imageFullModeBtn.addEventListener('click', () => handleImageModeToggle('full'));
+    }
+
+    // Summary Generator event listeners
+    if (generateSummaryBtn) {
+        generateSummaryBtn.addEventListener('click', handleGenerateSummary);
+    }
+    
+    if (summaryCopyBtn) {
+        summaryCopyBtn.addEventListener('click', handleCopySummary);
+    }
+    
+    if (summaryRefreshBtn) {
+        summaryRefreshBtn.addEventListener('click', handleRefreshSummary);
     }
 
     // Handle extract button click
@@ -2849,6 +2874,174 @@ document.addEventListener('DOMContentLoaded', async () => {
     function handleRefreshImages() {
         loadImageStructure();
     }
+
+    // Summary Generator Functions
+    async function handleGenerateSummary() {
+        if (!generateSummaryBtn) return;
+        
+        try {
+            setButtonLoading(generateSummaryBtn, true);
+            
+            // Get current tab
+            const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+            
+            if (tab.url.startsWith('chrome://') || tab.url.startsWith('chrome-extension://')) {
+                showStatus('error', 'Cannot generate summary from Chrome internal pages');
+                return;
+            }
+
+            // Ensure content script is available
+            await ensureContentScript(tab.id);
+            
+            // Get smart HTML content
+            const response = await chrome.tabs.sendMessage(tab.id, { 
+                action: 'copySmartHTML' 
+            });
+            
+            if (!response || !response.success || !response.html) {
+                showStatus('error', 'Failed to extract page content');
+                return;
+            }
+            
+            // Send to Gemini for summarization using the dedicated method
+            if (!geminiClient) {
+                showStatus('error', 'Gemini client not initialized. Please check your API key in settings.');
+                return;
+            }
+            
+            const summaryContent = await geminiClient.summarizeContentFromHTML(response.html);
+            
+            if (summaryContent) {
+                currentSummaryContent = summaryContent;
+                displaySummary(summaryContent);
+                
+                // Save the summary to storage
+                await saveSummaryData(currentUrl, summaryContent);
+                
+                showStatus('success', 'Summary generated successfully');
+            } else {
+                showStatus('error', 'Failed to generate summary');
+            }
+            
+        } catch (error) {
+            console.error('Error generating summary:', error);
+            showStatus('error', 'Error generating summary: ' + error.message);
+        } finally {
+            setButtonLoading(generateSummaryBtn, false);
+        }
+    }
+
+    function convertMarkdownToHTML(markdownContent) {
+        try {
+            // Simple markdown to HTML conversion (basic)
+            let html = markdownContent
+                .replace(/^# (.*$)/gim, '<h1>$1</h1>')
+                .replace(/^## (.*$)/gim, '<h2>$1</h2>')
+                .replace(/^### (.*$)/gim, '<h3>$1</h3>')
+                .replace(/^#### (.*$)/gim, '<h4>$1</h4>')
+                .replace(/^##### (.*$)/gim, '<h5>$1</h5>')
+                .replace(/^###### (.*$)/gim, '<h6>$1</h6>')
+                .replace(/\*\*(.*?)\*\*/gim, '<strong>$1</strong>')
+                .replace(/\*(.*?)\*/gim, '<em>$1</em>')
+                .replace(/`(.*?)`/gim, '<code>$1</code>')
+                .replace(/^\* (.*$)/gim, '<li>$1</li>')
+                .replace(/^\d+\. (.*$)/gim, '<li>$1</li>')
+                .replace(/\[([^\]]+)\]\(([^)]+)\)/gim, '<a href="$2" target="_blank">$1</a>')
+                .replace(/\n\n/gim, '</p><p>')
+                .replace(/\n/gim, '<br>');
+            
+            // Wrap in paragraphs
+            html = '<p>' + html + '</p>';
+            
+            // Wrap list items in ul tags
+            html = html.replace(/(<li>.*?<\/li>)(?:\s*<br>\s*<li>.*?<\/li>)*/gim, '<ul>$&</ul>');
+            html = html.replace(/<br>\s*(<li>)/gim, '$1');
+            html = html.replace(/(<\/li>)\s*<br>/gim, '$1');
+            
+            // Clean up empty paragraphs and extra breaks
+            html = html.replace(/<p><\/p>/gim, '');
+            html = html.replace(/<p><br><\/p>/gim, '');
+            
+            return html;
+        } catch (error) {
+            console.error('Error converting markdown to HTML:', error);
+            return '<p style="color: #f87171;">Error rendering markdown content</p>';
+        }
+    }
+
+    function displaySummary(content) {
+        if (!summaryContent || !summaryContainer || !summaryStatus) return;
+        
+        // Hide status, show container
+        summaryStatus.style.display = 'none';
+        summaryContainer.style.display = 'block';
+        
+        // Convert markdown to HTML (basic conversion)
+        const htmlContent = convertMarkdownToHTML(content);
+        summaryContent.innerHTML = htmlContent;
+    }
+
+    function handleCopySummary() {
+        if (!currentSummaryContent) {
+            showStatus('error', 'No summary to copy');
+            return;
+        }
+        
+        navigator.clipboard.writeText(currentSummaryContent).then(() => {
+            showStatus('success', 'Summary copied to clipboard');
+        }).catch(error => {
+            console.error('Copy failed:', error);
+            showStatus('error', 'Failed to copy summary');
+        });
+    }
+
+    function handleRefreshSummary() {
+        handleGenerateSummary();
+    }
+
+    // Summary Storage Functions
+    async function loadSavedSummaryData(url) {
+        try {
+            const storageKey = `matrx_summary_${btoa(url).slice(0, 50)}`;
+            const result = await chrome.storage.local.get([storageKey]);
+            
+            if (result[storageKey]) {
+                const data = result[storageKey];
+                
+                // Check if data is not too old (24 hours)
+                const twentyFourHours = 24 * 60 * 60 * 1000;
+                if (Date.now() - data.timestamp < twentyFourHours) {
+                    currentSummaryContent = data.content;
+                    displaySummary(data.content);
+                    console.log('Loaded saved summary data for URL:', url);
+                    return data;
+                } else {
+                    // Remove expired data
+                    await chrome.storage.local.remove([storageKey]);
+                    console.log('Removed expired summary data for URL:', url);
+                }
+            }
+        } catch (error) {
+            console.error('Failed to load saved summary data:', error);
+        }
+        return null;
+    }
+    
+    async function saveSummaryData(url, content) {
+        try {
+            const storageKey = `matrx_summary_${btoa(url).slice(0, 50)}`;
+            const dataToSave = {
+                content: content,
+                url: url,
+                timestamp: Date.now()
+            };
+            
+            await chrome.storage.local.set({ [storageKey]: dataToSave });
+            console.log('Saved summary data for URL:', url);
+        } catch (error) {
+            console.error('Failed to save summary data:', error);
+        }
+    }
     
     // Mode Toggle Functions
     function handleLinkModeToggle(mode) {
@@ -2979,6 +3172,17 @@ document.addEventListener('DOMContentLoaded', async () => {
             markdownStatus.style.display = 'block';
         }
         
+        // Reset Summary Generator tab
+        if (summaryContainer) {
+            summaryContainer.style.display = 'none';
+        }
+        if (summaryStatus) {
+            summaryStatus.style.display = 'block';
+        }
+        if (summaryContent) {
+            summaryContent.innerHTML = '';
+        }
+        
         // Clear custom range results
         if (customRangeResults) {
             customRangeResults.style.display = 'none';
@@ -3027,6 +3231,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 currentHeaderStructure = null;
                 currentLinkStructure = null;
                 currentImageStructure = null;
+                currentSummaryContent = null;
                 
                 // Update domain display
                 try {
@@ -3044,6 +3249,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                 
                 // Load saved data for new URL
                 savedGeminiData = await loadSavedGeminiData(currentUrl);
+                
+                // Load saved summary data for new URL
+                await loadSavedSummaryData(currentUrl);
                 
                 // Load saved custom range markers for new domain
                 await loadSavedCustomRangeMarkers();
