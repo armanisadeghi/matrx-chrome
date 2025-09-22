@@ -34,6 +34,30 @@ document.addEventListener('DOMContentLoaded', async () => {
     const expandFullResponseBtn = document.getElementById('expandFullResponseBtn');
     const copyAiBtn = document.getElementById('copyAiBtn');
     
+    // Custom Range elements
+    const customRangeDomain = document.getElementById('customRangeDomain');
+    const startMarkerInput = document.getElementById('startMarker');
+    const endMarkerInput = document.getElementById('endMarker');
+    const testStartMarkerBtn = document.getElementById('testStartMarkerBtn');
+    const testEndMarkerBtn = document.getElementById('testEndMarkerBtn');
+    const saveStartMarkerBtn = document.getElementById('saveStartMarkerBtn');
+    const saveEndMarkerBtn = document.getElementById('saveEndMarkerBtn');
+    const startMarkerResult = document.getElementById('startMarkerResult');
+    const endMarkerResult = document.getElementById('endMarkerResult');
+    const characterCount = document.getElementById('characterCount');
+    const characterCountValue = document.getElementById('characterCountValue');
+    const contentPreview = document.getElementById('contentPreview');
+    const previewRangeBtn = document.getElementById('previewRangeBtn');
+    const extractRangeBtn = document.getElementById('extractRangeBtn');
+    const geminiRangeBtn = document.getElementById('geminiRangeBtn');
+    const saveMarkersBtn = document.getElementById('saveMarkersBtn');
+    const clearMarkersBtn = document.getElementById('clearMarkersBtn');
+    const customRangeResults = document.getElementById('customRangeResults');
+    const customRangeContent = document.getElementById('customRangeContent');
+    const resultsLength = document.getElementById('resultsLength');
+    const copyCustomRangeBtn = document.getElementById('copyCustomRangeBtn');
+    const expandCustomRangeBtn = document.getElementById('expandCustomRangeBtn');
+    
     // Store all AI data formats
     let currentAiData = {
         ai_content: '',
@@ -48,6 +72,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     let templateLoader = null;
     let currentUrl = '';
     let savedGeminiData = null;
+    let currentCustomRangeContent = '';
+    let currentDomain = '';
 
     // Get current tab URL and load saved data
     try {
@@ -55,11 +81,28 @@ document.addEventListener('DOMContentLoaded', async () => {
         currentUrl = tab.url;
         currentUrlSpan.textContent = currentUrl;
         
+        // Extract domain for custom range
+        try {
+            const urlObj = new URL(currentUrl);
+            currentDomain = urlObj.hostname;
+            if (customRangeDomain) {
+                customRangeDomain.textContent = currentDomain;
+            }
+        } catch (error) {
+            currentDomain = 'unknown';
+            if (customRangeDomain) {
+                customRangeDomain.textContent = 'Unknown domain';
+            }
+        }
+        
         // Try to load saved AI data for this URL
         await loadSavedAiData(currentUrl);
         
         // Try to load saved Gemini data for this URL
         await loadSavedGeminiData(currentUrl);
+        
+        // Try to load saved custom range markers for this domain
+        await loadSavedCustomRangeMarkers(currentDomain);
         
         // Initialize Gemini client and template loader
         await initializeGeminiClient();
@@ -172,6 +215,66 @@ document.addEventListener('DOMContentLoaded', async () => {
             switchAiTab(tabName);
         }
     });
+
+    // Custom Range Event Listeners
+    if (testStartMarkerBtn) {
+        testStartMarkerBtn.addEventListener('click', () => handleTestMarker('start'));
+    }
+    
+    if (testEndMarkerBtn) {
+        testEndMarkerBtn.addEventListener('click', () => handleTestMarker('end'));
+    }
+    
+    if (saveStartMarkerBtn) {
+        saveStartMarkerBtn.addEventListener('click', () => handleSaveIndividualMarker('start'));
+    }
+    
+    if (saveEndMarkerBtn) {
+        saveEndMarkerBtn.addEventListener('click', () => handleSaveIndividualMarker('end'));
+    }
+    
+    if (previewRangeBtn) {
+        previewRangeBtn.addEventListener('click', handlePreviewRange);
+    }
+    
+    if (extractRangeBtn) {
+        extractRangeBtn.addEventListener('click', handleExtractRange);
+    }
+    
+    if (geminiRangeBtn) {
+        geminiRangeBtn.addEventListener('click', handleGeminiRange);
+    }
+    
+    if (saveMarkersBtn) {
+        saveMarkersBtn.addEventListener('click', handleSaveMarkers);
+    }
+    
+    if (clearMarkersBtn) {
+        clearMarkersBtn.addEventListener('click', handleClearMarkers);
+    }
+    
+    if (copyCustomRangeBtn) {
+        copyCustomRangeBtn.addEventListener('click', handleCopyCustomRange);
+    }
+    
+    if (expandCustomRangeBtn) {
+        expandCustomRangeBtn.addEventListener('click', handleExpandCustomRange);
+    }
+    
+    // Input change listeners for marker validation and auto-save
+    if (startMarkerInput) {
+        startMarkerInput.addEventListener('input', () => {
+            validateMarkers();
+            autoSaveMarkers();
+        });
+    }
+    
+    if (endMarkerInput) {
+        endMarkerInput.addEventListener('input', () => {
+            validateMarkers();
+            autoSaveMarkers();
+        });
+    }
 
     // Handle extract button click
     extractBtn.addEventListener('click', async () => {
@@ -967,7 +1070,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             tempDiv.innerHTML = formattedHtml;
             const formattedText = tempDiv.textContent || tempDiv.innerText || '';
             
-            // Create HTML using template with encoded content for reliable copying
+            // Create HTML using template with direct content embedding
             const htmlContent = await templateLoader.createBlobDocument('dual-view-content', {
                 contentType: contentType,
                 textContent: textContent,
@@ -1419,4 +1522,554 @@ document.addEventListener('DOMContentLoaded', async () => {
             await saveGeminiData(currentUrl, currentGeminiContent, type);
         }
     };
+
+    // Custom Range Functions
+    async function loadSavedCustomRangeMarkers(domain) {
+        try {
+            const storageKey = `matrx_custom_markers_${domain}`;
+            const tempStorageKey = `matrx_temp_markers_${domain}`;
+            
+            // Try to load saved markers first
+            const result = await chrome.storage.local.get([storageKey, tempStorageKey]);
+            let markersToLoad = null;
+            let isTemporary = false;
+            
+            // Check permanent markers first
+            if (result[storageKey]) {
+                const savedMarkers = result[storageKey];
+                const thirtyDays = 30 * 24 * 60 * 60 * 1000;
+                
+                if (Date.now() - savedMarkers.timestamp < thirtyDays) {
+                    markersToLoad = savedMarkers;
+                } else {
+                    // Remove expired permanent data
+                    await chrome.storage.local.remove([storageKey]);
+                    console.log('Removed expired custom range markers for domain:', domain);
+                }
+            }
+            
+            // Check temporary markers (they take precedence if more recent)
+            if (result[tempStorageKey]) {
+                const tempMarkers = result[tempStorageKey];
+                const oneHour = 60 * 60 * 1000; // Temporary markers expire after 1 hour
+                
+                if (Date.now() - tempMarkers.timestamp < oneHour) {
+                    // Use temporary markers if they're more recent or if no permanent markers exist
+                    if (!markersToLoad || tempMarkers.timestamp > markersToLoad.timestamp) {
+                        markersToLoad = tempMarkers;
+                        isTemporary = true;
+                    }
+                } else {
+                    // Remove expired temporary data
+                    await chrome.storage.local.remove([tempStorageKey]);
+                    console.log('Removed expired temporary markers for domain:', domain);
+                }
+            }
+            
+            // Load the markers if we found any
+            if (markersToLoad) {
+                if (startMarkerInput) {
+                    startMarkerInput.value = markersToLoad.startMarker || '';
+                }
+                if (endMarkerInput) {
+                    endMarkerInput.value = markersToLoad.endMarker || '';
+                }
+                
+                console.log(`Loaded ${isTemporary ? 'temporary' : 'saved'} custom range markers for domain:`, domain);
+                
+                // Show info about loaded markers
+                if (isTemporary) {
+                    showStatus('info', 'Loaded temporary markers from previous session');
+                }
+                
+                // Validate markers after loading
+                validateMarkers();
+            }
+        } catch (error) {
+            console.error('Failed to load saved custom range markers:', error);
+        }
+    }
+
+    async function saveCustomRangeMarkers(domain, startMarker, endMarker) {
+        try {
+            const storageKey = `matrx_custom_markers_${domain}`;
+            const dataToSave = {
+                startMarker: startMarker,
+                endMarker: endMarker,
+                domain: domain,
+                timestamp: Date.now()
+            };
+            
+            await chrome.storage.local.set({ [storageKey]: dataToSave });
+            console.log('Saved custom range markers for domain:', domain);
+            showStatus('success', `Markers saved for ${domain}`);
+        } catch (error) {
+            console.error('Failed to save custom range markers:', error);
+            showStatus('error', 'Failed to save markers');
+        }
+    }
+
+    function validateMarkers() {
+        const startMarker = startMarkerInput?.value?.trim() || '';
+        const endMarker = endMarkerInput?.value?.trim() || '';
+        
+        const hasStartMarker = startMarker.length > 0;
+        const hasEndMarker = endMarker.length > 0;
+        const hasBothMarkers = hasStartMarker && hasEndMarker;
+        
+        // Enable/disable individual test buttons
+        if (testStartMarkerBtn) {
+            testStartMarkerBtn.disabled = !hasStartMarker;
+        }
+        
+        if (testEndMarkerBtn) {
+            testEndMarkerBtn.disabled = !hasEndMarker;
+        }
+        
+        // Enable/disable individual save buttons
+        if (saveStartMarkerBtn) {
+            saveStartMarkerBtn.disabled = !hasStartMarker;
+        }
+        
+        if (saveEndMarkerBtn) {
+            saveEndMarkerBtn.disabled = !hasEndMarker;
+        }
+        
+        // Enable/disable preview button based on both markers
+        if (previewRangeBtn) {
+            previewRangeBtn.disabled = !hasBothMarkers;
+        }
+        
+        // Gemini button is enabled when both markers are present (does its own preview)
+        if (geminiRangeBtn) {
+            geminiRangeBtn.disabled = !hasBothMarkers;
+        }
+        
+        // Extract button is enabled after preview shows content
+        if (extractRangeBtn) {
+            extractRangeBtn.disabled = true;
+        }
+        
+        // Hide character count when markers change
+        if (characterCount) {
+            characterCount.style.display = 'none';
+        }
+        
+        // Hide results when markers change
+        if (customRangeResults) {
+            customRangeResults.style.display = 'none';
+        }
+    }
+
+    // Auto-save markers to prevent loss when inspecting page
+    let autoSaveTimeout;
+    function autoSaveMarkers() {
+        clearTimeout(autoSaveTimeout);
+        autoSaveTimeout = setTimeout(async () => {
+            const startMarker = startMarkerInput?.value?.trim() || '';
+            const endMarker = endMarkerInput?.value?.trim() || '';
+            
+            if (startMarker || endMarker) {
+                try {
+                    const storageKey = `matrx_temp_markers_${currentDomain}`;
+                    const dataToSave = {
+                        startMarker: startMarker,
+                        endMarker: endMarker,
+                        domain: currentDomain,
+                        timestamp: Date.now(),
+                        isTemporary: true
+                    };
+                    
+                    await chrome.storage.local.set({ [storageKey]: dataToSave });
+                    console.log('Auto-saved temporary markers for domain:', currentDomain);
+                } catch (error) {
+                    console.error('Failed to auto-save markers:', error);
+                }
+            }
+        }, 1000); // Auto-save after 1 second of no typing
+    }
+
+    async function handleTestMarker(type) {
+        const isStart = type === 'start';
+        const markerInput = isStart ? startMarkerInput : endMarkerInput;
+        const resultDiv = isStart ? startMarkerResult : endMarkerResult;
+        const testBtn = isStart ? testStartMarkerBtn : testEndMarkerBtn;
+        
+        const marker = markerInput?.value?.trim() || '';
+        
+        if (!marker) {
+            showMarkerResult(resultDiv, 'error', 'Please enter a marker to test');
+            return;
+        }
+
+        try {
+            setButtonLoading(testBtn, true);
+            showMarkerResult(resultDiv, 'info', 'Testing marker...');
+
+            const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+            
+            if (tab.url.startsWith('chrome://') || tab.url.startsWith('chrome-extension://')) {
+                throw new Error('Cannot access content from Chrome internal pages');
+            }
+
+            // Ensure content script is available
+            await ensureContentScript(tab.id);
+
+            // Test the marker
+            const response = await chrome.tabs.sendMessage(tab.id, { 
+                action: 'testHtmlMarker',
+                marker: marker,
+                type: type
+            });
+
+            if (response && response.success) {
+                const message = `✅ Found ${response.count} match${response.count !== 1 ? 'es' : ''} at position${response.count !== 1 ? 's' : ''}: ${response.positions.slice(0, 3).join(', ')}${response.count > 3 ? '...' : ''}`;
+                showMarkerResult(resultDiv, 'success', message);
+            } else {
+                showMarkerResult(resultDiv, 'error', response?.error || 'Marker not found in HTML');
+            }
+
+        } catch (error) {
+            console.error(`Test ${type} marker failed:`, error);
+            showMarkerResult(resultDiv, 'error', `Error: ${error.message}`);
+        } finally {
+            setButtonLoading(testBtn, false);
+        }
+    }
+
+    function showMarkerResult(resultDiv, type, message) {
+        if (resultDiv) {
+            resultDiv.className = `marker-result ${type}`;
+            resultDiv.textContent = message;
+            resultDiv.style.display = 'block';
+        }
+    }
+
+    async function handleSaveIndividualMarker(type) {
+        const isStart = type === 'start';
+        const markerInput = isStart ? startMarkerInput : endMarkerInput;
+        const resultDiv = isStart ? startMarkerResult : endMarkerResult;
+        
+        const marker = markerInput?.value?.trim() || '';
+        
+        if (!marker) {
+            showMarkerResult(resultDiv, 'error', 'Please enter a marker to save');
+            return;
+        }
+
+        try {
+            // Load existing saved markers
+            const storageKey = `matrx_custom_markers_${currentDomain}`;
+            const result = await chrome.storage.local.get([storageKey]);
+            const existingData = result[storageKey] || {};
+            
+            // Update only the specific marker
+            const dataToSave = {
+                ...existingData,
+                [isStart ? 'startMarker' : 'endMarker']: marker,
+                domain: currentDomain,
+                timestamp: Date.now(),
+                isTemporary: false
+            };
+            
+            await chrome.storage.local.set({ [storageKey]: dataToSave });
+            
+            showMarkerResult(resultDiv, 'success', `✅ ${isStart ? 'Start' : 'End'} marker saved for ${currentDomain}`);
+            console.log(`Saved ${type} marker for domain:`, currentDomain);
+        } catch (error) {
+            console.error(`Failed to save ${type} marker:`, error);
+            showMarkerResult(resultDiv, 'error', 'Failed to save marker');
+        }
+    }
+
+    async function handlePreviewRange() {
+        const startMarker = startMarkerInput?.value?.trim() || '';
+        const endMarker = endMarkerInput?.value?.trim() || '';
+        
+        if (!startMarker || !endMarker) {
+            showStatus('error', 'Please enter both start and end markers');
+            return;
+        }
+
+        try {
+            setButtonLoading(previewRangeBtn, true);
+            showStatus('loading', 'Analyzing content between markers...');
+
+            const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+            
+            if (tab.url.startsWith('chrome://') || tab.url.startsWith('chrome-extension://')) {
+                throw new Error('Cannot access content from Chrome internal pages');
+            }
+
+            // Ensure content script is available
+            await ensureContentScript(tab.id);
+
+            // Get text content and find range
+            const response = await chrome.tabs.sendMessage(tab.id, { 
+                action: 'extractCustomRange',
+                startMarker: startMarker,
+                endMarker: endMarker
+            });
+
+            if (response && response.success) {
+                const contentLength = response.content.length;
+                const previewText = response.content.substring(0, 200) + (contentLength > 200 ? '...' : '');
+                
+                // Show character count
+                if (characterCountValue) {
+                    characterCountValue.textContent = contentLength.toLocaleString();
+                }
+                
+                if (contentPreview) {
+                    contentPreview.textContent = previewText;
+                }
+                
+                if (characterCount) {
+                    characterCount.style.display = 'block';
+                }
+                
+                // Enable extract buttons
+                if (extractRangeBtn) {
+                    extractRangeBtn.disabled = false;
+                }
+                
+                if (geminiRangeBtn) {
+                    geminiRangeBtn.disabled = false;
+                }
+                
+                showStatus('success', `Found ${contentLength.toLocaleString()} characters between markers`);
+            } else {
+                throw new Error(response?.error || 'Failed to find content between markers');
+            }
+
+        } catch (error) {
+            console.error('Preview range failed:', error);
+            showStatus('error', `Error: ${error.message}`);
+            
+            // Hide character count on error
+            if (characterCount) {
+                characterCount.style.display = 'none';
+            }
+        } finally {
+            setButtonLoading(previewRangeBtn, false);
+        }
+    }
+
+    async function handleExtractRange() {
+        const startMarker = startMarkerInput?.value?.trim() || '';
+        const endMarker = endMarkerInput?.value?.trim() || '';
+        
+        if (!startMarker || !endMarker) {
+            showStatus('error', 'Please enter both start and end markers');
+            return;
+        }
+
+        try {
+            setButtonLoading(extractRangeBtn, true);
+            showStatus('loading', 'Extracting content between markers...');
+
+            const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+            
+            if (tab.url.startsWith('chrome://') || tab.url.startsWith('chrome-extension://')) {
+                throw new Error('Cannot access content from Chrome internal pages');
+            }
+
+            // Ensure content script is available
+            await ensureContentScript(tab.id);
+
+            // Get content between markers
+            const response = await chrome.tabs.sendMessage(tab.id, { 
+                action: 'extractCustomRange',
+                startMarker: startMarker,
+                endMarker: endMarker
+            });
+
+            if (response && response.success) {
+                currentCustomRangeContent = response.content;
+                
+                // Show results
+                if (customRangeContent) {
+                    customRangeContent.textContent = currentCustomRangeContent;
+                }
+                
+                if (resultsLength) {
+                    resultsLength.textContent = `${currentCustomRangeContent.length.toLocaleString()} characters`;
+                }
+                
+                if (customRangeResults) {
+                    customRangeResults.style.display = 'block';
+                }
+                
+                showStatus('success', `Extracted ${currentCustomRangeContent.length.toLocaleString()} characters`);
+            } else {
+                throw new Error(response?.error || 'Failed to extract content between markers');
+            }
+
+        } catch (error) {
+            console.error('Extract range failed:', error);
+            showStatus('error', `Error: ${error.message}`);
+        } finally {
+            setButtonLoading(extractRangeBtn, false);
+        }
+    }
+
+    async function handleGeminiRange() {
+        if (!geminiClient || !geminiClient.isConfigured()) {
+            showStatus('error', 'Gemini API key not configured. Please add your API key in settings.');
+            return;
+        }
+
+        const startMarker = startMarkerInput?.value?.trim() || '';
+        const endMarker = endMarkerInput?.value?.trim() || '';
+        
+        if (!startMarker || !endMarker) {
+            showStatus('error', 'Please enter both start and end markers');
+            return;
+        }
+
+        try {
+            setButtonLoading(geminiRangeBtn, true);
+            showStatus('loading', 'Analyzing content between markers...');
+
+            const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+            
+            if (tab.url.startsWith('chrome://') || tab.url.startsWith('chrome-extension://')) {
+                throw new Error('Cannot access content from Chrome internal pages');
+            }
+
+            // Ensure content script is available
+            await ensureContentScript(tab.id);
+
+            // Step 1: Get content between markers (like preview step)
+            const response = await chrome.tabs.sendMessage(tab.id, { 
+                action: 'extractCustomRange',
+                startMarker: startMarker,
+                endMarker: endMarker
+            });
+
+            if (!response || !response.success) {
+                throw new Error(response?.error || 'Failed to extract content between markers');
+            }
+
+            const contentLength = response.content.length;
+            
+            // Step 2: Update character count display (like preview step)
+            if (characterCountValue) {
+                characterCountValue.textContent = contentLength.toLocaleString();
+            }
+            
+            if (contentPreview) {
+                const previewText = response.content.substring(0, 200) + (contentLength > 200 ? '...' : '');
+                contentPreview.textContent = previewText;
+            }
+            
+            if (characterCount) {
+                characterCount.style.display = 'block';
+            }
+            
+            // Enable other buttons now that we have valid content
+            if (extractRangeBtn) {
+                extractRangeBtn.disabled = false;
+            }
+            
+            showStatus('loading', `Found ${contentLength.toLocaleString()} characters. Processing with Gemini...`);
+
+            // Step 3: Process with Gemini (the expensive step)
+            const extractedContent = await geminiClient.extractContentFromHTML(response.content);
+            currentCustomRangeContent = extractedContent;
+            
+            // Step 4: Show results
+            if (customRangeContent) {
+                customRangeContent.textContent = currentCustomRangeContent;
+            }
+            
+            if (resultsLength) {
+                resultsLength.textContent = `${currentCustomRangeContent.length.toLocaleString()} characters (Gemini processed)`;
+            }
+            
+            if (customRangeResults) {
+                customRangeResults.style.display = 'block';
+            }
+            
+            showStatus('success', `Extracted and processed ${currentCustomRangeContent.length.toLocaleString()} characters with Gemini`);
+
+        } catch (error) {
+            console.error('Gemini range extraction failed:', error);
+            showStatus('error', `Error: ${error.message}`);
+            
+            // Hide character count on error
+            if (characterCount) {
+                characterCount.style.display = 'none';
+            }
+        } finally {
+            setButtonLoading(geminiRangeBtn, false);
+        }
+    }
+
+    async function handleSaveMarkers() {
+        const startMarker = startMarkerInput?.value?.trim() || '';
+        const endMarker = endMarkerInput?.value?.trim() || '';
+        
+        if (!startMarker || !endMarker) {
+            showStatus('error', 'Please enter both start and end markers before saving');
+            return;
+        }
+
+        await saveCustomRangeMarkers(currentDomain, startMarker, endMarker);
+    }
+
+    function handleClearMarkers() {
+        if (startMarkerInput) {
+            startMarkerInput.value = '';
+        }
+        
+        if (endMarkerInput) {
+            endMarkerInput.value = '';
+        }
+        
+        // Hide character count and results
+        if (characterCount) {
+            characterCount.style.display = 'none';
+        }
+        
+        if (customRangeResults) {
+            customRangeResults.style.display = 'none';
+        }
+        
+        // Reset button states
+        validateMarkers();
+        
+        showStatus('success', 'Markers cleared');
+    }
+
+    async function handleCopyCustomRange() {
+        try {
+            if (currentCustomRangeContent) {
+                await navigator.clipboard.writeText(currentCustomRangeContent);
+                
+                // Show temporary feedback
+                const originalText = copyCustomRangeBtn.textContent;
+                copyCustomRangeBtn.textContent = '✅ Copied!';
+                copyCustomRangeBtn.disabled = true;
+                
+                setTimeout(() => {
+                    copyCustomRangeBtn.textContent = originalText;
+                    copyCustomRangeBtn.disabled = false;
+                }, 1500);
+                
+                showStatus('success', 'Content copied to clipboard');
+            }
+        } catch (error) {
+            console.error('Failed to copy custom range content:', error);
+            showStatus('error', 'Failed to copy content');
+        }
+    }
+
+    function handleExpandCustomRange() {
+        if (currentCustomRangeContent) {
+            openSingleContentInNewTab('Custom Range Content', currentCustomRangeContent);
+        } else {
+            showStatus('error', 'No custom range content available');
+        }
+    }
 }); 

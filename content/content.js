@@ -71,6 +71,22 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         
         return true;
     }
+    
+    if (request.action === 'extractCustomRange') {
+        handleCustomRangeExtraction(request.startMarker, request.endMarker)
+            .then(result => sendResponse(result))
+            .catch(error => sendResponse({ success: false, error: error.message }));
+        
+        return true;
+    }
+    
+    if (request.action === 'testHtmlMarker') {
+        handleTestHtmlMarker(request.marker, request.type)
+            .then(result => sendResponse(result))
+            .catch(error => sendResponse({ success: false, error: error.message }));
+        
+        return true;
+    }
 });
 
 async function handleHTMLExtraction(url) {
@@ -646,4 +662,123 @@ function cleanupElement(element) {
             }
         }
     });
+}
+
+async function handleTestHtmlMarker(marker, type) {
+    try {
+        // Get the HTML content of the entire page
+        const pageHtml = document.documentElement.outerHTML;
+        
+        if (!pageHtml) {
+            throw new Error('No HTML content found on the page');
+        }
+        
+        // Find all occurrences of the marker in the HTML
+        const positions = [];
+        let searchPos = 0;
+        
+        while (true) {
+            const pos = pageHtml.indexOf(marker, searchPos);
+            if (pos === -1) break;
+            positions.push(pos);
+            searchPos = pos + 1;
+        }
+        
+        if (positions.length === 0) {
+            return {
+                success: false,
+                error: `${type === 'start' ? 'Start' : 'End'} marker not found in HTML: "${marker.substring(0, 50)}${marker.length > 50 ? '...' : ''}"`
+            };
+        }
+        
+        console.log(`HTML marker test successful: ${positions.length} matches found`);
+        
+        return {
+            success: true,
+            count: positions.length,
+            positions: positions,
+            marker: marker,
+            type: type
+        };
+        
+    } catch (error) {
+        console.error('HTML marker test failed:', error);
+        return {
+            success: false,
+            error: error.message
+        };
+    }
+}
+
+async function handleCustomRangeExtraction(startMarker, endMarker) {
+    try {
+        // Get the HTML content of the entire page
+        const pageHtml = document.documentElement.outerHTML;
+        
+        if (!pageHtml) {
+            throw new Error('No HTML content found on the page');
+        }
+        
+        // Find start marker position in HTML
+        const startPos = pageHtml.indexOf(startMarker);
+        if (startPos === -1) {
+            throw new Error(`Start marker not found in HTML: "${startMarker.substring(0, 50)}${startMarker.length > 50 ? '...' : ''}"`);
+        }
+        
+        // Find end marker position after start position in HTML
+        const endPos = pageHtml.indexOf(endMarker, startPos + startMarker.length);
+        if (endPos === -1) {
+            throw new Error(`End marker not found after start marker in HTML: "${endMarker.substring(0, 50)}${endMarker.length > 50 ? '...' : ''}"`);
+        }
+        
+        // Extract HTML content between markers (including the start marker, excluding the end marker)
+        const extractedHtml = pageHtml.substring(startPos, endPos + endMarker.length);
+        
+        if (!extractedHtml) {
+            throw new Error('No HTML content found between the specified markers');
+        }
+        
+        // Clean up the extracted HTML by creating a minimal document structure
+        const cleanedHtml = createMinimalHtmlDocument(extractedHtml, startMarker, endMarker);
+        
+        console.log(`Custom range HTML extraction successful: ${cleanedHtml.length} characters`);
+        
+        return {
+            success: true,
+            content: cleanedHtml,
+            size: cleanedHtml.length,
+            startPosition: startPos,
+            endPosition: endPos
+        };
+        
+    } catch (error) {
+        console.error('Custom range HTML extraction failed:', error);
+        return {
+            success: false,
+            error: error.message
+        };
+    }
+}
+
+function createMinimalHtmlDocument(extractedHtml, startMarker, endMarker) {
+    // Create a minimal HTML document with the extracted content
+    const title = document.title || 'Custom Range Content';
+    
+    // Get essential meta tags from the original document
+    const metaDescription = document.querySelector('meta[name="description"]')?.outerHTML || '';
+    const metaKeywords = document.querySelector('meta[name="keywords"]')?.outerHTML || '';
+    
+    return `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${title}</title>
+    ${metaDescription}
+    ${metaKeywords}
+</head>
+<body>
+${extractedHtml}
+</body>
+</html>`;
 } 

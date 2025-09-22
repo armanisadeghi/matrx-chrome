@@ -46,6 +46,39 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         });
         return true; // Keep the message channel open
     }
+    
+    if (request.action === 'copyToClipboard') {
+        // Handle copy request from blob URL
+        chrome.storage.local.get([request.contentId], async (result) => {
+            const contentData = result[request.contentId];
+            if (!contentData) {
+                sendResponse({ success: false, error: 'Content not found' });
+                return;
+            }
+            
+            const contentToCopy = request.isFormattedView ? contentData.formattedText : contentData.textContent;
+            
+            if (!contentToCopy || contentToCopy.length === 0) {
+                sendResponse({ success: false, error: 'No content available' });
+                return;
+            }
+            
+            try {
+                // Use the background script's clipboard access
+                await navigator.clipboard.writeText(contentToCopy);
+                sendResponse({ success: true });
+                
+                // Clean up old content after successful copy
+                setTimeout(() => {
+                    chrome.storage.local.remove([request.contentId]);
+                }, 5000);
+            } catch (error) {
+                console.error('Copy failed:', error);
+                sendResponse({ success: false, error: error.message });
+            }
+        });
+        return true; // Keep the message channel open for async response
+    }
 });
 
 // Optional: Add context menu for quick access

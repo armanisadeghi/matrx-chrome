@@ -47,77 +47,113 @@
         </div>
     </div>
 
-    <!-- Content data will be stored in JavaScript variables for reliable copying -->
+    <!-- Content is embedded directly in the page for direct clipboard access -->
     
         <script>
-            // Store content in JavaScript variables for reliable access
-            const CONTENT_DATA = {
-                textContent: decodeURIComponent(`{{textContentEncoded}}`),
-                formattedText: decodeURIComponent(`{{formattedTextEncoded}}`)
-            };
+            // Store content directly in the page for direct clipboard access
+            const TEXT_CONTENT = `{{textContentEncoded}}`;
+            const FORMATTED_TEXT = `{{formattedTextEncoded}}`;
             
-            console.log('Matrx Dual View loaded. Hash:', window.location.hash);
-            console.log('Content data loaded:', {
-                textLength: CONTENT_DATA.textContent.length,
-                formattedLength: CONTENT_DATA.formattedText.length
-            });
+            // Visual debugging element (since console doesn't work in blob URLs)
+            let debugDiv = null;
             
-            // Enhanced copy functionality with better reliability and feedback
+            function showDebug(message) {
+                if (!debugDiv) {
+                    debugDiv = document.createElement('div');
+                    debugDiv.style.cssText = `
+                        position: fixed;
+                        top: 10px;
+                        right: 10px;
+                        background: rgba(0,0,0,0.9);
+                        color: white;
+                        padding: 12px;
+                        border-radius: 8px;
+                        font-size: 11px;
+                        z-index: 10000;
+                        max-width: 300px;
+                        word-wrap: break-word;
+                        font-family: monospace;
+                        border: 1px solid #333;
+                        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+                    `;
+                    document.body.appendChild(debugDiv);
+                }
+                const timestamp = new Date().toLocaleTimeString();
+                debugDiv.innerHTML = `[${timestamp}] ${message}<br>` + (debugDiv.innerHTML || '');
+                
+                // Auto-hide debug after 8 seconds
+                setTimeout(() => {
+                    if (debugDiv && debugDiv.parentNode) {
+                        debugDiv.style.opacity = '0.5';
+                    }
+                }, 8000);
+            }
+            
+            showDebug(`Dual View loaded - Text: ${TEXT_CONTENT.length} chars, Formatted: ${FORMATTED_TEXT.length} chars`);
+            
+            // Direct clipboard access (should work with clipboardWrite permission)
             function setupCopyButton() {
                 const copyBtn = document.getElementById('copyBtn');
-                if (!copyBtn) return;
+                if (!copyBtn) {
+                    showDebug('ERROR: Copy button not found!');
+                    return;
+                }
+                
+                showDebug('Copy button found and event listener attached');
                 
                 copyBtn.addEventListener('click', async function(e) {
                     e.preventDefault();
-                    console.log('Copy button clicked. Current view:', window.location.hash);
-                    console.log('Available content:', {
-                        textContent: CONTENT_DATA.textContent ? CONTENT_DATA.textContent.substring(0, 100) + '...' : 'EMPTY',
-                        formattedText: CONTENT_DATA.formattedText ? CONTENT_DATA.formattedText.substring(0, 100) + '...' : 'EMPTY'
-                    });
+                    e.stopPropagation();
                     
-                    // Determine which content to copy
                     const isFormattedView = window.location.hash === '#formattedContent';
-                    const contentToCopy = isFormattedView ? CONTENT_DATA.formattedText : CONTENT_DATA.textContent;
+                    const contentToCopy = isFormattedView ? 
+                        decodeURIComponent(FORMATTED_TEXT) : 
+                        decodeURIComponent(TEXT_CONTENT);
                     
-                    console.log('Content to copy length:', contentToCopy ? contentToCopy.length : 0);
+                    showDebug(`Copy clicked - View: ${isFormattedView ? 'formatted' : 'text'}, Length: ${contentToCopy.length}`);
                     
                     if (!contentToCopy || contentToCopy.length === 0) {
-                        console.error('No content available to copy');
+                        showDebug('ERROR: No content available');
                         showCopyFeedback(copyBtn, '❌ No Content', 'error');
                         return;
                     }
                     
                     try {
-                        // Use modern clipboard API as primary method
-                        if (navigator.clipboard && navigator.clipboard.writeText) {
-                            await navigator.clipboard.writeText(contentToCopy);
-                            showCopyFeedback(copyBtn, '✅ Copied!', 'success');
-                            console.log('Content copied via Clipboard API');
-                        } else {
-                            // Fallback: create temporary textarea
-                            const tempTextarea = document.createElement('textarea');
-                            tempTextarea.value = contentToCopy;
-                            tempTextarea.style.position = 'fixed';
-                            tempTextarea.style.left = '-9999px';
-                            tempTextarea.style.top = '-9999px';
-                            document.body.appendChild(tempTextarea);
-                            
-                            tempTextarea.select();
-                            tempTextarea.setSelectionRange(0, 99999);
-                            
-                            const successful = document.execCommand('copy');
-                            document.body.removeChild(tempTextarea);
-                            
-                            if (successful) {
-                                showCopyFeedback(copyBtn, '✅ Copied!', 'success');
-                                console.log('Content copied via execCommand');
-                            } else {
-                                throw new Error('execCommand failed');
-                            }
-                        }
+                        showDebug('Attempting direct clipboard access...');
+                        
+                        // Direct clipboard access - should work with clipboardWrite permission
+                        await navigator.clipboard.writeText(contentToCopy);
+                        showCopyFeedback(copyBtn, '✅ Copied!', 'success');
+                        showDebug('SUCCESS: Content copied via navigator.clipboard');
+                        
                     } catch (error) {
-                        console.error('Copy failed:', error);
-                        showCopyFeedback(copyBtn, '❌ Failed', 'error');
+                        showDebug(`Clipboard API failed: ${error.message}, trying fallback...`);
+                        
+                        try {
+                            // Fallback to execCommand method
+                            const textArea = document.createElement('textarea');
+                            textArea.value = contentToCopy;
+                            textArea.style.position = 'fixed';
+                            textArea.style.left = '-9999px';
+                            textArea.style.top = '-9999px';
+                            document.body.appendChild(textArea);
+                            textArea.focus();
+                            textArea.select();
+                            
+                            const success = document.execCommand('copy');
+                            document.body.removeChild(textArea);
+                            
+                            if (success) {
+                                showCopyFeedback(copyBtn, '✅ Copied!', 'success');
+                                showDebug('SUCCESS: Content copied via execCommand fallback');
+                            } else {
+                                showCopyFeedback(copyBtn, '❌ Failed', 'error');
+                                showDebug('ERROR: execCommand fallback failed');
+                            }
+                        } catch (fallbackError) {
+                            showCopyFeedback(copyBtn, '❌ Error', 'error');
+                            showDebug(`FALLBACK ERROR: ${fallbackError.message}`);
+                        }
                     }
                 });
             }
@@ -154,7 +190,14 @@
             
             // Debug hash changes
             window.addEventListener('hashchange', function() {
-                console.log('View switched to:', window.location.hash);
+                showDebug('View switched to: ' + window.location.hash);
+            });
+            
+            // Add click handler to debug div to hide it
+            document.addEventListener('click', function(e) {
+                if (e.target === debugDiv) {
+                    debugDiv.style.display = 'none';
+                }
             });
         </script>
 </body>

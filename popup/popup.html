@@ -42,6 +42,12 @@
                 </svg>
                 <span class="tab-text">Gemini</span>
             </button>
+            <button class="tab-btn" data-tab="custom-range">
+                <svg class="tab-icon" viewBox="0 0 24 24">
+                    <path d="M9 11H7v6h2v-6zm4 0h-2v6h2v-6zm4 0h-2v6h2v-6zm2.5-5H19V4h-1V2h-2v2H8V2H6v2H5v2h-.5C3.67 6 3 6.67 3 7.5S3.67 9 4.5 9H5v10c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V9h.5c.83 0 1.5-.67 1.5-1.5S19.33 6 18.5 6z"/>
+                </svg>
+                <span class="tab-text">Custom</span>
+            </button>
             <button class="tab-btn" data-tab="header-structure">
                 <svg class="tab-icon" viewBox="0 0 24 24">
                     <path d="M3 3v18h18V3H3zm16 16H5V5h14v14zm-2-2H7v-2h10v2zm0-4H7v-2h10v2zm0-4H7V7h10v2z"/>
@@ -197,6 +203,104 @@
                     <div class="gemini-response-actions">
                         <button id="copyGeminiBtn" class="gemini-action-btn">📋 Copy Clean Text</button>
                         <button id="expandGeminiBtn" class="gemini-action-btn">📖 View Full Text</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Custom Range Tab -->
+            <div id="custom-range" class="tab-pane">
+                <div class="tab-header">
+                    <h3>🎯 Custom Range Extraction</h3>
+                    <p>Extract content between specific text markers with optional Gemini processing</p>
+                </div>
+                
+                <!-- Domain Info -->
+                <div class="domain-info">
+                    <div class="domain-label">Domain:</div>
+                    <div class="domain-value" id="customRangeDomain">Loading...</div>
+                </div>
+                
+                <!-- Marker Input Fields -->
+                <div class="marker-inputs">
+                    <div class="marker-group">
+                        <label for="startMarker" class="marker-label">Start Marker (HTML to find):</label>
+                        <textarea id="startMarker" class="marker-input" placeholder="Enter HTML marker like: &lt;div class=&quot;article-content&quot;&gt; or &lt;main&gt; or &lt;!-- article start --&gt;" rows="2"></textarea>
+                        <div class="marker-actions">
+                            <button id="testStartMarkerBtn" class="marker-test-btn" disabled>
+                                <span class="btn-text">🔍 Test Start</span>
+                                <span class="btn-loader" style="display: none;">Testing...</span>
+                            </button>
+                            <button id="saveStartMarkerBtn" class="marker-save-btn" disabled>
+                                <span class="btn-text">💾 Save Start</span>
+                                <span class="btn-loader" style="display: none;">Saving...</span>
+                            </button>
+                        </div>
+                        <div id="startMarkerResult" class="marker-result" style="display: none;"></div>
+                    </div>
+                    
+                    <div class="marker-group">
+                        <label for="endMarker" class="marker-label">End Marker (HTML to find):</label>
+                        <textarea id="endMarker" class="marker-input" placeholder="Enter HTML marker like: &lt;/article&gt; or &lt;footer&gt; or &lt;!-- article end --&gt;" rows="2"></textarea>
+                        <div class="marker-actions">
+                            <button id="testEndMarkerBtn" class="marker-test-btn" disabled>
+                                <span class="btn-text">🔍 Test End</span>
+                                <span class="btn-loader" style="display: none;">Testing...</span>
+                            </button>
+                            <button id="saveEndMarkerBtn" class="marker-save-btn" disabled>
+                                <span class="btn-text">💾 Save End</span>
+                                <span class="btn-loader" style="display: none;">Saving...</span>
+                            </button>
+                        </div>
+                        <div id="endMarkerResult" class="marker-result" style="display: none;"></div>
+                    </div>
+                </div>
+                
+                <!-- Character Count Display -->
+                <div class="character-count" id="characterCount" style="display: none;">
+                    <div class="count-info">
+                        <span class="count-label">Content Length:</span>
+                        <span class="count-value" id="characterCountValue">0</span>
+                        <span class="count-unit">characters</span>
+                    </div>
+                    <div class="count-preview" id="contentPreview"></div>
+                </div>
+                
+                <!-- Action Buttons -->
+                <div class="custom-range-actions">
+                    <button id="previewRangeBtn" class="custom-range-btn preview-btn">
+                        <span class="btn-text">📊 Preview Content</span>
+                        <span class="btn-loader" style="display: none;">Analyzing...</span>
+                    </button>
+                    
+                    <button id="extractRangeBtn" class="custom-range-btn extract-btn" disabled>
+                        <span class="btn-text">📋 Extract Content</span>
+                        <span class="btn-loader" style="display: none;">Extracting...</span>
+                    </button>
+                    
+                    <button id="geminiRangeBtn" class="custom-range-btn gemini-btn" disabled>
+                        <span class="btn-text">🤖 Extract + Gemini</span>
+                        <span class="btn-loader" style="display: none;">Processing...</span>
+                    </button>
+                </div>
+                
+                <!-- Save/Load Markers -->
+                <div class="marker-management">
+                    <button id="saveMarkersBtn" class="marker-mgmt-btn">💾 Save for Domain</button>
+                    <button id="clearMarkersBtn" class="marker-mgmt-btn">🗑️ Clear Markers</button>
+                </div>
+                
+                <!-- Custom Range Results -->
+                <div class="custom-range-results" id="customRangeResults" style="display: none;">
+                    <div class="results-header">
+                        <h4>📄 Extracted Content</h4>
+                        <div class="results-info">
+                            <span class="results-length" id="resultsLength">0 characters</span>
+                        </div>
+                    </div>
+                    <div class="results-content" id="customRangeContent"></div>
+                    <div class="results-actions">
+                        <button id="copyCustomRangeBtn" class="results-action-btn">📋 Copy Content</button>
+                        <button id="expandCustomRangeBtn" class="results-action-btn">📖 View Full Content</button>
                     </div>
                 </div>
             </div>
