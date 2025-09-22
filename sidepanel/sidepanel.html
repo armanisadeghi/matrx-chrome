@@ -48,6 +48,12 @@
                 </svg>
                 <span class="tab-text">Custom</span>
             </button>
+            <button class="tab-btn" data-tab="markdown-viewer">
+                <svg class="tab-icon" viewBox="0 0 24 24">
+                    <path d="M22.46,6C21.69,6.18 20.8,6.27 19.83,6.27C21.1,5.72 22.06,4.56 22.47,3.15C21.56,3.65 20.54,4.01 19.44,4.21C18.63,3.42 17.5,3 16.25,3C13.93,3 12.05,4.87 12.05,7.2C12.05,7.5 12.08,7.77 12.15,8.03C8.86,7.85 5.97,6.18 4.05,3.62C3.73,4.2 3.54,4.87 3.54,5.6C3.54,6.95 4.17,8.17 5.1,8.91C4.52,8.89 3.99,8.72 3.54,8.45V8.5C3.54,10.53 4.92,12.22 6.81,12.59C6.5,12.68 6.18,12.73 5.84,12.73C5.6,12.73 5.37,12.7 5.15,12.66C5.61,14.32 7.08,15.51 8.86,15.54C7.5,16.59 5.78,17.24 3.92,17.24C3.6,17.24 3.29,17.22 3,17.18C4.8,18.29 6.93,18.92 9.21,18.92C16.25,18.92 20.12,12.8 20.12,7.64C20.12,7.47 20.12,7.31 20.11,7.15C21.01,6.54 21.81,5.78 22.46,6Z"/>
+                </svg>
+                <span class="tab-text">Markdown</span>
+            </button>
             <button class="tab-btn" data-tab="header-structure">
                 <svg class="tab-icon" viewBox="0 0 24 24">
                     <path d="M3 3v18h18V3H3zm16 16H5V5h14v14zm-2-2H7v-2h10v2zm0-4H7v-2h10v2zm0-4H7V7h10v2z"/>
@@ -146,6 +152,7 @@
                     <div class="ai-response-content" id="aiResponseContent"></div>
                     <div class="ai-response-actions">
                         <button id="copyAiBtn" class="ai-action-btn">📋 Copy Current</button>
+                        <button id="viewMarkdownBtn" class="ai-action-btn ai-markdown-btn">📝 View Markdown</button>
                         <div class="expand-buttons">
                             <button id="expandAiContentBtn" class="ai-expand-btn">📖 AI Content</button>
                             <button id="expandResearchBtn" class="ai-expand-btn">📖 Research</button>
@@ -202,6 +209,7 @@
                     <div class="gemini-response-content" id="geminiResponseContent"></div>
                     <div class="gemini-response-actions">
                         <button id="copyGeminiBtn" class="gemini-action-btn">📋 Copy Clean Text</button>
+                        <button id="viewGeminiMarkdownBtn" class="gemini-action-btn gemini-markdown-btn">📝 View as Markdown</button>
                         <button id="expandGeminiBtn" class="gemini-action-btn">📖 View Full Text</button>
                     </div>
                 </div>
@@ -301,6 +309,64 @@
                     <div class="results-actions">
                         <button id="copyCustomRangeBtn" class="results-action-btn">📋 Copy Content</button>
                         <button id="expandCustomRangeBtn" class="results-action-btn">📖 View Full Content</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Markdown Viewer Tab -->
+            <div id="markdown-viewer" class="tab-pane">
+                <div class="tab-header">
+                    <h3>📝 Markdown Viewer</h3>
+                    <p>View and interact with AI-generated markdown content</p>
+                </div>
+                
+                <!-- Markdown Content Status -->
+                <div class="markdown-status" id="markdownStatus">
+                    <div class="status-icon">📝</div>
+                    <div class="status-text">
+                        <h4>No Markdown Content</h4>
+                        <p>Generate markdown content using AI Processing or Gemini extraction, then click "View Markdown" to display it here.</p>
+                    </div>
+                </div>
+                
+                <!-- Markdown Dual View Container -->
+                <div class="markdown-viewer-container" id="markdownViewerContainer" style="display: none;">
+                    <div class="markdown-header">
+                        <h4 id="markdownTitle">Markdown Content</h4>
+                        <div class="markdown-header-actions">
+                            <button class="markdown-view-toggle active" data-view="formatted" id="formattedViewBtn">
+                                <svg class="btn-icon" viewBox="0 0 24 24">
+                                    <path d="M12,15.5A3.5,3.5 0 0,1 8.5,12A3.5,3.5 0 0,1 12,8.5A3.5,3.5 0 0,1 15.5,12A3.5,3.5 0 0,1 12,15.5M19.43,12.97C19.47,12.65 19.5,12.33 19.5,12C19.5,11.67 19.47,11.34 19.43,11L21.54,9.37C21.73,9.22 21.78,8.95 21.66,8.73L19.66,5.27C19.54,5.05 19.27,4.96 19.05,5.05L16.56,6.05C16.04,5.66 15.5,5.32 14.87,5.07L14.5,2.42C14.46,2.18 14.25,2 14,2H10C9.75,2 9.54,2.18 9.5,2.42L9.13,5.07C8.5,5.32 7.96,5.66 7.44,6.05L4.95,5.05C4.73,4.96 4.46,5.05 4.34,5.27L2.34,8.73C2.22,8.95 2.27,9.22 2.46,9.37L4.57,11C4.53,11.34 4.5,11.67 4.5,12C4.5,12.33 4.53,12.65 4.57,12.97L2.46,14.63C2.27,14.78 2.21,15.05 2.34,15.27L4.34,18.73C4.46,18.95 4.73,19.03 4.95,18.95L7.44,17.94C7.96,18.34 8.5,18.68 9.13,18.93L9.5,21.58C9.54,21.82 9.75,22 10,22H14C14.25,22 14.46,21.82 14.5,21.58L14.87,18.93C15.5,18.68 16.04,18.34 16.56,17.94L19.05,18.95C19.27,19.03 19.54,18.95 19.66,18.73L21.66,15.27C21.78,15.05 21.73,14.78 21.54,14.63L19.43,12.97Z"/>
+                                </svg>
+                                Formatted
+                            </button>
+                            <button class="markdown-view-toggle" data-view="raw" id="rawViewBtn">
+                                <svg class="btn-icon" viewBox="0 0 24 24">
+                                    <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                                </svg>
+                                Raw
+                            </button>
+                            <button class="markdown-copy-btn" id="markdownCopyBtn">
+                                <svg class="btn-icon" viewBox="0 0 24 24">
+                                    <path d="M19,21H8V7H19M19,5H8A2,2 0 0,0 6,7V21A2,2 0 0,0 8,23H19A2,2 0 0,0 21,21V7A2,2 0 0,0 19,5M16,1H4A2,2 0 0,0 2,3V17H4V3H16V1Z"/>
+                                </svg>
+                                Copy
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Formatted View -->
+                    <div class="markdown-content-view formatted-view active" id="formattedView">
+                        <div class="markdown-rendered-content" id="markdownRenderedContent">
+                            <!-- Formatted markdown content will be rendered here -->
+                        </div>
+                    </div>
+                    
+                    <!-- Raw View -->
+                    <div class="markdown-content-view raw-view" id="rawView">
+                        <div class="markdown-raw-content" id="markdownRawContent">
+                            <!-- Raw markdown content will be displayed here -->
+                        </div>
                     </div>
                 </div>
             </div>

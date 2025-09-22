@@ -33,6 +33,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     const expandJsonBtn = document.getElementById('expandJsonBtn');
     const expandFullResponseBtn = document.getElementById('expandFullResponseBtn');
     const copyAiBtn = document.getElementById('copyAiBtn');
+    const viewMarkdownBtn = document.getElementById('viewMarkdownBtn');
+    const viewGeminiMarkdownBtn = document.getElementById('viewGeminiMarkdownBtn');
     
     // Custom Range elements
     const customRangeDomain = document.getElementById('customRangeDomain');
@@ -58,6 +60,18 @@ document.addEventListener('DOMContentLoaded', async () => {
     const copyCustomRangeBtn = document.getElementById('copyCustomRangeBtn');
     const expandCustomRangeBtn = document.getElementById('expandCustomRangeBtn');
     
+    // Markdown Viewer elements
+    const markdownStatus = document.getElementById('markdownStatus');
+    const markdownViewerContainer = document.getElementById('markdownViewerContainer');
+    const markdownTitle = document.getElementById('markdownTitle');
+    const formattedViewBtn = document.getElementById('formattedViewBtn');
+    const rawViewBtn = document.getElementById('rawViewBtn');
+    const markdownCopyBtn = document.getElementById('markdownCopyBtn');
+    const formattedView = document.getElementById('formattedView');
+    const rawView = document.getElementById('rawView');
+    const markdownRenderedContent = document.getElementById('markdownRenderedContent');
+    const markdownRawContent = document.getElementById('markdownRawContent');
+    
     // Store all AI data formats
     let currentAiData = {
         ai_content: '',
@@ -74,6 +88,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     let savedGeminiData = null;
     let currentCustomRangeContent = '';
     let currentDomain = '';
+    let currentMarkdownContent = '';
+    let currentMarkdownView = 'formatted';
 
     // Get current tab URL and load saved data
     try {
@@ -107,6 +123,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Initialize Gemini client and template loader
         await initializeGeminiClient();
         templateLoader = new TemplateLoader();
+        
+        // Load saved markdown content for the markdown tab
+        loadSavedMarkdownContent();
         
         // Initialize tab system
         initializeTabSystem();
@@ -208,6 +227,16 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     });
 
+    // Handle view markdown button click for AI content
+    if (viewMarkdownBtn) {
+        viewMarkdownBtn.addEventListener('click', handleViewAiMarkdown);
+    }
+
+    // Handle view markdown button click for Gemini content
+    if (viewGeminiMarkdownBtn) {
+        viewGeminiMarkdownBtn.addEventListener('click', handleViewGeminiMarkdown);
+    }
+
     // Handle AI tab switching
     document.addEventListener('click', (e) => {
         if (e.target.classList.contains('ai-tab')) {
@@ -274,6 +303,19 @@ document.addEventListener('DOMContentLoaded', async () => {
             validateMarkers();
             autoSaveMarkers();
         });
+    }
+
+    // Markdown Viewer Event Listeners
+    if (formattedViewBtn) {
+        formattedViewBtn.addEventListener('click', () => switchMarkdownView('formatted'));
+    }
+    
+    if (rawViewBtn) {
+        rawViewBtn.addEventListener('click', () => switchMarkdownView('raw'));
+    }
+    
+    if (markdownCopyBtn) {
+        markdownCopyBtn.addEventListener('click', handleCopyMarkdown);
     }
 
     // Handle extract button click
@@ -708,9 +750,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Handle expand Gemini content button click
     expandGeminiBtn.addEventListener('click', () => {
         if (currentGeminiContent) {
-            openGeminiContentViewer(currentGeminiContent);
+            // Format Gemini content as markdown and open in markdown tab
+            const markdownContent = `# Extracted Content\n\n${currentGeminiContent}`;
+            openMarkdownViewer(markdownContent);
         } else {
-            alert('No extracted content available');
+            showStatus('error', 'No extracted content available');
         }
     });
 
@@ -789,225 +833,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     function openMarkdownViewer(markdownContent) {
-        console.log('Opening markdown viewer with content:', markdownContent.substring(0, 100) + '...');
+        console.log('Opening markdown viewer in tab:', markdownContent.substring(0, 100) + '...');
         
-        try {
-            // Create self-contained HTML with embedded markdown viewer
-            const htmlContent = `<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Matrx - Markdown Content</title>
-    <script src="https://cdn.jsdelivr.net/npm/marked@9.1.6/marked.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.5/dist/purify.min.js"></script>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { 
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            line-height: 1.6; color: #333; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-        }
-        .container { max-width: 1200px; margin: 0 auto; padding: 20px; min-height: 100vh; display: flex; flex-direction: column; }
-        .header { 
-            background: rgba(255, 255, 255, 0.1); border-radius: 16px; padding: 30px; margin-bottom: 30px;
-            text-align: center; backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-        .header h1 { color: white; font-size: 32px; font-weight: 700; margin-bottom: 10px; }
-        .subtitle { color: rgba(255, 255, 255, 0.8); font-size: 16px; margin-bottom: 25px; }
-        .header-actions { display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; }
-        .toggle-btn, .copy-btn {
-            background: rgba(255, 255, 255, 0.2); border: 1px solid rgba(255, 255, 255, 0.3);
-            border-radius: 8px; padding: 12px 20px; color: white; font-size: 14px; font-weight: 500;
-            cursor: pointer; transition: all 0.3s ease; backdrop-filter: blur(5px);
-        }
-        .toggle-btn:hover, .copy-btn:hover {
-            background: rgba(255, 255, 255, 0.3); border-color: rgba(255, 255, 255, 0.5);
-            transform: translateY(-2px);
-        }
-        .copy-btn:disabled { background: rgba(34, 197, 94, 0.3); border-color: rgba(34, 197, 94, 0.5); cursor: not-allowed; transform: none; }
-        .content-wrapper {
-            flex: 1; background: white; border-radius: 16px; overflow: hidden;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1); border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-        .rendered-content, .raw-content { padding: 40px; min-height: 500px; max-height: 80vh; overflow-y: auto; }
-        .raw-content { background: #1e293b; color: #e2e8f0; }
-        .raw-content pre { margin: 0; background: none; padding: 0; border-radius: 0; white-space: pre-wrap; word-wrap: break-word; }
+        // Set the current markdown content
+        currentMarkdownContent = markdownContent;
         
-        /* Markdown styling */
-        .rendered-content h1, .rendered-content h2, .rendered-content h3, .rendered-content h4, .rendered-content h5, .rendered-content h6 {
-            color: #1e293b; font-weight: 700; margin-top: 2em; margin-bottom: 1em; line-height: 1.3;
-        }
-        .rendered-content h1 { font-size: 2.5em; border-bottom: 3px solid #667eea; padding-bottom: 0.5em; margin-top: 0; }
-        .rendered-content h2 { font-size: 2em; border-bottom: 2px solid #e2e8f0; padding-bottom: 0.3em; }
-        .rendered-content h3 { font-size: 1.5em; color: #475569; }
-        .rendered-content h4 { font-size: 1.25em; color: #64748b; }
-        .rendered-content p { margin-bottom: 1.5em; line-height: 1.7; color: #374151; }
-        .rendered-content ul, .rendered-content ol { margin-bottom: 1.5em; padding-left: 2em; }
-        .rendered-content li { margin-bottom: 0.5em; line-height: 1.6; }
-        .rendered-content blockquote {
-            border-left: 4px solid #667eea; background: #f8fafc; margin: 1.5em 0; padding: 1em 2em;
-            font-style: italic; color: #64748b; border-radius: 0 8px 8px 0;
-        }
-        .rendered-content code {
-            background: #f1f5f9; color: #be185d; padding: 0.2em 0.4em; border-radius: 4px;
-            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace; font-size: 0.9em;
-        }
-        .rendered-content pre {
-            background: #1e293b; color: #e2e8f0; padding: 1.5em; border-radius: 8px;
-            overflow-x: auto; margin: 1.5em 0; line-height: 1.5; position: relative;
-        }
-        .rendered-content pre code { background: none; color: inherit; padding: 0; border-radius: 0; font-size: inherit; }
-        .rendered-content table {
-            width: 100%; border-collapse: collapse; margin: 1.5em 0; border-radius: 8px;
-            overflow: hidden; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-        .rendered-content th, .rendered-content td { padding: 12px 16px; text-align: left; border-bottom: 1px solid #e2e8f0; }
-        .rendered-content th { background: #667eea; color: white; font-weight: 600; }
-        .rendered-content tr:nth-child(even) { background: #f8fafc; }
-        .rendered-content a { color: #667eea; text-decoration: none; border-bottom: 1px solid transparent; transition: border-color 0.2s ease; }
-        .rendered-content a:hover { border-bottom-color: #667eea; }
-        .rendered-content img { max-width: 100%; height: auto; border-radius: 8px; margin: 1em 0; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); }
-        .rendered-content hr { border: none; height: 2px; background: linear-gradient(90deg, transparent, #e2e8f0, transparent); margin: 2em 0; }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="header">
-            <h1>📝 Matrx - Markdown Content</h1>
-            <p class="subtitle">AI-processed markdown content from your webpage</p>
-            <div class="header-actions">
-                <button id="toggleView" class="toggle-btn">🔄 Show Raw</button>
-                <button id="copyBtn" class="copy-btn">📋 Copy Content</button>
-            </div>
-        </div>
+        // Switch to the markdown viewer tab
+        switchTab('markdown-viewer');
         
-        <div class="content-wrapper">
-            <div id="renderedContent" class="rendered-content"></div>
-            <div id="rawContent" class="raw-content" style="display: none;">
-                <pre><code id="rawMarkdown"></code></pre>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        const markdownContent = ${JSON.stringify(markdownContent)};
-        let isRenderedView = true;
-        
-        // Configure marked.js
-        marked.setOptions({
-            breaks: true,
-            gfm: true,
-            headerIds: true
-        });
-        
-        function renderMarkdown() {
-            const renderedContent = document.getElementById('renderedContent');
-            const rawMarkdown = document.getElementById('rawMarkdown');
-            
-            try {
-                const htmlContent = marked.parse(markdownContent);
-                const sanitizedHtml = DOMPurify.sanitize(htmlContent);
-                renderedContent.innerHTML = sanitizedHtml;
-                rawMarkdown.textContent = markdownContent;
-                
-                // Add copy buttons to code blocks
-                addCodeBlockCopyButtons();
-            } catch (error) {
-                console.error('Error rendering markdown:', error);
-                renderedContent.innerHTML = '<div style="color: #ef4444; text-align: center; padding: 2em;">Failed to render markdown content</div>';
-            }
-        }
-        
-        function addCodeBlockCopyButtons() {
-            const codeBlocks = document.querySelectorAll('pre');
-            codeBlocks.forEach(pre => {
-                const copyBtn = document.createElement('button');
-                copyBtn.innerHTML = '📋';
-                copyBtn.style.cssText = 'position: absolute; top: 8px; right: 8px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 4px; color: white; padding: 4px 8px; cursor: pointer; font-size: 12px; opacity: 0; transition: opacity 0.2s ease;';
-                pre.appendChild(copyBtn);
-                
-                pre.addEventListener('mouseenter', () => copyBtn.style.opacity = '1');
-                pre.addEventListener('mouseleave', () => copyBtn.style.opacity = '0');
-                
-                copyBtn.addEventListener('click', async () => {
-                    const code = pre.querySelector('code').textContent;
-                    try {
-                        await navigator.clipboard.writeText(code);
-                        copyBtn.innerHTML = '✅';
-                        setTimeout(() => copyBtn.innerHTML = '📋', 1500);
-                    } catch (error) {
-                        copyBtn.innerHTML = '❌';
-                        setTimeout(() => copyBtn.innerHTML = '📋', 1500);
-                    }
-                });
-            });
-        }
-        
-        function toggleView() {
-            const renderedContent = document.getElementById('renderedContent');
-            const rawContent = document.getElementById('rawContent');
-            const toggleBtn = document.getElementById('toggleView');
-            
-            isRenderedView = !isRenderedView;
-            
-            if (isRenderedView) {
-                renderedContent.style.display = 'block';
-                rawContent.style.display = 'none';
-                toggleBtn.textContent = '🔄 Show Raw';
-            } else {
-                renderedContent.style.display = 'none';
-                rawContent.style.display = 'block';
-                toggleBtn.textContent = '🔄 Show Rendered';
-            }
-        }
-        
-        async function copyContent() {
-            const copyBtn = document.getElementById('copyBtn');
-            try {
-                const contentToCopy = isRenderedView 
-                    ? document.getElementById('renderedContent').textContent 
-                    : markdownContent;
-                    
-                await navigator.clipboard.writeText(contentToCopy);
-                
-                const originalText = copyBtn.textContent;
-                copyBtn.textContent = '✅ Copied!';
-                copyBtn.disabled = true;
-                
-                setTimeout(() => {
-                    copyBtn.textContent = originalText;
-                    copyBtn.disabled = false;
-                }, 2000);
-                
-            } catch (error) {
-                console.error('Failed to copy:', error);
-                copyBtn.textContent = '❌ Failed';
-                setTimeout(() => copyBtn.textContent = '📋 Copy Content', 2000);
-            }
-        }
-        
-        // Event listeners
-        document.getElementById('toggleView').addEventListener('click', toggleView);
-        document.getElementById('copyBtn').addEventListener('click', copyContent);
-        
-        // Initialize
-        renderMarkdown();
-    </script>
-</body>
-</html>`;
-            
-            // Create blob URL
-            const blob = new Blob([htmlContent], { type: 'text/html' });
-            const url = URL.createObjectURL(blob);
-            
-            console.log('Opening markdown viewer tab');
-            chrome.tabs.create({ url: url });
-            
-        } catch (error) {
-            console.error('Error opening markdown viewer:', error);
-            alert('Error opening markdown viewer: ' + error.message);
-        }
+        // Load the markdown content
+        loadMarkdownContent(markdownContent);
     }
 
     async function openSingleContentInNewTab(contentType, content) {
@@ -1343,6 +1178,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         const targetPane = document.getElementById(tabId);
         if (targetPane) {
             targetPane.classList.add('active');
+            
+            // Special handling for markdown-viewer tab
+            if (tabId === 'markdown-viewer') {
+                loadSavedMarkdownContent();
+            }
             
             // Reset min-height after animation
             setTimeout(() => {
@@ -1978,6 +1818,12 @@ document.addEventListener('DOMContentLoaded', async () => {
             const extractedContent = await geminiClient.extractContentFromHTML(response.content);
             currentCustomRangeContent = extractedContent;
             
+            // IMPORTANT: Also set currentGeminiContent so it integrates with the main Gemini system
+            currentGeminiContent = extractedContent;
+            
+            // Save to storage like regular Gemini extraction
+            await saveGeminiData(currentUrl, extractedContent, 'custom-range');
+            
             // Step 4: Show results
             if (customRangeContent) {
                 customRangeContent.textContent = currentCustomRangeContent;
@@ -2067,9 +1913,188 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     function handleExpandCustomRange() {
         if (currentCustomRangeContent) {
-            openSingleContentInNewTab('Custom Range Content', currentCustomRangeContent);
+            // Format custom range content as markdown and open in markdown tab
+            const markdownContent = `# Custom Range Extracted Content\n\n${currentCustomRangeContent}`;
+            openMarkdownViewer(markdownContent);
         } else {
             showStatus('error', 'No custom range content available');
         }
     }
+
+    // Markdown Viewer Functions
+    function loadMarkdownContent(markdownContent) {
+        if (!markdownContent || !markdownContent.trim()) {
+            showMarkdownStatus();
+            return;
+        }
+        
+        currentMarkdownContent = markdownContent;
+        
+        // Hide status and show viewer
+        if (markdownStatus) {
+            markdownStatus.style.display = 'none';
+        }
+        
+        if (markdownViewerContainer) {
+            markdownViewerContainer.style.display = 'block';
+        }
+        
+        // Update title
+        if (markdownTitle) {
+            markdownTitle.textContent = 'Markdown Content';
+        }
+        
+        // Load content into both views
+        loadFormattedMarkdown(markdownContent);
+        loadRawMarkdown(markdownContent);
+        
+        // Set the current view
+        switchMarkdownView(currentMarkdownView);
+    }
+    
+    function loadFormattedMarkdown(markdownContent) {
+        if (!markdownRenderedContent) return;
+        
+        try {
+            // Simple markdown to HTML conversion (basic)
+            let html = markdownContent
+                .replace(/^# (.*$)/gim, '<h1>$1</h1>')
+                .replace(/^## (.*$)/gim, '<h2>$1</h2>')
+                .replace(/^### (.*$)/gim, '<h3>$1</h3>')
+                .replace(/^#### (.*$)/gim, '<h4>$1</h4>')
+                .replace(/^##### (.*$)/gim, '<h5>$1</h5>')
+                .replace(/^###### (.*$)/gim, '<h6>$1</h6>')
+                .replace(/\*\*(.*?)\*\*/gim, '<strong>$1</strong>')
+                .replace(/\*(.*?)\*/gim, '<em>$1</em>')
+                .replace(/`(.*?)`/gim, '<code>$1</code>')
+                .replace(/^\* (.*$)/gim, '<li>$1</li>')
+                .replace(/^\d+\. (.*$)/gim, '<li>$1</li>')
+                .replace(/\[([^\]]+)\]\(([^)]+)\)/gim, '<a href="$2">$1</a>')
+                .replace(/\n/gim, '<br>');
+            
+            // Wrap list items
+            html = html.replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>');
+            
+            markdownRenderedContent.innerHTML = html;
+        } catch (error) {
+            console.error('Error rendering markdown:', error);
+            markdownRenderedContent.innerHTML = '<p style="color: #f87171;">Error rendering markdown content</p>';
+        }
+    }
+    
+    function loadRawMarkdown(markdownContent) {
+        if (!markdownRawContent) return;
+        
+        markdownRawContent.textContent = markdownContent;
+    }
+    
+    function switchMarkdownView(view) {
+        currentMarkdownView = view;
+        
+        // Update button states
+        if (formattedViewBtn && rawViewBtn) {
+            formattedViewBtn.classList.toggle('active', view === 'formatted');
+            rawViewBtn.classList.toggle('active', view === 'raw');
+        }
+        
+        // Update view visibility
+        if (formattedView && rawView) {
+            formattedView.classList.toggle('active', view === 'formatted');
+            rawView.classList.toggle('active', view === 'raw');
+        }
+    }
+    
+    function showMarkdownStatus() {
+        if (markdownStatus) {
+            markdownStatus.style.display = 'block';
+        }
+        
+        if (markdownViewerContainer) {
+            markdownViewerContainer.style.display = 'none';
+        }
+    }
+    
+    async function handleCopyMarkdown() {
+        if (!currentMarkdownContent) {
+            showStatus('error', 'No markdown content to copy');
+            return;
+        }
+        
+        try {
+            const contentToCopy = currentMarkdownView === 'formatted' 
+                ? markdownRenderedContent.textContent 
+                : currentMarkdownContent;
+                
+            await navigator.clipboard.writeText(contentToCopy);
+            showStatus('success', 'Markdown content copied to clipboard');
+            
+            // Update button text temporarily
+            if (markdownCopyBtn) {
+                const originalText = markdownCopyBtn.innerHTML;
+                markdownCopyBtn.innerHTML = '<svg class="btn-icon" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>Copied!';
+                setTimeout(() => {
+                    markdownCopyBtn.innerHTML = originalText;
+                }, 2000);
+            }
+        } catch (error) {
+            console.error('Failed to copy markdown:', error);
+            showStatus('error', 'Failed to copy to clipboard');
+        }
+    }
+
+    function handleViewAiMarkdown() {
+        const markdownContent = currentAiData.markdown_renderable;
+        if (markdownContent && markdownContent.trim()) {
+            openMarkdownViewer(markdownContent);
+        } else {
+            showStatus('error', 'No AI markdown content available');
+        }
+    }
+
+    function handleViewGeminiMarkdown() {
+        if (currentGeminiContent && currentGeminiContent.trim()) {
+            // Format Gemini content as markdown
+            const markdownContent = `# Extracted Content\n\n${currentGeminiContent}`;
+            openMarkdownViewer(markdownContent);
+        } else {
+            showStatus('error', 'No Gemini content available');
+        }
+    }
+
+    function loadSavedMarkdownContent() {
+        // Try to load content in order of priority
+        let contentToLoad = null;
+        let title = 'Markdown Content';
+        
+        // 1. First priority: AI markdown content
+        if (currentAiData.markdown_renderable && currentAiData.markdown_renderable.trim()) {
+            contentToLoad = currentAiData.markdown_renderable;
+            title = 'AI Generated Markdown';
+        }
+        // 2. Second priority: Current Gemini content
+        else if (currentGeminiContent && currentGeminiContent.trim()) {
+            contentToLoad = `# Extracted Content\n\n${currentGeminiContent}`;
+            title = 'Gemini Extracted Content';
+        }
+        // 3. Third priority: Saved Gemini data
+        else if (savedGeminiData && savedGeminiData.content && savedGeminiData.content.trim()) {
+            contentToLoad = `# Extracted Content\n\n${savedGeminiData.content}`;
+            title = 'Saved Gemini Content';
+        }
+        
+        if (contentToLoad) {
+            // Update title
+            if (markdownTitle) {
+                markdownTitle.textContent = title;
+            }
+            
+            // Load the content
+            loadMarkdownContent(contentToLoad);
+        } else {
+            // Show the status message if no content is available
+            showMarkdownStatus();
+        }
+    }
+
+    console.log('Matrx Side Panel loaded successfully');
 }); 

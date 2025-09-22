@@ -357,6 +357,18 @@ body {
     border-color: rgba(255, 255, 255, 0.5);
 }
 
+.ai-markdown-btn, .gemini-markdown-btn {
+    background: rgba(156, 39, 176, 0.2) !important;
+    border-color: rgba(156, 39, 176, 0.4) !important;
+    color: #e1bee7 !important;
+}
+
+.ai-markdown-btn:hover, .gemini-markdown-btn:hover {
+    background: rgba(156, 39, 176, 0.3) !important;
+    border-color: rgba(156, 39, 176, 0.6) !important;
+    color: white !important;
+}
+
 /* Gemini Styles */
 .saved-results {
     background: rgba(255, 255, 255, 0.05);
@@ -1017,6 +1029,274 @@ body {
     background: rgba(255, 255, 255, 0.5);
 }
 
+/* Markdown Viewer Tab Styles */
+.markdown-status {
+    text-align: center;
+    padding: 40px 20px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.status-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+}
+
+.status-text h4 {
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.status-text p {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 12px;
+    line-height: 1.5;
+    max-width: 300px;
+    margin: 0 auto;
+}
+
+.markdown-viewer-container {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    overflow: hidden;
+}
+
+.markdown-header {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 12px 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.markdown-header h4 {
+    color: white;
+    font-size: 14px;
+    font-weight: 600;
+    margin: 0;
+}
+
+.markdown-header-actions {
+    display: flex;
+    gap: 6px;
+}
+
+.markdown-view-toggle, .markdown-copy-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+    padding: 6px 10px;
+    font-size: 10px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.8);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.markdown-view-toggle:hover, .markdown-copy-btn:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.3);
+    color: white;
+}
+
+.markdown-view-toggle.active {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.4);
+    color: white;
+}
+
+.markdown-view-toggle:active, .markdown-copy-btn:active {
+    transform: scale(0.98);
+}
+
+.btn-icon {
+    width: 12px;
+    height: 12px;
+    fill: currentColor;
+}
+
+.markdown-content-view {
+    display: none;
+    padding: 16px;
+    max-height: 600px;
+    overflow-y: auto;
+}
+
+.markdown-content-view.active {
+    display: block;
+}
+
+.markdown-rendered-content {
+    color: white;
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+/* Markdown styling within the side panel */
+.markdown-rendered-content h1,
+.markdown-rendered-content h2,
+.markdown-rendered-content h3,
+.markdown-rendered-content h4,
+.markdown-rendered-content h5,
+.markdown-rendered-content h6 {
+    color: white;
+    font-weight: 600;
+    margin-top: 1.5em;
+    margin-bottom: 0.75em;
+    line-height: 1.3;
+}
+
+.markdown-rendered-content h1 {
+    font-size: 18px;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+    padding-bottom: 0.3em;
+    margin-top: 0;
+}
+
+.markdown-rendered-content h2 {
+    font-size: 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    padding-bottom: 0.2em;
+}
+
+.markdown-rendered-content h3 {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.95);
+}
+
+.markdown-rendered-content h4 {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.markdown-rendered-content p {
+    margin-bottom: 1em;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.markdown-rendered-content ul,
+.markdown-rendered-content ol {
+    margin-bottom: 1em;
+    padding-left: 1.5em;
+}
+
+.markdown-rendered-content li {
+    margin-bottom: 0.3em;
+    line-height: 1.5;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.markdown-rendered-content blockquote {
+    border-left: 3px solid rgba(255, 255, 255, 0.4);
+    background: rgba(255, 255, 255, 0.05);
+    margin: 1em 0;
+    padding: 0.75em 1.25em;
+    font-style: italic;
+    color: rgba(255, 255, 255, 0.8);
+    border-radius: 0 4px 4px 0;
+}
+
+.markdown-rendered-content code {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fbbf24;
+    padding: 0.2em 0.4em;
+    border-radius: 3px;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    font-size: 11px;
+}
+
+.markdown-rendered-content pre {
+    background: rgba(0, 0, 0, 0.3);
+    color: rgba(255, 255, 255, 0.95);
+    padding: 1em;
+    border-radius: 6px;
+    overflow-x: auto;
+    margin: 1em 0;
+    line-height: 1.4;
+}
+
+.markdown-rendered-content pre code {
+    background: none;
+    color: inherit;
+    padding: 0;
+    border-radius: 0;
+    font-size: inherit;
+}
+
+.markdown-rendered-content table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1em 0;
+    border-radius: 6px;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.markdown-rendered-content th,
+.markdown-rendered-content td {
+    padding: 8px 12px;
+    text-align: left;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    font-size: 11px;
+}
+
+.markdown-rendered-content th {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    font-weight: 600;
+}
+
+.markdown-rendered-content tr:nth-child(even) {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.markdown-rendered-content a {
+    color: #60a5fa;
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.2s ease;
+}
+
+.markdown-rendered-content a:hover {
+    border-bottom-color: #60a5fa;
+}
+
+.markdown-rendered-content img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 6px;
+    margin: 0.75em 0;
+}
+
+.markdown-rendered-content hr {
+    border: none;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    margin: 1.5em 0;
+}
+
+.markdown-raw-content {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 6px;
+    padding: 16px;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    font-size: 11px;
+    line-height: 1.5;
+    color: rgba(255, 255, 255, 0.9);
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    overflow-x: auto;
+}
+
 /* Responsive adjustments for very narrow side panels */
 @media (max-width: 350px) {
     .tab-navigation {
@@ -1029,5 +1309,15 @@ body {
     
     .expand-buttons {
         grid-template-columns: 1fr;
+    }
+    
+    .markdown-header {
+        flex-direction: column;
+        gap: 8px;
+        align-items: stretch;
+    }
+    
+    .markdown-header-actions {
+        justify-content: center;
     }
 }
