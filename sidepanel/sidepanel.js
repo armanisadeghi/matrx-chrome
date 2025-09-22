@@ -72,6 +72,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     const markdownRenderedContent = document.getElementById('markdownRenderedContent');
     const markdownRawContent = document.getElementById('markdownRawContent');
     
+    // Header Structure elements
+    const headerStatus = document.getElementById('headerStatus');
+    const headerStructureContainer = document.getElementById('headerStructureContainer');
+    const headerStructureContent = document.getElementById('headerStructureContent');
+    const headerStats = document.getElementById('headerStats');
+    const headerCopyBtn = document.getElementById('headerCopyBtn');
+    const headerRefreshBtn = document.getElementById('headerRefreshBtn');
+    
     // Store all AI data formats
     let currentAiData = {
         ai_content: '',
@@ -90,6 +98,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     let currentDomain = '';
     let currentMarkdownContent = '';
     let currentMarkdownView = 'formatted';
+    let currentHeaderStructure = null;
 
     // Get current tab URL and load saved data
     try {
@@ -316,6 +325,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     if (markdownCopyBtn) {
         markdownCopyBtn.addEventListener('click', handleCopyMarkdown);
+    }
+
+    // Header Structure Event Listeners
+    if (headerCopyBtn) {
+        headerCopyBtn.addEventListener('click', handleCopyHeaders);
+    }
+    
+    if (headerRefreshBtn) {
+        headerRefreshBtn.addEventListener('click', handleRefreshHeaders);
     }
 
     // Handle extract button click
@@ -1182,6 +1200,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             // Special handling for markdown-viewer tab
             if (tabId === 'markdown-viewer') {
                 loadSavedMarkdownContent();
+            }
+            
+            // Special handling for header-structure tab
+            if (tabId === 'header-structure') {
+                loadHeaderStructure();
             }
             
             // Reset min-height after animation
@@ -2094,6 +2117,245 @@ document.addEventListener('DOMContentLoaded', async () => {
             // Show the status message if no content is available
             showMarkdownStatus();
         }
+    }
+
+    // Header Structure Functions
+    async function loadHeaderStructure() {
+        try {
+            showHeaderStatus('Analyzing headers...');
+            
+            const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+            
+            if (tab.url.startsWith('chrome://') || tab.url.startsWith('chrome-extension://')) {
+                showHeaderError('Cannot access headers from Chrome internal pages');
+                return;
+            }
+
+            // Ensure content script is available
+            await ensureContentScript(tab.id);
+
+            // Get full HTML content
+            const response = await chrome.tabs.sendMessage(tab.id, { 
+                action: 'copyFullHTML'
+            });
+
+            if (!response || !response.success) {
+                throw new Error(response?.error || 'Failed to get page HTML');
+            }
+
+            // Extract headers from HTML
+            const headerStructure = extractHeadersFromHTML(response.html);
+            currentHeaderStructure = headerStructure;
+            
+            // Display the header structure
+            displayHeaderStructure(headerStructure);
+            
+        } catch (error) {
+            console.error('Header analysis failed:', error);
+            showHeaderError(`Error: ${error.message}`);
+        }
+    }
+    
+    function extractHeadersFromHTML(html) {
+        // Create a temporary DOM element to parse HTML
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = html;
+        
+        // Find all header elements
+        const headerElements = tempDiv.querySelectorAll('h1, h2, h3, h4');
+        const headers = [];
+        
+        headerElements.forEach((element, index) => {
+            const level = element.tagName.toLowerCase();
+            const text = element.textContent.trim();
+            
+            if (text) { // Only include headers with text content
+                headers.push({
+                    level: level,
+                    text: text,
+                    index: index + 1
+                });
+            }
+        });
+        
+        return headers;
+    }
+    
+    function displayHeaderStructure(headers) {
+        if (!headers || headers.length === 0) {
+            showNoHeaders();
+            return;
+        }
+        
+        // Hide status and show container
+        if (headerStatus) {
+            headerStatus.style.display = 'none';
+        }
+        
+        if (headerStructureContainer) {
+            headerStructureContainer.style.display = 'block';
+        }
+        
+        // Generate header outline HTML
+        let outlineHTML = '<div class="header-outline">';
+        
+        headers.forEach(header => {
+            outlineHTML += `
+                <div class="header-item ${header.level}">
+                    <span class="header-level">${header.level}</span>
+                    <span class="header-text">${escapeHtml(header.text)}</span>
+                </div>
+            `;
+        });
+        
+        outlineHTML += '</div>';
+        
+        // Display the outline
+        if (headerStructureContent) {
+            headerStructureContent.innerHTML = outlineHTML;
+        }
+        
+        // Display statistics
+        displayHeaderStats(headers);
+    }
+    
+    function displayHeaderStats(headers) {
+        if (!headerStats) return;
+        
+        const stats = {
+            h1: headers.filter(h => h.level === 'h1').length,
+            h2: headers.filter(h => h.level === 'h2').length,
+            h3: headers.filter(h => h.level === 'h3').length,
+            h4: headers.filter(h => h.level === 'h4').length
+        };
+        
+        const total = headers.length;
+        
+        headerStats.innerHTML = `
+            <div class="stat-item">
+                <span class="stat-number">${total}</span>
+                <span class="stat-label">Total</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">${stats.h1}</span>
+                <span class="stat-label">H1</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">${stats.h2}</span>
+                <span class="stat-label">H2</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">${stats.h3}</span>
+                <span class="stat-label">H3</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">${stats.h4}</span>
+                <span class="stat-label">H4</span>
+            </div>
+        `;
+    }
+    
+    function showHeaderStatus(message) {
+        if (headerStatus) {
+            headerStatus.style.display = 'block';
+            const statusText = headerStatus.querySelector('.status-text h4');
+            if (statusText) {
+                statusText.textContent = message;
+            }
+        }
+        
+        if (headerStructureContainer) {
+            headerStructureContainer.style.display = 'none';
+        }
+    }
+    
+    function showHeaderError(message) {
+        if (headerStatus) {
+            headerStatus.style.display = 'block';
+            const statusText = headerStatus.querySelector('.status-text h4');
+            const statusDesc = headerStatus.querySelector('.status-text p');
+            if (statusText) {
+                statusText.textContent = 'Analysis Failed';
+            }
+            if (statusDesc) {
+                statusDesc.textContent = message;
+            }
+        }
+        
+        if (headerStructureContainer) {
+            headerStructureContainer.style.display = 'none';
+        }
+    }
+    
+    function showNoHeaders() {
+        if (headerStatus) {
+            headerStatus.style.display = 'none';
+        }
+        
+        if (headerStructureContainer) {
+            headerStructureContainer.style.display = 'block';
+        }
+        
+        if (headerStructureContent) {
+            headerStructureContent.innerHTML = `
+                <div class="no-headers-message">
+                    <div class="icon">📄</div>
+                    <h4>No Headers Found</h4>
+                    <p>This page doesn't contain any H1, H2, H3, or H4 header elements, or they may be dynamically generated.</p>
+                </div>
+            `;
+        }
+        
+        if (headerStats) {
+            headerStats.innerHTML = `
+                <div class="stat-item">
+                    <span class="stat-number">0</span>
+                    <span class="stat-label">Headers</span>
+                </div>
+            `;
+        }
+    }
+    
+    async function handleCopyHeaders() {
+        if (!currentHeaderStructure || currentHeaderStructure.length === 0) {
+            showStatus('error', 'No header structure to copy');
+            return;
+        }
+        
+        try {
+            // Generate text outline
+            let outline = 'Page Header Outline:\n\n';
+            
+            currentHeaderStructure.forEach(header => {
+                const indent = '  '.repeat(['h1', 'h2', 'h3', 'h4'].indexOf(header.level));
+                outline += `${indent}${header.level.toUpperCase()}: ${header.text}\n`;
+            });
+            
+            await navigator.clipboard.writeText(outline);
+            showStatus('success', 'Header outline copied to clipboard');
+            
+            // Update button text temporarily
+            if (headerCopyBtn) {
+                const originalText = headerCopyBtn.innerHTML;
+                headerCopyBtn.innerHTML = '<svg class="btn-icon" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>Copied!';
+                setTimeout(() => {
+                    headerCopyBtn.innerHTML = originalText;
+                }, 2000);
+            }
+        } catch (error) {
+            console.error('Failed to copy headers:', error);
+            showStatus('error', 'Failed to copy to clipboard');
+        }
+    }
+    
+    function handleRefreshHeaders() {
+        loadHeaderStructure();
+    }
+    
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
     }
 
     console.log('Matrx Side Panel loaded successfully');
