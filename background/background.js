@@ -25,6 +25,23 @@ chrome.action.onClicked.addListener(async (tab) => {
     await chrome.sidePanel.open({ tabId: tab.id });
 });
 
+// Listen for tab updates (URL changes, page loads)
+chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+    // Only respond to URL changes or when loading is complete
+    if (changeInfo.url || changeInfo.status === 'complete') {
+        // Send message to side panel about the URL change
+        chrome.runtime.sendMessage({
+            action: 'tabUpdated',
+            tabId: tabId,
+            url: tab.url,
+            status: changeInfo.status,
+            urlChanged: !!changeInfo.url
+        }).catch(() => {
+            // Side panel might not be open, which is fine
+        });
+    }
+});
+
 // Handle messages from content scripts and popup
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.action === 'getConfig') {

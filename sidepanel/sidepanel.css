@@ -1456,6 +1456,40 @@ body {
 .link-actions, .image-actions {
     display: flex;
     gap: 6px;
+    align-items: center;
+}
+
+.analysis-mode-toggle {
+    display: flex;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 4px;
+    padding: 2px;
+    margin-right: 8px;
+}
+
+.mode-toggle-btn {
+    background: transparent;
+    border: none;
+    border-radius: 3px;
+    padding: 4px 8px;
+    font-size: 9px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.6);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+}
+
+.mode-toggle-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.mode-toggle-btn.active {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
 }
 
 .link-copy-btn, .link-refresh-btn, .image-copy-btn, .image-refresh-btn {

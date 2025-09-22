@@ -430,6 +430,29 @@ function extractSmartHTML() {
     // Create a clone of the document to manipulate without affecting the original
     const docClone = document.cloneNode(true);
     
+    // Remove navigation, header, footer, and sidebar elements first
+    const navigationSelectors = [
+        'nav', 'header', 'footer', 'aside',
+        '[role="navigation"]', '[role="banner"]', '[role="contentinfo"]', '[role="complementary"]',
+        '.nav', '.navigation', '.navbar', '.menu', '.header', '.footer', '.sidebar', '.aside',
+        '#nav', '#navigation', '#navbar', '#menu', '#header', '#footer', '#sidebar', '#aside',
+        '.site-header', '.site-footer', '.site-nav', '.main-nav', '.primary-nav', '.secondary-nav',
+        '.breadcrumb', '.breadcrumbs', '.pagination', '.pager',
+        '.social', '.social-links', '.social-media', '.share', '.sharing',
+        '.advertisement', '.ads', '.ad', '.banner-ad', '.sponsored',
+        '.cookie-notice', '.cookie-banner', '.gdpr-notice',
+        '.newsletter', '.subscription', '.signup', '.subscribe'
+    ];
+    
+    navigationSelectors.forEach(selector => {
+        try {
+            const elements = docClone.querySelectorAll(selector);
+            elements.forEach(el => el.remove());
+        } catch (e) {
+            // Ignore selector errors and continue
+        }
+    });
+    
     // Remove scripts and other unwanted elements
     const elementsToRemove = [
         'script',

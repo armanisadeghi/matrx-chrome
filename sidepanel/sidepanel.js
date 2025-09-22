@@ -87,6 +87,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     const linkStats = document.getElementById('linkStats');
     const linkCopyBtn = document.getElementById('linkCopyBtn');
     const linkRefreshBtn = document.getElementById('linkRefreshBtn');
+    const linkSmartModeBtn = document.getElementById('linkSmartModeBtn');
+    const linkFullModeBtn = document.getElementById('linkFullModeBtn');
     
     // Image Analyzer elements
     const imageStatus = document.getElementById('imageStatus');
@@ -95,6 +97,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     const imageStats = document.getElementById('imageStats');
     const imageCopyBtn = document.getElementById('imageCopyBtn');
     const imageRefreshBtn = document.getElementById('imageRefreshBtn');
+    const imageSmartModeBtn = document.getElementById('imageSmartModeBtn');
+    const imageFullModeBtn = document.getElementById('imageFullModeBtn');
     
     // Store all AI data formats
     let currentAiData = {
@@ -117,6 +121,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     let currentHeaderStructure = null;
     let currentLinkStructure = null;
     let currentImageStructure = null;
+    let linkAnalysisMode = 'smart'; // 'smart' or 'full'
+    let imageAnalysisMode = 'smart'; // 'smart' or 'full'
 
     // Get current tab URL and load saved data
     try {
@@ -356,6 +362,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (linkRefreshBtn) {
         linkRefreshBtn.addEventListener('click', handleRefreshLinks);
     }
+    
+    if (linkSmartModeBtn) {
+        linkSmartModeBtn.addEventListener('click', () => handleLinkModeToggle('smart'));
+    }
+    
+    if (linkFullModeBtn) {
+        linkFullModeBtn.addEventListener('click', () => handleLinkModeToggle('full'));
+    }
 
     // Image Analyzer Event Listeners
     if (imageCopyBtn) {
@@ -364,6 +378,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     if (imageRefreshBtn) {
         imageRefreshBtn.addEventListener('click', handleRefreshImages);
+    }
+    
+    if (imageSmartModeBtn) {
+        imageSmartModeBtn.addEventListener('click', () => handleImageModeToggle('smart'));
+    }
+    
+    if (imageFullModeBtn) {
+        imageFullModeBtn.addEventListener('click', () => handleImageModeToggle('full'));
     }
 
     // Handle extract button click
@@ -2413,9 +2435,10 @@ document.addEventListener('DOMContentLoaded', async () => {
             // Ensure content script is available
             await ensureContentScript(tab.id);
 
-            // Get Smart HTML content (excludes nav/header/footer)
+            // Get HTML content based on selected analysis mode
+            const action = linkAnalysisMode === 'smart' ? 'copySmartHTML' : 'copyFullHTML';
             const response = await chrome.tabs.sendMessage(tab.id, { 
-                action: 'copySmartHTML'
+                action: action
             });
 
             if (!response || !response.success) {
@@ -2494,9 +2517,10 @@ document.addEventListener('DOMContentLoaded', async () => {
             // Ensure content script is available
             await ensureContentScript(tab.id);
 
-            // Get Smart HTML content (excludes nav/header/footer)
+            // Get HTML content based on selected analysis mode
+            const action = imageAnalysisMode === 'smart' ? 'copySmartHTML' : 'copyFullHTML';
             const response = await chrome.tabs.sendMessage(tab.id, { 
-                action: 'copySmartHTML'
+                action: action
             });
 
             if (!response || !response.success) {
@@ -2826,6 +2850,33 @@ document.addEventListener('DOMContentLoaded', async () => {
         loadImageStructure();
     }
     
+    // Mode Toggle Functions
+    function handleLinkModeToggle(mode) {
+        linkAnalysisMode = mode;
+        
+        // Update button states
+        if (linkSmartModeBtn && linkFullModeBtn) {
+            linkSmartModeBtn.classList.toggle('active', mode === 'smart');
+            linkFullModeBtn.classList.toggle('active', mode === 'full');
+        }
+        
+        // Reload links with new mode
+        loadLinkStructure();
+    }
+    
+    function handleImageModeToggle(mode) {
+        imageAnalysisMode = mode;
+        
+        // Update button states
+        if (imageSmartModeBtn && imageFullModeBtn) {
+            imageSmartModeBtn.classList.toggle('active', mode === 'smart');
+            imageFullModeBtn.classList.toggle('active', mode === 'full');
+        }
+        
+        // Reload images with new mode
+        loadImageStructure();
+    }
+    
     // Click Handler Functions
     function handleLinkClick(link) {
         if (!link || !link.url) return;
@@ -2884,6 +2935,144 @@ document.addEventListener('DOMContentLoaded', async () => {
             return match ? match[1] : null;
         } catch {
             return null;
+        }
+    }
+
+    // Listen for tab updates from background script
+    chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+        if (request.action === 'tabUpdated') {
+            handleTabUpdate(request);
+        }
+    });
+    
+    // Reset all tabs to their initial loading state
+    function resetAllTabsToInitialState() {
+        // Reset Header Structure tab
+        if (headerStructureContainer) {
+            headerStructureContainer.style.display = 'none';
+        }
+        if (headerStatus) {
+            headerStatus.style.display = 'block';
+        }
+        
+        // Reset Link Analyzer tab
+        if (linkStructureContainer) {
+            linkStructureContainer.style.display = 'none';
+        }
+        if (linkStatus) {
+            linkStatus.style.display = 'block';
+        }
+        
+        // Reset Image Analyzer tab
+        if (imageStructureContainer) {
+            imageStructureContainer.style.display = 'none';
+        }
+        if (imageStatus) {
+            imageStatus.style.display = 'block';
+        }
+        
+        // Reset Markdown Viewer tab
+        if (markdownViewerContainer) {
+            markdownViewerContainer.style.display = 'none';
+        }
+        if (markdownStatus) {
+            markdownStatus.style.display = 'block';
+        }
+        
+        // Clear custom range results
+        if (customRangeResults) {
+            customRangeResults.style.display = 'none';
+        }
+        
+        // Reset AI and Gemini response sections (if they exist)
+        const aiResponse = document.getElementById('aiResponse');
+        const geminiResponse = document.getElementById('geminiResponse');
+        const savedResults = document.getElementById('savedResults');
+        
+        if (aiResponse) {
+            aiResponse.style.display = 'none';
+        }
+        if (geminiResponse) {
+            geminiResponse.style.display = 'none';
+        }
+        if (savedResults) {
+            savedResults.style.display = 'none';
+        }
+    }
+
+    // Handle tab updates (URL changes, page loads)
+    async function handleTabUpdate(updateInfo) {
+        try {
+            // Get current active tab to make sure we're updating the right content
+            const [activeTab] = await chrome.tabs.query({ active: true, currentWindow: true });
+            
+            // Only update if this is the active tab and URL actually changed
+            if (activeTab && activeTab.id === updateInfo.tabId && updateInfo.urlChanged) {
+                console.log('URL changed, refreshing side panel content:', updateInfo.url);
+                
+                // Update current URL
+                currentUrl = updateInfo.url;
+                
+                // Clear previous data
+                currentAiData = {
+                    ai_content: '',
+                    ai_research_content: '',
+                    markdown_renderable: '',
+                    raw_html: '',
+                    smart_html: '',
+                    custom_smart_html: ''
+                };
+                currentGeminiContent = '';
+                currentCustomRangeContent = '';
+                currentHeaderStructure = null;
+                currentLinkStructure = null;
+                currentImageStructure = null;
+                
+                // Update domain display
+                try {
+                    const url = new URL(currentUrl);
+                    currentDomain = url.hostname;
+                    if (currentUrlSpan) {
+                        currentUrlSpan.textContent = currentDomain;
+                    }
+                } catch (error) {
+                    currentDomain = 'Unknown';
+                    if (currentUrlSpan) {
+                        currentUrlSpan.textContent = 'Unable to get domain';
+                    }
+                }
+                
+                // Load saved data for new URL
+                savedGeminiData = await loadSavedGeminiData(currentUrl);
+                
+                // Load saved custom range markers for new domain
+                await loadSavedCustomRangeMarkers();
+                
+                // Reset all tabs to initial state
+                resetAllTabsToInitialState();
+                
+                // Refresh content based on currently active tab
+                const activeTabElement = document.querySelector('.tab-btn.active');
+                if (activeTabElement) {
+                    const activeTabId = activeTabElement.getAttribute('data-tab');
+                    
+                    // Auto-refresh analyzer tabs that load automatically
+                    if (activeTabId === 'header-structure') {
+                        loadHeaderStructure();
+                    } else if (activeTabId === 'link-analyzer') {
+                        loadLinkStructure();
+                    } else if (activeTabId === 'image-analyzer') {
+                        loadImageStructure();
+                    } else if (activeTabId === 'markdown-viewer') {
+                        loadSavedMarkdownContent();
+                    }
+                }
+                
+                // Show status notification
+                showStatus('info', `Page changed: ${currentDomain}`);
+            }
+        } catch (error) {
+            console.error('Error handling tab update:', error);
         }
     }
 
