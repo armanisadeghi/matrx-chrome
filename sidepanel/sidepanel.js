@@ -80,6 +80,22 @@ document.addEventListener('DOMContentLoaded', async () => {
     const headerCopyBtn = document.getElementById('headerCopyBtn');
     const headerRefreshBtn = document.getElementById('headerRefreshBtn');
     
+    // Link Analyzer elements
+    const linkStatus = document.getElementById('linkStatus');
+    const linkStructureContainer = document.getElementById('linkStructureContainer');
+    const linkStructureContent = document.getElementById('linkStructureContent');
+    const linkStats = document.getElementById('linkStats');
+    const linkCopyBtn = document.getElementById('linkCopyBtn');
+    const linkRefreshBtn = document.getElementById('linkRefreshBtn');
+    
+    // Image Analyzer elements
+    const imageStatus = document.getElementById('imageStatus');
+    const imageStructureContainer = document.getElementById('imageStructureContainer');
+    const imageStructureContent = document.getElementById('imageStructureContent');
+    const imageStats = document.getElementById('imageStats');
+    const imageCopyBtn = document.getElementById('imageCopyBtn');
+    const imageRefreshBtn = document.getElementById('imageRefreshBtn');
+    
     // Store all AI data formats
     let currentAiData = {
         ai_content: '',
@@ -99,6 +115,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     let currentMarkdownContent = '';
     let currentMarkdownView = 'formatted';
     let currentHeaderStructure = null;
+    let currentLinkStructure = null;
+    let currentImageStructure = null;
 
     // Get current tab URL and load saved data
     try {
@@ -334,6 +352,24 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     if (headerRefreshBtn) {
         headerRefreshBtn.addEventListener('click', handleRefreshHeaders);
+    }
+
+    // Link Analyzer Event Listeners
+    if (linkCopyBtn) {
+        linkCopyBtn.addEventListener('click', handleCopyLinks);
+    }
+    
+    if (linkRefreshBtn) {
+        linkRefreshBtn.addEventListener('click', handleRefreshLinks);
+    }
+
+    // Image Analyzer Event Listeners
+    if (imageCopyBtn) {
+        imageCopyBtn.addEventListener('click', handleCopyImages);
+    }
+    
+    if (imageRefreshBtn) {
+        imageRefreshBtn.addEventListener('click', handleRefreshImages);
     }
 
     // Handle extract button click
@@ -1205,6 +1241,16 @@ document.addEventListener('DOMContentLoaded', async () => {
             // Special handling for header-structure tab
             if (tabId === 'header-structure') {
                 loadHeaderStructure();
+            }
+            
+            // Special handling for link-analyzer tab
+            if (tabId === 'link-analyzer') {
+                loadLinkStructure();
+            }
+            
+            // Special handling for image-analyzer tab
+            if (tabId === 'image-analyzer') {
+                loadImageStructure();
             }
             
             // Reset min-height after animation
@@ -2356,6 +2402,408 @@ document.addEventListener('DOMContentLoaded', async () => {
         const div = document.createElement('div');
         div.textContent = text;
         return div.innerHTML;
+    }
+
+    // Link Analyzer Functions
+    async function loadLinkStructure() {
+        try {
+            showLinkStatus('Analyzing links...');
+            
+            const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+            
+            if (tab.url.startsWith('chrome://') || tab.url.startsWith('chrome-extension://')) {
+                showLinkError('Cannot access links from Chrome internal pages');
+                return;
+            }
+
+            // Ensure content script is available
+            await ensureContentScript(tab.id);
+
+            // Get Smart HTML content (excludes nav/header/footer)
+            const response = await chrome.tabs.sendMessage(tab.id, { 
+                action: 'copySmartHTML'
+            });
+
+            if (!response || !response.success) {
+                throw new Error(response?.error || 'Failed to get page HTML');
+            }
+
+            // Extract links from Smart HTML
+            const linkStructure = extractLinksFromHTML(response.html, tab.url);
+            currentLinkStructure = linkStructure;
+            
+            // Display the link structure
+            displayLinkStructure(linkStructure);
+            
+        } catch (error) {
+            console.error('Link analysis failed:', error);
+            showLinkError(`Error: ${error.message}`);
+        }
+    }
+    
+    function extractLinksFromHTML(html, currentUrl) {
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = html;
+        
+        const linkElements = tempDiv.querySelectorAll('a[href]');
+        const links = [];
+        
+        linkElements.forEach((element, index) => {
+            const href = element.getAttribute('href');
+            const text = element.textContent.trim();
+            
+            if (href && href !== '#') {
+                const linkType = classifyLink(href, currentUrl);
+                links.push({
+                    url: href,
+                    text: text || href,
+                    type: linkType,
+                    index: index + 1
+                });
+            }
+        });
+        
+        return links;
+    }
+    
+    function classifyLink(href, currentUrl) {
+        try {
+            if (href.startsWith('mailto:')) {
+                return 'email';
+            }
+            if (href.startsWith('#')) {
+                return 'anchor';
+            }
+            if (href.startsWith('http') || href.startsWith('//')) {
+                const linkHost = new URL(href, currentUrl).hostname;
+                const currentHost = new URL(currentUrl).hostname;
+                return linkHost === currentHost ? 'internal' : 'external';
+            }
+            return 'internal'; // Relative links
+        } catch (error) {
+            return 'external';
+        }
+    }
+    
+    // Image Analyzer Functions
+    async function loadImageStructure() {
+        try {
+            showImageStatus('Analyzing images...');
+            
+            const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+            
+            if (tab.url.startsWith('chrome://') || tab.url.startsWith('chrome-extension://')) {
+                showImageError('Cannot access images from Chrome internal pages');
+                return;
+            }
+
+            // Ensure content script is available
+            await ensureContentScript(tab.id);
+
+            // Get Smart HTML content (excludes nav/header/footer)
+            const response = await chrome.tabs.sendMessage(tab.id, { 
+                action: 'copySmartHTML'
+            });
+
+            if (!response || !response.success) {
+                throw new Error(response?.error || 'Failed to get page HTML');
+            }
+
+            // Extract images from Smart HTML
+            const imageStructure = extractImagesFromHTML(response.html, tab.url);
+            currentImageStructure = imageStructure;
+            
+            // Display the image structure
+            displayImageStructure(imageStructure);
+            
+        } catch (error) {
+            console.error('Image analysis failed:', error);
+            showImageError(`Error: ${error.message}`);
+        }
+    }
+    
+    function extractImagesFromHTML(html, currentUrl) {
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = html;
+        
+        const imageElements = tempDiv.querySelectorAll('img[src]');
+        const images = [];
+        
+        imageElements.forEach((element, index) => {
+            const src = element.getAttribute('src');
+            const alt = element.getAttribute('alt') || '';
+            const title = element.getAttribute('title') || '';
+            
+            if (src) {
+                // Convert relative URLs to absolute
+                const absoluteSrc = src.startsWith('http') ? src : new URL(src, currentUrl).href;
+                
+                images.push({
+                    src: absoluteSrc,
+                    alt: alt,
+                    title: title,
+                    index: index + 1
+                });
+            }
+        });
+        
+        return images;
+    }
+    
+    // Display Functions
+    function displayLinkStructure(links) {
+        if (!links || links.length === 0) {
+            showNoLinks();
+            return;
+        }
+        
+        if (linkStatus) linkStatus.style.display = 'none';
+        if (linkStructureContainer) linkStructureContainer.style.display = 'block';
+        
+        let linksHTML = '<div class="link-list">';
+        
+        links.forEach(link => {
+            linksHTML += `
+                <div class="link-item ${link.type}">
+                    <div class="link-url">${escapeHtml(link.url)}</div>
+                    <div class="link-text">${escapeHtml(link.text)}</div>
+                    <span class="link-type ${link.type}">${link.type}</span>
+                </div>
+            `;
+        });
+        
+        linksHTML += '</div>';
+        
+        if (linkStructureContent) {
+            linkStructureContent.innerHTML = linksHTML;
+        }
+        
+        displayLinkStats(links);
+    }
+    
+    function displayImageStructure(images) {
+        if (!images || images.length === 0) {
+            showNoImages();
+            return;
+        }
+        
+        if (imageStatus) imageStatus.style.display = 'none';
+        if (imageStructureContainer) imageStructureContainer.style.display = 'block';
+        
+        let imagesHTML = '<div class="image-list">';
+        
+        images.forEach(image => {
+            imagesHTML += `
+                <div class="image-item">
+                    <div class="image-preview" style="background-image: url('${image.src}')"></div>
+                    <div class="image-details">
+                        <div class="image-src">${escapeHtml(image.src)}</div>
+                        <div class="image-alt">${escapeHtml(image.alt || 'No alt text')}</div>
+                        <span class="image-info">IMG</span>
+                    </div>
+                </div>
+            `;
+        });
+        
+        imagesHTML += '</div>';
+        
+        if (imageStructureContent) {
+            imageStructureContent.innerHTML = imagesHTML;
+        }
+        
+        displayImageStats(images);
+    }
+    
+    function displayLinkStats(links) {
+        if (!linkStats) return;
+        
+        const stats = {
+            internal: links.filter(l => l.type === 'internal').length,
+            external: links.filter(l => l.type === 'external').length,
+            email: links.filter(l => l.type === 'email').length,
+            anchor: links.filter(l => l.type === 'anchor').length
+        };
+        
+        linkStats.innerHTML = `
+            <div class="stat-item">
+                <span class="stat-number">${links.length}</span>
+                <span class="stat-label">Total</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">${stats.internal}</span>
+                <span class="stat-label">Internal</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">${stats.external}</span>
+                <span class="stat-label">External</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">${stats.email}</span>
+                <span class="stat-label">Email</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">${stats.anchor}</span>
+                <span class="stat-label">Anchor</span>
+            </div>
+        `;
+    }
+    
+    function displayImageStats(images) {
+        if (!imageStats) return;
+        
+        const withAlt = images.filter(img => img.alt && img.alt.trim()).length;
+        const withoutAlt = images.length - withAlt;
+        
+        imageStats.innerHTML = `
+            <div class="stat-item">
+                <span class="stat-number">${images.length}</span>
+                <span class="stat-label">Total</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">${withAlt}</span>
+                <span class="stat-label">With Alt</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">${withoutAlt}</span>
+                <span class="stat-label">No Alt</span>
+            </div>
+        `;
+    }
+    
+    // Status and Error Functions
+    function showLinkStatus(message) {
+        if (linkStatus) {
+            linkStatus.style.display = 'block';
+            const statusText = linkStatus.querySelector('.status-text h4');
+            if (statusText) statusText.textContent = message;
+        }
+        if (linkStructureContainer) linkStructureContainer.style.display = 'none';
+    }
+    
+    function showLinkError(message) {
+        if (linkStatus) {
+            linkStatus.style.display = 'block';
+            const statusText = linkStatus.querySelector('.status-text h4');
+            const statusDesc = linkStatus.querySelector('.status-text p');
+            if (statusText) statusText.textContent = 'Analysis Failed';
+            if (statusDesc) statusDesc.textContent = message;
+        }
+        if (linkStructureContainer) linkStructureContainer.style.display = 'none';
+    }
+    
+    function showImageStatus(message) {
+        if (imageStatus) {
+            imageStatus.style.display = 'block';
+            const statusText = imageStatus.querySelector('.status-text h4');
+            if (statusText) statusText.textContent = message;
+        }
+        if (imageStructureContainer) imageStructureContainer.style.display = 'none';
+    }
+    
+    function showImageError(message) {
+        if (imageStatus) {
+            imageStatus.style.display = 'block';
+            const statusText = imageStatus.querySelector('.status-text h4');
+            const statusDesc = imageStatus.querySelector('.status-text p');
+            if (statusText) statusText.textContent = 'Analysis Failed';
+            if (statusDesc) statusDesc.textContent = message;
+        }
+        if (imageStructureContainer) imageStructureContainer.style.display = 'none';
+    }
+    
+    function showNoLinks() {
+        if (linkStatus) linkStatus.style.display = 'none';
+        if (linkStructureContainer) linkStructureContainer.style.display = 'block';
+        if (linkStructureContent) {
+            linkStructureContent.innerHTML = `
+                <div class="no-links-message">
+                    <div class="icon">🔗</div>
+                    <h4>No Links Found</h4>
+                    <p>This page doesn't contain any links in the main content area.</p>
+                </div>
+            `;
+        }
+        if (linkStats) {
+            linkStats.innerHTML = `<div class="stat-item"><span class="stat-number">0</span><span class="stat-label">Links</span></div>`;
+        }
+    }
+    
+    function showNoImages() {
+        if (imageStatus) imageStatus.style.display = 'none';
+        if (imageStructureContainer) imageStructureContainer.style.display = 'block';
+        if (imageStructureContent) {
+            imageStructureContent.innerHTML = `
+                <div class="no-images-message">
+                    <div class="icon">🖼️</div>
+                    <h4>No Images Found</h4>
+                    <p>This page doesn't contain any images in the main content area.</p>
+                </div>
+            `;
+        }
+        if (imageStats) {
+            imageStats.innerHTML = `<div class="stat-item"><span class="stat-number">0</span><span class="stat-label">Images</span></div>`;
+        }
+    }
+    
+    // Copy and Refresh Functions
+    async function handleCopyLinks() {
+        if (!currentLinkStructure || currentLinkStructure.length === 0) {
+            showStatus('error', 'No links to copy');
+            return;
+        }
+        
+        try {
+            let linksList = 'Page Links Analysis:\n\n';
+            
+            currentLinkStructure.forEach(link => {
+                linksList += `${link.type.toUpperCase()}: ${link.text}\n${link.url}\n\n`;
+            });
+            
+            await navigator.clipboard.writeText(linksList);
+            showStatus('success', 'Links list copied to clipboard');
+            
+            if (linkCopyBtn) {
+                const originalText = linkCopyBtn.innerHTML;
+                linkCopyBtn.innerHTML = '<svg class="btn-icon" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>Copied!';
+                setTimeout(() => linkCopyBtn.innerHTML = originalText, 2000);
+            }
+        } catch (error) {
+            showStatus('error', 'Failed to copy to clipboard');
+        }
+    }
+    
+    async function handleCopyImages() {
+        if (!currentImageStructure || currentImageStructure.length === 0) {
+            showStatus('error', 'No images to copy');
+            return;
+        }
+        
+        try {
+            let imagesList = 'Page Images Analysis:\n\n';
+            
+            currentImageStructure.forEach(image => {
+                imagesList += `Image: ${image.alt || 'No alt text'}\n${image.src}\n\n`;
+            });
+            
+            await navigator.clipboard.writeText(imagesList);
+            showStatus('success', 'Images list copied to clipboard');
+            
+            if (imageCopyBtn) {
+                const originalText = imageCopyBtn.innerHTML;
+                imageCopyBtn.innerHTML = '<svg class="btn-icon" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>Copied!';
+                setTimeout(() => imageCopyBtn.innerHTML = originalText, 2000);
+            }
+        } catch (error) {
+            showStatus('error', 'Failed to copy to clipboard');
+        }
+    }
+    
+    function handleRefreshLinks() {
+        loadLinkStructure();
+    }
+    
+    function handleRefreshImages() {
+        loadImageStructure();
     }
 
     console.log('Matrx Side Panel loaded successfully');

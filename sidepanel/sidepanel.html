@@ -417,6 +417,98 @@
                 </div>
             </div>
             
+            <!-- Link Analyzer Tab -->
+            <div id="link-analyzer" class="tab-pane">
+                <div class="tab-header">
+                    <h3>🔗 Link Analyzer</h3>
+                    <p>Analyze internal and external links in main content</p>
+                </div>
+                
+                <!-- Link Analysis Status -->
+                <div class="link-status" id="linkStatus">
+                    <div class="status-icon">🔗</div>
+                    <div class="status-text">
+                        <h4>Analyzing Links...</h4>
+                        <p>Extracting links from the main page content.</p>
+                    </div>
+                </div>
+                
+                <!-- Link Structure Display -->
+                <div class="link-structure-container" id="linkStructureContainer" style="display: none;">
+                    <div class="link-structure-header">
+                        <h4>Page Links Analysis</h4>
+                        <div class="link-actions">
+                            <button class="link-copy-btn" id="linkCopyBtn">
+                                <svg class="btn-icon" viewBox="0 0 24 24">
+                                    <path d="M19,21H8V7H19M19,5H8A2,2 0 0,0 6,7V21A2,2 0 0,0 8,23H19A2,2 0 0,0 21,21V7A2,2 0 0,0 19,5M16,1H4A2,2 0 0,0 2,3V17H4V3H16V1Z"/>
+                                </svg>
+                                Copy Links
+                            </button>
+                            <button class="link-refresh-btn" id="linkRefreshBtn">
+                                <svg class="btn-icon" viewBox="0 0 24 24">
+                                    <path d="M17.65,6.35C16.2,4.9 14.21,4 12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20C15.73,20 18.84,17.45 19.73,14H17.65C16.83,16.33 14.61,18 12,18A6,6 0 0,1 6,12A6,6 0 0,1 12,6C13.66,6 15.14,6.69 16.22,7.78L13,11H20V4L17.65,6.35Z"/>
+                                </svg>
+                                Refresh
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="link-structure-content" id="linkStructureContent">
+                        <!-- Links will be displayed here -->
+                    </div>
+                    
+                    <div class="link-stats" id="linkStats">
+                        <!-- Link statistics will be displayed here -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Image Analyzer Tab -->
+            <div id="image-analyzer" class="tab-pane">
+                <div class="tab-header">
+                    <h3>🖼️ Image Analyzer</h3>
+                    <p>Analyze images, alt text, and optimization in main content</p>
+                </div>
+                
+                <!-- Image Analysis Status -->
+                <div class="image-status" id="imageStatus">
+                    <div class="status-icon">🖼️</div>
+                    <div class="status-text">
+                        <h4>Analyzing Images...</h4>
+                        <p>Extracting images from the main page content.</p>
+                    </div>
+                </div>
+                
+                <!-- Image Structure Display -->
+                <div class="image-structure-container" id="imageStructureContainer" style="display: none;">
+                    <div class="image-structure-header">
+                        <h4>Page Images Analysis</h4>
+                        <div class="image-actions">
+                            <button class="image-copy-btn" id="imageCopyBtn">
+                                <svg class="btn-icon" viewBox="0 0 24 24">
+                                    <path d="M19,21H8V7H19M19,5H8A2,2 0 0,0 6,7V21A2,2 0 0,0 8,23H19A2,2 0 0,0 21,21V7A2,2 0 0,0 19,5M16,1H4A2,2 0 0,0 2,3V17H4V3H16V1Z"/>
+                                </svg>
+                                Copy Images
+                            </button>
+                            <button class="image-refresh-btn" id="imageRefreshBtn">
+                                <svg class="btn-icon" viewBox="0 0 24 24">
+                                    <path d="M17.65,6.35C16.2,4.9 14.21,4 12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20C15.73,20 18.84,17.45 19.73,14H17.65C16.83,16.33 14.61,18 12,18A6,6 0 0,1 6,12A6,6 0 0,1 12,6C13.66,6 15.14,6.69 16.22,7.78L13,11H20V4L17.65,6.35Z"/>
+                                </svg>
+                                Refresh
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="image-structure-content" id="imageStructureContent">
+                        <!-- Images will be displayed here -->
+                    </div>
+                    
+                    <div class="image-stats" id="imageStats">
+                        <!-- Image statistics will be displayed here -->
+                    </div>
+                </div>
+            </div>
+            
             <!-- Future Feature Tabs (Placeholders) -->
             
             <div id="seo-analyzer" class="tab-pane">
