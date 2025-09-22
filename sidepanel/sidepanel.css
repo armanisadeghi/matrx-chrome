@@ -1601,11 +1601,11 @@ body {
 }
 
 .link-item.external {
-    border-left-color: #3b82f6;
+    border-left-color: #fbbf24;
 }
 
 .link-item.anchor {
-    border-left-color: #eab308;
+    border-left-color: #06b6d4;
 }
 
 .link-item.email {
@@ -1613,22 +1613,43 @@ body {
 }
 
 .image-item {
-    border-left-color: #8b5cf6;
+    border-left-color: #a78bfa;
 }
 
 .link-url, .image-src {
-    color: #60a5fa;
+    color: #fbbf24;
     font-size: 11px;
     font-family: monospace;
     word-break: break-all;
     margin-bottom: 4px;
+    font-weight: 500;
+}
+
+.clickable-link, .clickable-image {
+    transition: all 0.2s ease;
+    border-radius: 3px;
+    padding: 2px 4px;
+    margin: -2px -4px;
+}
+
+.clickable-link:hover, .clickable-image:hover {
+    background: rgba(251, 191, 36, 0.2);
+    color: #fcd34d !important;
+    transform: scale(1.02);
+    text-decoration: underline;
+}
+
+.clickable-link:active, .clickable-image:active {
+    transform: scale(0.98);
+    background: rgba(251, 191, 36, 0.3);
 }
 
 .link-text, .image-alt {
-    color: white;
+    color: #f8fafc;
     font-size: 12px;
     line-height: 1.4;
     margin-bottom: 4px;
+    font-weight: 500;
 }
 
 .link-type, .image-info {
@@ -1649,13 +1670,13 @@ body {
 }
 
 .link-type.external {
-    background: rgba(59, 130, 246, 0.3);
-    color: #60a5fa;
+    background: rgba(251, 191, 36, 0.3);
+    color: #fbbf24;
 }
 
 .link-type.anchor {
-    background: rgba(234, 179, 8, 0.3);
-    color: #fbbf24;
+    background: rgba(6, 182, 212, 0.3);
+    color: #22d3ee;
 }
 
 .link-type.email {

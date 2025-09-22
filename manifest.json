@@ -12,7 +12,8 @@
     "tabs",
     "clipboardWrite",
     "scripting",
-    "sidePanel"
+    "sidePanel",
+    "downloads"
   ],
   "host_permissions": [
     "https://*/*",

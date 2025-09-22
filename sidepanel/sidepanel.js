@@ -2562,10 +2562,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         
         let linksHTML = '<div class="link-list">';
         
-        links.forEach(link => {
+        links.forEach((link, index) => {
             linksHTML += `
-                <div class="link-item ${link.type}">
-                    <div class="link-url">${escapeHtml(link.url)}</div>
+                <div class="link-item ${link.type}" data-link-index="${index}">
+                    <div class="link-url clickable-link" title="Click to open in new tab">${escapeHtml(link.url)}</div>
                     <div class="link-text">${escapeHtml(link.text)}</div>
                     <span class="link-type ${link.type}">${link.type}</span>
                 </div>
@@ -2576,6 +2576,19 @@ document.addEventListener('DOMContentLoaded', async () => {
         
         if (linkStructureContent) {
             linkStructureContent.innerHTML = linksHTML;
+            
+            // Add click handlers for links
+            const linkItems = linkStructureContent.querySelectorAll('.link-item');
+            linkItems.forEach((item, index) => {
+                const clickableLink = item.querySelector('.clickable-link');
+                if (clickableLink) {
+                    clickableLink.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        handleLinkClick(links[index]);
+                    });
+                    clickableLink.style.cursor = 'pointer';
+                }
+            });
         }
         
         displayLinkStats(links);
@@ -2592,12 +2605,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         
         let imagesHTML = '<div class="image-list">';
         
-        images.forEach(image => {
+        images.forEach((image, index) => {
             imagesHTML += `
-                <div class="image-item">
-                    <div class="image-preview" style="background-image: url('${image.src}')"></div>
+                <div class="image-item" data-image-index="${index}">
+                    <div class="image-preview clickable-image" style="background-image: url('${image.src}')" title="Click to download image"></div>
                     <div class="image-details">
-                        <div class="image-src">${escapeHtml(image.src)}</div>
+                        <div class="image-src clickable-image" title="Click to download image">${escapeHtml(image.src)}</div>
                         <div class="image-alt">${escapeHtml(image.alt || 'No alt text')}</div>
                         <span class="image-info">IMG</span>
                     </div>
@@ -2609,6 +2622,19 @@ document.addEventListener('DOMContentLoaded', async () => {
         
         if (imageStructureContent) {
             imageStructureContent.innerHTML = imagesHTML;
+            
+            // Add click handlers for images
+            const imageItems = imageStructureContent.querySelectorAll('.image-item');
+            imageItems.forEach((item, index) => {
+                const clickableImages = item.querySelectorAll('.clickable-image');
+                clickableImages.forEach(clickable => {
+                    clickable.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        handleImageClick(images[index]);
+                    });
+                    clickable.style.cursor = 'pointer';
+                });
+            });
         }
         
         displayImageStats(images);
@@ -2804,6 +2830,67 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     function handleRefreshImages() {
         loadImageStructure();
+    }
+    
+    // Click Handler Functions
+    function handleLinkClick(link) {
+        if (!link || !link.url) return;
+        
+        try {
+            // Open link in new tab
+            chrome.tabs.create({ 
+                url: link.url,
+                active: false // Don't switch to the new tab immediately
+            });
+            
+            showStatus('success', 'Link opened in new tab');
+        } catch (error) {
+            console.error('Failed to open link:', error);
+            showStatus('error', 'Failed to open link');
+        }
+    }
+    
+    function handleImageClick(image) {
+        if (!image || !image.src) return;
+        
+        try {
+            // Extract filename from URL or create a generic one
+            const url = new URL(image.src);
+            let filename = url.pathname.split('/').pop();
+            
+            // If no filename or extension, create one based on image type
+            if (!filename || !filename.includes('.')) {
+                const extension = getImageExtension(image.src) || 'jpg';
+                filename = `image_${Date.now()}.${extension}`;
+            }
+            
+            // Use Chrome downloads API to download the image
+            chrome.downloads.download({
+                url: image.src,
+                filename: filename,
+                saveAs: false // Download directly without showing save dialog
+            }, (downloadId) => {
+                if (chrome.runtime.lastError) {
+                    console.error('Download failed:', chrome.runtime.lastError);
+                    showStatus('error', 'Failed to download image');
+                } else {
+                    showStatus('success', `Image download started: ${filename}`);
+                }
+            });
+        } catch (error) {
+            console.error('Failed to download image:', error);
+            showStatus('error', 'Failed to download image');
+        }
+    }
+    
+    function getImageExtension(url) {
+        try {
+            const pathname = new URL(url).pathname.toLowerCase();
+            const match = pathname.match(/\.(jpg|jpeg|png|gif|webp|svg|bmp|ico)$/);
+            return match ? match[1] : null;
+        } catch {
+            return null;
+        }
     }
 
     console.log('Matrx Side Panel loaded successfully');
