@@ -1063,6 +1063,9 @@ body {
     border-radius: 8px;
     border: 1px solid rgba(255, 255, 255, 0.2);
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 200px);
 }
 
 .markdown-header {
@@ -1072,6 +1075,7 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    flex-shrink: 0;
 }
 
 .markdown-header h4 {
@@ -1126,18 +1130,22 @@ body {
 .markdown-content-view {
     display: none;
     padding: 16px;
-    max-height: 600px;
+    flex: 1;
     overflow-y: auto;
+    min-height: 0;
 }
 
 .markdown-content-view.active {
-    display: block;
+    display: flex;
+    flex-direction: column;
 }
 
 .markdown-rendered-content {
     color: white;
     font-size: 12px;
     line-height: 1.6;
+    flex: 1;
+    overflow-y: auto;
 }
 
 /* Markdown styling within the side panel */
@@ -1295,6 +1303,8 @@ body {
     white-space: pre-wrap;
     word-wrap: break-word;
     overflow-x: auto;
+    flex: 1;
+    overflow-y: auto;
 }
 
 /* Header Structure Tab Styles */
