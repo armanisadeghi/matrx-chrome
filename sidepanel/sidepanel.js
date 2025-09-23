@@ -3143,55 +3143,156 @@ document.addEventListener('DOMContentLoaded', async () => {
             const scriptsAndStyles = doc.querySelectorAll('script, style, noscript');
             scriptsAndStyles.forEach(el => el.remove());
             
-            // Get text content from important elements in order
+            // ========================================
+            // TEXT IGNORE LIST - Add unwanted text here
+            // ========================================
+            // List of exact text matches to ignore (case-insensitive)
+            // To add more: just add new strings to this array
+            const ignoreTexts = [
+                'Toggle High Contrast',
+                'Toggle Font size',
+                'Skip to main content',
+                'Skip to content',
+                'Menu',
+                'Search',
+                'Close',
+                'Open menu',
+                'Close menu',
+                'Home',
+                'Back to top',
+                'Scroll to top',
+                'Read more',
+                'Continue reading',
+                'Share',
+                'Print',
+                'Email',
+                'Facebook',
+                'Twitter',
+                'LinkedIn',
+                'Pinterest',
+                'WhatsApp',
+                'Copy link',
+                'Subscribe',
+                'Sign up',
+                'Log in',
+                'Login',
+                'Register',
+                'Contact us',
+                'Privacy Policy',
+                'Terms of Service',
+                'Cookie Policy',
+                'Accept all cookies',
+                'Manage cookies',
+                'Cookie settings'
+            ];
+            
+            // Convert to lowercase for case-insensitive matching
+            const ignoreTextsLower = ignoreTexts.map(text => text.toLowerCase());
+            
+            // Function to check if text should be ignored
+            function shouldIgnoreText(text) {
+                const cleanText = text.trim();
+                const lowerText = cleanText.toLowerCase();
+                
+                // Check for exact matches (case-insensitive)
+                return ignoreTextsLower.includes(lowerText);
+            }
+            
             const textParts = [];
             
             // Extract title if available
             const title = doc.querySelector('title');
             if (title && title.textContent.trim()) {
-                textParts.push(`TITLE: ${title.textContent.trim()}\n`);
+                textParts.push(`TITLE: ${title.textContent.trim()}`);
             }
             
-            // Extract headings in order
-            const headings = doc.querySelectorAll('h1, h2, h3, h4, h5, h6');
-            headings.forEach(heading => {
-                const text = heading.textContent.trim();
-                if (text) {
-                    const level = heading.tagName.toLowerCase();
-                    textParts.push(`${level.toUpperCase()}: ${text}`);
+            // Use a different approach: walk through the document and extract text node by node
+            function walkAndExtract(node) {
+                if (!node) return;
+                
+                const tagName = node.tagName ? node.tagName.toLowerCase() : '';
+                
+                // Handle headings
+                if (tagName.match(/^h[1-6]$/)) {
+                    const text = node.textContent.trim();
+                    if (text && text.length > 3 && !shouldIgnoreText(text)) {
+                        textParts.push(`${tagName.toUpperCase()}: ${text}`);
+                    }
+                    return; // Don't process children of headings
                 }
-            });
-            
-            if (headings.length > 0) {
-                textParts.push(''); // Add blank line after headings
+                
+                // Handle paragraphs
+                if (tagName === 'p') {
+                    const text = node.textContent.trim();
+                    if (text && text.length > 20 && !shouldIgnoreText(text)) {
+                        textParts.push(text);
+                    }
+                    return; // Don't process children of paragraphs
+                }
+                
+                // Handle list items
+                if (tagName === 'li') {
+                    const text = node.textContent.trim();
+                    if (text && text.length > 10 && !shouldIgnoreText(text)) {
+                        textParts.push(`• ${text}`);
+                    }
+                    return; // Don't process children of list items
+                }
+                
+                // Handle divs and other containers - but only if they don't have block-level children
+                if (tagName.match(/^(div|article|section|main)$/)) {
+                    const hasBlockChildren = node.querySelector('h1, h2, h3, h4, h5, h6, p, div, article, section, main, ul, ol');
+                    if (!hasBlockChildren) {
+                        const text = node.textContent.trim();
+                        if (text && text.length > 20 && !shouldIgnoreText(text)) {
+                            textParts.push(text);
+                        }
+                        return; // Don't process children
+                    }
+                }
+                
+                // For other elements, continue processing children
+                if (node.children) {
+                    for (const child of node.children) {
+                        walkAndExtract(child);
+                    }
+                }
             }
             
-            // Extract paragraph content
-            const paragraphs = doc.querySelectorAll('p, div, article, section, main');
-            paragraphs.forEach(p => {
-                const text = p.textContent.trim();
-                if (text && text.length > 20) { // Only include substantial text
-                    // Clean up whitespace
-                    const cleanText = text.replace(/\s+/g, ' ').trim();
-                    if (cleanText && !textParts.includes(cleanText)) {
-                        textParts.push(cleanText);
-                    }
-                }
-            });
+            // Start walking from the body
+            const body = doc.body || doc.documentElement;
+            walkAndExtract(body);
             
-            // Extract list items
-            const listItems = doc.querySelectorAll('li');
-            listItems.forEach(li => {
-                const text = li.textContent.trim();
-                if (text && text.length > 10) {
-                    const cleanText = text.replace(/\s+/g, ' ').trim();
-                    if (cleanText && !textParts.includes(cleanText)) {
-                        textParts.push(`• ${cleanText}`);
-                    }
-                }
-            });
+            // Remove duplicates while preserving order
+            const uniqueParts = [];
+            const seen = new Set();
             
-            return textParts.join('\n\n');
+            for (const part of textParts) {
+                const cleanPart = part.replace(/\s+/g, ' ').trim();
+                if (!seen.has(cleanPart) && cleanPart.length > 0) {
+                    uniqueParts.push(part);
+                    seen.add(cleanPart);
+                }
+            }
+            
+            // Join with double line breaks for good separation
+            const result = uniqueParts.join('\n\n');
+            
+            // // Debug logging to see what we're generating
+            // console.log('Text extraction result:');
+            // console.log('Total parts before filtering:', textParts.length);
+            // console.log('Unique parts after filtering:', uniqueParts.length);
+            // console.log('First few parts:', uniqueParts.slice(0, 8));
+            // console.log('Result length:', result.length);
+            // console.log('Has line breaks:', (result.match(/\n/g) || []).length);
+            
+            // // Log any ignored texts that were found (for debugging)
+            // const ignoredCount = textParts.length - uniqueParts.length;
+            // if (ignoredCount > 0) {
+            //     console.log(`Filtered out ${ignoredCount} duplicate/ignored items`);
+            // }
+            
+            return result;
             
         } catch (error) {
             console.error('Error extracting text from HTML:', error);
@@ -3206,8 +3307,17 @@ document.addEventListener('DOMContentLoaded', async () => {
         textStatus.style.display = 'none';
         textContentContainer.style.display = 'block';
         
-        // Display the text content
-        textContentDisplay.textContent = textContent;
+        // Convert line breaks to HTML for better display
+        const htmlContent = textContent.replace(/\n/g, '<br>');
+        
+        // Display the text content using innerHTML to preserve line breaks
+        textContentDisplay.innerHTML = htmlContent;
+        
+        // Also log for debugging
+        // console.log('Displaying text content:');
+        // console.log('Original length:', textContent.length);
+        // console.log('Line breaks in original:', (textContent.match(/\n/g) || []).length);
+        // console.log('HTML length:', htmlContent.length);
         
         // Display statistics
         displayTextStats(textContent);

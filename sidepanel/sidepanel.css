@@ -1090,7 +1090,6 @@ body {
     color: #e8eaed;
     font-size: 12px;
     line-height: 1.6;
-    white-space: pre-wrap;
     word-wrap: break-word;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
 }
