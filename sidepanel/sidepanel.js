@@ -101,6 +101,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     const imageSmartModeBtn = document.getElementById('imageSmartModeBtn');
     const imageFullModeBtn = document.getElementById('imageFullModeBtn');
 
+    // Text Content tab elements
+    const textStatus = document.getElementById('textStatus');
+    const textContentContainer = document.getElementById('textContentContainer');
+    const textContentDisplay = document.getElementById('textContentDisplay');
+    const textStats = document.getElementById('textStats');
+    const textCopyBtn = document.getElementById('textCopyBtn');
+    const textRefreshBtn = document.getElementById('textRefreshBtn');
+
     // Summary Generator elements
     const summaryStatus = document.getElementById('summaryStatus');
     const summaryViewerContainer = document.getElementById('summaryViewerContainer');
@@ -136,6 +144,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     let currentLinkStructure = null;
     let currentImageStructure = null;
     let currentSummaryContent = null;
+    let currentTextContent = null;
     let linkAnalysisMode = 'smart'; // 'smart' or 'full'
     let imageAnalysisMode = 'smart'; // 'smart' or 'full'
 
@@ -255,6 +264,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 currentLinkStructure = null;
                 currentImageStructure = null;
                 currentSummaryContent = null;
+                currentTextContent = null;
                 
                 // Reset all tabs to initial state
                 resetAllTabsToInitialState();
@@ -512,6 +522,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     if (imageFullModeBtn) {
         imageFullModeBtn.addEventListener('click', () => handleImageModeToggle('full'));
+    }
+
+    // Text Content event listeners
+    if (textCopyBtn) {
+        textCopyBtn.addEventListener('click', handleCopyText);
+    }
+    
+    if (textRefreshBtn) {
+        textRefreshBtn.addEventListener('click', handleRefreshText);
     }
 
     // Summary Generator event listeners
@@ -1414,6 +1433,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             // Special handling for image-analyzer tab
             if (tabId === 'image-analyzer') {
                 loadImageStructure();
+            }
+            
+            // Special handling for text-content tab
+            if (tabId === 'text-content') {
+                loadTextContent();
             }
             
             // Reset min-height after animation
@@ -3070,6 +3094,223 @@ document.addEventListener('DOMContentLoaded', async () => {
         loadImageStructure();
     }
 
+    // Text Content Functions
+    async function loadTextContent() {
+        try {
+            showTextStatus('Extracting text content...');
+            
+            const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+            
+            if (tab.url.startsWith('chrome://') || tab.url.startsWith('chrome-extension://')) {
+                showTextError('Cannot access content from Chrome internal pages');
+                return;
+            }
+
+            // Ensure content script is available
+            await ensureContentScript(tab.id);
+
+            // Get Smart HTML content (focused on main content)
+            const response = await chrome.tabs.sendMessage(tab.id, { action: 'copySmartHTML' });
+            
+            if (!response || !response.success) {
+                throw new Error(response?.error || 'Failed to get page content');
+            }
+
+            // Extract text content from HTML
+            const textContent = extractTextFromHTML(response.html);
+            
+            if (!textContent || textContent.trim().length === 0) {
+                showNoText();
+                return;
+            }
+
+            currentTextContent = textContent;
+            displayTextContent(textContent);
+            
+        } catch (error) {
+            console.error('Text content extraction failed:', error);
+            showTextError(error.message);
+        }
+    }
+    
+    function extractTextFromHTML(html) {
+        try {
+            // Create a temporary DOM parser
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            
+            // Remove script and style elements
+            const scriptsAndStyles = doc.querySelectorAll('script, style, noscript');
+            scriptsAndStyles.forEach(el => el.remove());
+            
+            // Get text content from important elements in order
+            const textParts = [];
+            
+            // Extract title if available
+            const title = doc.querySelector('title');
+            if (title && title.textContent.trim()) {
+                textParts.push(`TITLE: ${title.textContent.trim()}\n`);
+            }
+            
+            // Extract headings in order
+            const headings = doc.querySelectorAll('h1, h2, h3, h4, h5, h6');
+            headings.forEach(heading => {
+                const text = heading.textContent.trim();
+                if (text) {
+                    const level = heading.tagName.toLowerCase();
+                    textParts.push(`${level.toUpperCase()}: ${text}`);
+                }
+            });
+            
+            if (headings.length > 0) {
+                textParts.push(''); // Add blank line after headings
+            }
+            
+            // Extract paragraph content
+            const paragraphs = doc.querySelectorAll('p, div, article, section, main');
+            paragraphs.forEach(p => {
+                const text = p.textContent.trim();
+                if (text && text.length > 20) { // Only include substantial text
+                    // Clean up whitespace
+                    const cleanText = text.replace(/\s+/g, ' ').trim();
+                    if (cleanText && !textParts.includes(cleanText)) {
+                        textParts.push(cleanText);
+                    }
+                }
+            });
+            
+            // Extract list items
+            const listItems = doc.querySelectorAll('li');
+            listItems.forEach(li => {
+                const text = li.textContent.trim();
+                if (text && text.length > 10) {
+                    const cleanText = text.replace(/\s+/g, ' ').trim();
+                    if (cleanText && !textParts.includes(cleanText)) {
+                        textParts.push(`• ${cleanText}`);
+                    }
+                }
+            });
+            
+            return textParts.join('\n\n');
+            
+        } catch (error) {
+            console.error('Error extracting text from HTML:', error);
+            return '';
+        }
+    }
+    
+    function displayTextContent(textContent) {
+        if (!textContentDisplay || !textContentContainer || !textStatus) return;
+        
+        // Hide status, show container
+        textStatus.style.display = 'none';
+        textContentContainer.style.display = 'block';
+        
+        // Display the text content
+        textContentDisplay.textContent = textContent;
+        
+        // Display statistics
+        displayTextStats(textContent);
+    }
+    
+    function displayTextStats(textContent) {
+        if (!textStats) return;
+        
+        const lines = textContent.split('\n').filter(line => line.trim().length > 0);
+        const words = textContent.split(/\s+/).filter(word => word.length > 0);
+        const characters = textContent.length;
+        const charactersNoSpaces = textContent.replace(/\s/g, '').length;
+        
+        const headingCount = (textContent.match(/^H[1-6]:/gm) || []).length;
+        const paragraphs = lines.filter(line => !line.match(/^(H[1-6]:|TITLE:|•)/)).length;
+        const listItems = (textContent.match(/^•/gm) || []).length;
+        
+        textStats.innerHTML = `
+            <div class="stat-item">
+                <span class="stat-number">${characters.toLocaleString()}</span>
+                <span class="stat-label">Characters</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">${words.length.toLocaleString()}</span>
+                <span class="stat-label">Words</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">${lines.length.toLocaleString()}</span>
+                <span class="stat-label">Lines</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">${headingCount}</span>
+                <span class="stat-label">Headings</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">${paragraphs}</span>
+                <span class="stat-label">Paragraphs</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">${listItems}</span>
+                <span class="stat-label">List Items</span>
+            </div>
+        `;
+    }
+    
+    function showTextStatus(message) {
+        if (textStatus) {
+            textStatus.style.display = 'block';
+            const statusText = textStatus.querySelector('.status-text p');
+            if (statusText) {
+                statusText.textContent = message;
+            }
+        }
+        if (textContentContainer) {
+            textContentContainer.style.display = 'none';
+        }
+    }
+    
+    function showTextError(message) {
+        if (textStatus) {
+            textStatus.style.display = 'block';
+            textStatus.innerHTML = `
+                <div class="status-icon">❌</div>
+                <div class="status-text">
+                    <h4>Text Extraction Failed</h4>
+                    <p>${escapeHtml(message)}</p>
+                </div>
+            `;
+        }
+        if (textContentContainer) {
+            textContentContainer.style.display = 'none';
+        }
+    }
+    
+    function showNoText() {
+        if (textContentContainer && textContentDisplay) {
+            textStatus.style.display = 'none';
+            textContentContainer.style.display = 'block';
+            textContentDisplay.innerHTML = '<div class="no-text-message">No readable text content found on this page.</div>';
+            if (textStats) {
+                textStats.innerHTML = '';
+            }
+        }
+    }
+    
+    function handleCopyText() {
+        if (!currentTextContent) {
+            showStatus('error', 'No text content to copy');
+            return;
+        }
+
+        navigator.clipboard.writeText(currentTextContent).then(() => {
+            showStatus('success', 'Text content copied to clipboard');
+        }).catch(error => {
+            console.error('Copy failed:', error);
+            showStatus('error', 'Failed to copy text content');
+        });
+    }
+    
+    function handleRefreshText() {
+        loadTextContent();
+    }
+
     // Summary Generator Functions
     async function handleGenerateSummary() {
         if (!generateSummaryBtn) return;
@@ -3338,6 +3579,17 @@ document.addEventListener('DOMContentLoaded', async () => {
             imageStatus.style.display = 'block';
         }
         
+        // Reset Text Content tab
+        if (textContentContainer) {
+            textContentContainer.style.display = 'none';
+        }
+        if (textStatus) {
+            textStatus.style.display = 'block';
+        }
+        if (textContentDisplay) {
+            textContentDisplay.textContent = '';
+        }
+        
         // Reset Markdown Viewer tab
         if (markdownViewerContainer) {
             markdownViewerContainer.style.display = 'none';
@@ -3409,6 +3661,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 currentLinkStructure = null;
                 currentImageStructure = null;
                 currentSummaryContent = null;
+                currentTextContent = null;
                 
                 // Update domain and URL display
                 try {
