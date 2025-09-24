@@ -26,6 +26,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     const currentUrlSpan = document.getElementById('currentUrl');
     const settingsLink = document.getElementById('settingsLink');
     const refreshUrlBtn = document.getElementById('refreshUrlBtn');
+    
+    // Start Screen elements
+    const startScreenOverlay = document.getElementById('startScreenOverlay');
+    const startScreenUrl = document.getElementById('startScreenUrl');
+    const startScreenDomain = document.getElementById('startScreenDomain');
+    const startAnalysisBtn = document.getElementById('startAnalysisBtn');
+    const refreshPageBtn = document.getElementById('refreshPageBtn');
     const aiResponseDiv = document.getElementById('aiResponse');
     const aiResponseContent = document.getElementById('aiResponseContent');
     const expandAiContentBtn = document.getElementById('expandAiContentBtn');
@@ -148,41 +155,25 @@ document.addEventListener('DOMContentLoaded', async () => {
     let linkAnalysisMode = 'smart'; // 'smart' or 'full'
     let imageAnalysisMode = 'smart'; // 'smart' or 'full'
 
-    // Get current tab URL and load saved data
+    // Get current tab URL and show start screen
     try {
         const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
         currentUrl = tab.url;
-        currentUrlSpan.textContent = currentUrl;
         
-        // Extract domain for custom range
+        // Extract domain
         try {
             const urlObj = new URL(currentUrl);
             currentDomain = urlObj.hostname;
-            if (customRangeDomain) {
-                customRangeDomain.textContent = currentDomain;
-            }
         } catch (error) {
             currentDomain = 'unknown';
-            if (customRangeDomain) {
-                customRangeDomain.textContent = 'Unknown domain';
-            }
         }
         
-        // Try to load saved AI data for this URL
-        await loadSavedAiData(currentUrl);
-        
-        // Try to load saved Gemini data (includes both full content and summaries) for this URL
-        await loadSavedGeminiData(currentUrl);
-        
-        // Try to load saved custom range markers for this domain
-        await loadSavedCustomRangeMarkers(currentDomain);
+        // Show start screen on initial load
+        showStartScreen(currentUrl, currentDomain);
         
         // Initialize Gemini client and template loader
         await initializeGeminiClient();
         templateLoader = new TemplateLoader();
-        
-        // Load saved markdown content for the markdown tab
-        loadSavedMarkdownContent();
         
         // Initialize tab system
         initializeTabSystem();
@@ -315,6 +306,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     if (refreshUrlBtn) {
         refreshUrlBtn.addEventListener('click', handleManualRefresh);
+    }
+    
+    // Start Screen event listeners
+    if (startAnalysisBtn) {
+        startAnalysisBtn.addEventListener('click', handleStartAnalysis);
+    }
+    
+    if (refreshPageBtn) {
+        refreshPageBtn.addEventListener('click', handleRefreshPage);
     }
 
     // Handle expand AI content buttons click
@@ -3756,6 +3756,18 @@ document.addEventListener('DOMContentLoaded', async () => {
                 // Update current URL
                 currentUrl = updateInfo.url;
                 
+                // Extract domain for start screen
+                let domain = 'Unknown';
+                try {
+                    const url = new URL(currentUrl);
+                    domain = url.hostname;
+                } catch (error) {
+                    console.error('Error parsing URL:', error);
+                }
+                
+                // Show start screen for URL change
+                showStartScreen(currentUrl, domain);
+                
                 // Clear previous data
                 currentAiData = {
                     ai_content: '',
@@ -3799,25 +3811,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                 // Load saved custom range markers for new domain
                 await loadSavedCustomRangeMarkers(currentDomain);
                 
-                // Reset all tabs to initial state
-                resetAllTabsToInitialState();
-                
-                // Refresh content based on currently active tab
-                const activeTabElement = document.querySelector('.tab-btn.active');
-                if (activeTabElement) {
-                    const activeTabId = activeTabElement.getAttribute('data-tab');
-                    
-                    // Auto-refresh analyzer tabs that load automatically
-                    if (activeTabId === 'header-structure') {
-                        loadHeaderStructure();
-                    } else if (activeTabId === 'link-analyzer') {
-                        loadLinkStructure();
-                    } else if (activeTabId === 'image-analyzer') {
-                        loadImageStructure();
-                    } else if (activeTabId === 'markdown-viewer') {
-                        loadSavedMarkdownContent();
-                    }
-                }
+                // The start screen will handle all reset logic when user clicks "Start Analysis"
+                console.log('Start screen displayed, waiting for user interaction');
                 
                 // Show status notification
                 showStatus('info', `Page changed: ${currentDomain}`);
@@ -3826,6 +3821,295 @@ document.addEventListener('DOMContentLoaded', async () => {
             console.error('Error handling tab update:', error);
         }
     }
+
+    // ========================================
+    // START SCREEN FUNCTIONS
+    // ========================================
+    
+    function showStartScreen(url, domain) {
+        if (!startScreenOverlay) return;
+        
+        // Update start screen info
+        if (startScreenUrl) {
+            startScreenUrl.textContent = url || 'Loading...';
+        }
+        if (startScreenDomain) {
+            startScreenDomain.textContent = domain || 'Loading...';
+        }
+        
+        // Show the overlay with animation
+        startScreenOverlay.style.display = 'flex';
+        
+        console.log('Start screen shown for URL:', url);
+    }
+    
+    function hideStartScreen() {
+        if (!startScreenOverlay) return;
+        
+        startScreenOverlay.style.display = 'none';
+        console.log('Start screen hidden');
+    }
+    
+    async function handleStartAnalysis() {
+        console.log('Starting analysis...');
+        
+        try {
+            // Hide the start screen
+            hideStartScreen();
+            
+            // Perform complete reset and initialization
+            await performCompleteReset();
+            
+            // Explicitly switch to Headers tab (this will also load the content)
+            switchTab('header-structure');
+            
+            showStatus('success', 'Analysis started successfully');
+            
+        } catch (error) {
+            console.error('Error starting analysis:', error);
+            showStatus('error', 'Failed to start analysis');
+        }
+    }
+    
+    async function handleRefreshPage() {
+        console.log('Refreshing page...');
+        
+        try {
+            // Get current tab
+            const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+            
+            // Reload the page
+            await chrome.tabs.reload(tab.id);
+            
+            // Hide start screen
+            hideStartScreen();
+            
+            // Show loading status
+            showStatus('info', 'Page refreshed - ready for analysis');
+            
+        } catch (error) {
+            console.error('Error refreshing page:', error);
+            showStatus('error', 'Failed to refresh page');
+        }
+    }
+    
+    async function performCompleteReset() {
+        console.log('🔄 NUCLEAR RESET: Wiping everything clean...');
+        
+        try {
+            // Get current tab info
+            const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+            currentUrl = tab.url;
+            
+            // Extract domain
+            try {
+                const url = new URL(currentUrl);
+                currentDomain = url.hostname;
+            } catch (error) {
+                currentDomain = 'Unknown';
+            }
+            
+            // ========================================
+            // NUCLEAR RESET: CLEAR ALL STATE
+            // ========================================
+            
+            // 1. Clear ALL state variables
+            currentAiData = {
+                ai_content: '',
+                ai_research_content: '',
+                markdown_renderable: '',
+                raw_html: '',
+                smart_html: '',
+                custom_smart_html: ''
+            };
+            currentGeminiContent = null;
+            currentSummaryContent = null;
+            currentMarkdownContent = null;
+            currentHeaderStructure = null;
+            currentLinkStructure = null;
+            currentImageStructure = null;
+            currentTextContent = null;
+            currentCustomRangeContent = null;
+            savedGeminiData = null;
+            
+            // 2. Clear analysis mode states
+            linkAnalysisMode = 'smart';
+            imageAnalysisMode = 'smart';
+            
+            // ========================================
+            // NUCLEAR RESET: CLEAR ALL DOM CONTENT
+            // ========================================
+            
+            // 3. Clear all content containers
+            const contentSelectors = [
+                // Header Structure
+                '#headerStructureContent', '#headerStats',
+                // Link Analyzer  
+                '#linkStructureContent', '#linkStats',
+                // Image Analyzer
+                '#imageStructureContent', '#imageStats', 
+                // Text Content
+                '#textContentDisplay', '#textStats',
+                // Markdown Viewer
+                '#markdownRenderedContent', '#markdownRawContent',
+                // Summary
+                '#summaryRenderedContent', '#summaryRawContent',
+                // Gemini responses
+                '#geminiResponseContent', '#geminiSavedContent',
+                // AI responses
+                '#aiResponseContent',
+                // Custom range
+                '#customRangeResults .results-content'
+            ];
+            
+            contentSelectors.forEach(selector => {
+                const element = document.querySelector(selector);
+                if (element) {
+                    element.innerHTML = '';
+                    element.textContent = '';
+                }
+            });
+            
+            // 4. Reset all input fields
+            const inputSelectors = [
+                '#startMarker', '#endMarker'
+            ];
+            
+            inputSelectors.forEach(selector => {
+                const element = document.querySelector(selector);
+                if (element) {
+                    element.value = '';
+                }
+            });
+            
+            // 5. Hide all result containers and show status messages
+            const containerSelectors = [
+                { container: '#headerStructureContainer', status: '#headerStatus' },
+                { container: '#linkStructureContainer', status: '#linkStatus' },
+                { container: '#imageStructureContainer', status: '#imageStatus' },
+                { container: '#textContentContainer', status: '#textStatus' },
+                { container: '#markdownViewerContainer', status: '#markdownStatus' },
+                { container: '#summaryViewerContainer', status: '#summaryStatus' },
+                { container: '#geminiResponse', status: null },
+                { container: '#geminiSavedResults', status: null },
+                { container: '#aiResponse', status: null }
+            ];
+            
+            containerSelectors.forEach(({ container, status }) => {
+                const containerEl = document.querySelector(container);
+                const statusEl = document.querySelector(status);
+                
+                if (containerEl) {
+                    containerEl.style.display = 'none';
+                }
+                if (statusEl) {
+                    statusEl.style.display = 'block';
+                }
+            });
+            
+            // 6. Reset all buttons to initial state (remove loading classes)
+            document.querySelectorAll('button').forEach(btn => {
+                btn.classList.remove('loading');
+                btn.disabled = false;
+                const loader = btn.querySelector('.btn-loader');
+                const text = btn.querySelector('.btn-text');
+                if (loader) loader.style.display = 'none';
+                if (text) text.style.display = 'inline';
+            });
+            
+            // 7. Clear all status messages
+            if (statusDiv) {
+                statusDiv.style.display = 'none';
+            }
+            if (statusMessage) {
+                statusMessage.textContent = '';
+            }
+            
+            // 8. Reset character counts and result displays
+            const resetElements = [
+                '#characterCount', '#customRangeResults', 
+                '#startMarkerResult', '#endMarkerResult'
+            ];
+            
+            resetElements.forEach(selector => {
+                const element = document.querySelector(selector);
+                if (element) {
+                    element.innerHTML = '';
+                    element.style.display = 'none';
+                }
+            });
+            
+            // ========================================
+            // SET CLEAN INITIAL STATE
+            // ========================================
+            
+            // 9. Update URL displays
+            if (currentUrlSpan) {
+                currentUrlSpan.textContent = currentUrl;
+            }
+            if (customRangeDomain) {
+                customRangeDomain.textContent = currentDomain;
+            }
+            
+            // 10. Force Headers tab to be active (both button and pane)
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.dataset.tab === 'header-structure') {
+                    btn.classList.add('active');
+                }
+            });
+            
+            document.querySelectorAll('.tab-pane').forEach(pane => {
+                pane.classList.remove('active');
+                if (pane.id === 'header-structure') {
+                    pane.classList.add('active');
+                }
+            });
+            
+            // 11. Reset mode toggle buttons to 'smart'
+            document.querySelectorAll('.mode-toggle-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.dataset.mode === 'smart') {
+                    btn.classList.add('active');
+                }
+            });
+            
+            // ========================================
+            // LOAD FRESH DATA
+            // ========================================
+            
+            // 12. Load saved data for current URL/domain (this should be minimal)
+            await loadSavedGeminiData(currentUrl);
+            await loadSavedCustomRangeMarkers(currentDomain);
+            
+            // Don't auto-load markdown content - let it be fresh
+            
+            console.log('✅ NUCLEAR RESET COMPLETE for URL:', currentUrl);
+            console.log('🎯 All state cleared, DOM wiped, Headers tab active');
+            
+        } catch (error) {
+            console.error('❌ Nuclear reset failed:', error);
+            throw error;
+        }
+    }
+    
+    // Make functions available globally for debugging
+    window.showStartScreen = showStartScreen;
+    window.hideStartScreen = hideStartScreen;
+    window.performCompleteReset = performCompleteReset;
+    
+    // Nuclear reset function for debugging - can be called from console
+    window.nuclearReset = async function() {
+        console.log('🚨 MANUAL NUCLEAR RESET TRIGGERED');
+        try {
+            await performCompleteReset();
+            switchTab('header-structure');
+            showStatus('success', '💥 Nuclear reset completed - everything wiped clean!');
+        } catch (error) {
+            console.error('Nuclear reset failed:', error);
+            showStatus('error', 'Nuclear reset failed: ' + error.message);
+        }
+    };
 
     console.log('Matrx Side Panel loaded successfully');
 }); 
