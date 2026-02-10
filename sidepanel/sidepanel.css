@@ -398,18 +398,19 @@ body {
 
 /* Auth Status Bar */
 .auth-bar {
-    padding: 8px 12px;
-    background: #fff;
-    border-bottom: 1px solid #e8eaed;
+    padding: var(--m-space-5) var(--m-space-4);
+    background: var(--m-bg-card);
+    border-bottom: 1px solid var(--m-border);
     flex-shrink: 0;
+    backdrop-filter: blur(8px);
 }
 
 .auth-bar-content {
     display: flex;
     align-items: center;
-    gap: 8px;
-    font-size: 12px;
-    color: #5f6368;
+    gap: var(--m-space-3);
+    font-size: var(--m-text-xs);
+    color: var(--m-text-secondary);
 }
 
 .auth-bar-content[style*="display: none"] {
@@ -424,7 +425,8 @@ body {
     width: 16px;
     height: 16px;
     flex-shrink: 0;
-    opacity: 0.6;
+    opacity: 0.7;
+    transition: opacity 0.2s ease;
 }
 
 .auth-bar-icon-ok {
@@ -437,40 +439,53 @@ body {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    font-size: var(--m-text-sm);
+    font-weight: var(--m-weight-medium);
 }
 
 .auth-bar-btn {
-    background: #1a73e8;
-    color: #fff;
+    background: var(--m-brand);
+    color: var(--m-text-inverse);
     border: none;
-    border-radius: 4px;
-    padding: 4px 12px;
-    font-size: 11px;
-    font-weight: 500;
+    border-radius: var(--m-radius-md);
+    padding: 6px 14px;
+    font-size: var(--m-text-xs);
+    font-weight: var(--m-weight-semibold);
     cursor: pointer;
     flex-shrink: 0;
-    transition: background 0.15s;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .auth-bar-btn:hover {
-    background: #1557b0;
+    background: var(--m-brand-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.auth-bar-btn:active {
+    background: var(--m-brand-active);
+    transform: translateY(0);
 }
 
 .auth-bar-btn-settings {
     background: transparent;
-    color: #5f6368;
+    color: var(--m-text-secondary);
     padding: 4px;
-    border-radius: 50%;
+    border-radius: var(--m-radius-full);
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 24px;
-    height: 24px;
+    width: 28px;
+    height: 28px;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
 }
 
 .auth-bar-btn-settings:hover {
-    background: #e8eaed;
+    background: var(--m-bg-hover);
     color: var(--m-text-primary);
+    border-color: var(--m-border);
 }
 
 .auth-bar-btn-settings svg {
@@ -478,51 +493,52 @@ body {
     height: 14px;
 }
 
-/* Tab Navigation - Google-inspired design */
+/* Tab Navigation - Modern design system */
 .tab-navigation {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(72px, 1fr));
-    gap: 6px;
-    margin-bottom: 16px;
-    padding: 8px;
-    background: #ffffff;
-    border-radius: 12px;
-    border: 1px solid #e8eaed;
-    box-shadow: 0 1px 3px rgba(60, 64, 67, 0.12), 0 1px 2px rgba(60, 64, 67, 0.24);
+    gap: var(--m-space-3);
+    margin-bottom: var(--m-space-5);
+    padding: var(--m-space-4);
+    background: var(--m-bg-card);
+    border-radius: var(--m-radius-lg);
+    border: 1px solid var(--m-border);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    backdrop-filter: blur(8px);
 }
 
 .tab-btn {
     background: var(--m-bg-page);
-    border: 1px solid #e8eaed;
-    border-radius: 8px;
-    padding: 10px 6px;
+    border: 1px solid var(--m-border);
+    border-radius: var(--m-radius-md);
+    padding: var(--m-space-3) var(--m-space-2);
     cursor: pointer;
-    transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
-    color: #5f6368;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    color: var(--m-text-secondary);
     font-size: 10px;
-    font-weight: 500;
+    font-weight: var(--m-weight-semibold);
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 4px;
-    min-height: 64px;
+    min-height: 68px;
     position: relative;
     overflow: hidden;
 }
 
 .tab-btn:hover {
-    background: #ffffff;
-    border-color: #dadce0;
+    background: var(--m-bg-card);
+    border-color: var(--m-border-strong);
     color: var(--m-text-primary);
-    transform: translateY(-1px);
-    box-shadow: 0 2px 8px rgba(60, 64, 67, 0.15);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
 }
 
 .tab-btn.active {
-    background: #ffffff;
+    background: linear-gradient(135deg, var(--m-brand-subtle) 0%, var(--m-bg-card) 100%);
     border-color: var(--m-brand);
-    color: var(--m-text-primary);
-    box-shadow: 0 2px 12px rgba(37, 99, 235, 0.2);
+    color: var(--m-brand);
+    box-shadow: 0 4px 16px var(--m-brand-ring);
 }
 
 .tab-btn.active::before {
@@ -531,22 +547,23 @@ body {
     top: 0;
     left: 50%;
     transform: translateX(-50%);
-    width: 24px;
+    width: 28px;
     height: 2px;
     background: var(--m-brand);
     border-radius: 0 0 2px 2px;
+    box-shadow: 0 2px 6px var(--m-brand-ring);
 }
 
 .tab-icon {
     width: 24px;
     height: 24px;
-    transition: transform 0.15s ease, color 0.15s ease;
+    transition: transform 0.2s ease, color 0.2s ease;
     flex-shrink: 0;
     color: var(--m-text-tertiary);
 }
 
 .tab-btn:hover .tab-icon {
-    transform: scale(1.05);
+    transform: scale(1.08);
     color: var(--m-brand);
 }
 
@@ -556,23 +573,23 @@ body {
 
 .tab-text {
     font-size: 9px;
-    font-weight: 500;
+    font-weight: var(--m-weight-semibold);
     text-align: center;
     line-height: 1.2;
-    letter-spacing: 0.02em;
+    letter-spacing: 0.03em;
 }
 
 /* Tab Content - More space for side panel */
 .tab-content {
     flex: 1;
-    background: #1f1f1f;
-    border-radius: 12px;
-    padding: 16px;
-    border: 1px solid #e8eaed;
-    box-shadow: 0 1px 3px rgba(60, 64, 67, 0.12);
+    background: var(--m-bg-page);
+    border-radius: var(--m-radius-lg);
+    padding: var(--m-space-5);
+    border: 1px solid var(--m-border);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
     overflow-y: auto;
-    margin-bottom: 12px;
-    color: #e8eaed;
+    margin-bottom: var(--m-space-4);
+    color: var(--m-text-primary);
 }
 
 .tab-pane {
