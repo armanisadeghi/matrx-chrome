@@ -520,9 +520,9 @@ body {
 
 .tab-btn.active {
     background: #ffffff;
-    border-color: #4285f4;
+    border-color: var(--m-brand);
     color: var(--m-text-primary);
-    box-shadow: 0 2px 12px rgba(66, 133, 244, 0.2);
+    box-shadow: 0 2px 12px rgba(37, 99, 235, 0.2);
 }
 
 .tab-btn.active::before {
@@ -533,20 +533,25 @@ body {
     transform: translateX(-50%);
     width: 24px;
     height: 2px;
-    background: #4285f4;
+    background: var(--m-brand);
     border-radius: 0 0 2px 2px;
 }
 
 .tab-icon {
     width: 24px;
     height: 24px;
-    transition: transform 0.15s ease;
+    transition: transform 0.15s ease, color 0.15s ease;
     flex-shrink: 0;
-    /* Remove fill: currentColor to allow inline colors */
+    color: var(--m-text-tertiary);
 }
 
 .tab-btn:hover .tab-icon {
     transform: scale(1.05);
+    color: var(--m-brand);
+}
+
+.tab-btn.active .tab-icon {
+    color: var(--m-brand);
 }
 
 .tab-text {
@@ -594,6 +599,10 @@ body {
     font-size: 16px;
     font-weight: 600;
     margin-bottom: 4px;
+}
+
+.tab-header h3 .m-icon {
+    color: var(--m-brand);
 }
 
 .tab-header p {
@@ -1287,6 +1296,7 @@ body {
 .placeholder-icon {
     font-size: 48px;
     margin-bottom: 16px;
+    color: var(--m-brand);
 }
 
 .placeholder-content h4 {
@@ -1863,6 +1873,11 @@ body {
 .status-icon {
     font-size: 48px;
     margin-bottom: 16px;
+    color: var(--m-brand);
+}
+
+.status-icon .m-icon {
+    color: var(--m-brand);
 }
 
 .status-text h4 {

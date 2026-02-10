@@ -776,8 +776,9 @@ body.m-base {
 .m-empty-icon {
     width: 48px;
     height: 48px;
-    color: var(--m-text-tertiary);
+    color: var(--m-brand);
     margin-bottom: var(--m-space-3);
+    opacity: 0.7;
 }
 
 .m-empty-title {
@@ -854,6 +855,13 @@ body.m-base {
 .m-flex-center { display: flex; align-items: center; justify-content: center; }
 .m-flex-between { display: flex; align-items: center; justify-content: space-between; }
 .m-grid { display: grid; }
+
+/* Icon color accents — apply to .m-icon or parent to tint icons */
+.m-icon-brand { color: var(--m-brand); }
+.m-icon-success { color: var(--m-success); }
+.m-icon-error { color: var(--m-error); }
+.m-icon-warning { color: var(--m-warning); }
+.m-icon-muted { color: var(--m-text-tertiary); }
 
 /* Misc */
 .m-truncate {
