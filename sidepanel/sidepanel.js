@@ -492,8 +492,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                 await navigator.clipboard.writeText(content);
                 
                 // Show temporary feedback
-                const originalText = copyAiBtn.textContent;
-                copyAiBtn.textContent = '✅ Copied!';
+                const originalHtml = copyAiBtn.innerHTML;
+                copyAiBtn.innerHTML = '<span class="m-icon m-icon-sm m-icon-check-circle"></span> Copied!';
                 copyAiBtn.disabled = true;
                 
                 setTimeout(() => {
@@ -1099,12 +1099,12 @@ document.addEventListener('DOMContentLoaded', async () => {
                 await navigator.clipboard.writeText(currentGeminiContent);
                 
                 // Show temporary feedback
-                const originalText = copyGeminiBtn.textContent;
-                copyGeminiBtn.textContent = '✅ Copied!';
+                const originalHtml = copyGeminiBtn.innerHTML;
+                copyGeminiBtn.innerHTML = '<span class="m-icon m-icon-sm m-icon-check-circle"></span> Copied!';
                 copyGeminiBtn.disabled = true;
                 
                 setTimeout(() => {
-                    copyGeminiBtn.textContent = originalText;
+                    copyGeminiBtn.innerHTML = originalHtml;
                     copyGeminiBtn.disabled = false;
                 }, 1500);
             }
@@ -1545,9 +1545,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         
         // Update tab buttons
         document.querySelectorAll('.tab-btn').forEach(btn => {
-            btn.classList.remove('active');
+            btn.classList.remove('active', 'm-tab-active');
             if (btn.dataset.tab === tabId) {
-                btn.classList.add('active');
+                btn.classList.add('active', 'm-tab-active');
             }
         });
         
@@ -1750,12 +1750,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         try {
             await navigator.clipboard.writeText(savedGeminiData.content);
             
-            const originalText = copyGeminiSavedBtn.textContent;
-            copyGeminiSavedBtn.textContent = '✅ Copied!';
+const originalHtml = copyGeminiSavedBtn.innerHTML;
+                copyGeminiSavedBtn.innerHTML = '<span class="m-icon m-icon-sm m-icon-check-circle"></span> Copied!';
             copyGeminiSavedBtn.disabled = true;
             
             setTimeout(() => {
-                copyGeminiSavedBtn.textContent = originalText;
+                copyGeminiSavedBtn.innerHTML = originalHtml;
                 copyGeminiSavedBtn.disabled = false;
             }, 1500);
         } catch (error) {
@@ -2054,7 +2054,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             });
 
             if (response && response.success) {
-                const message = `✅ Found ${response.count} match${response.count !== 1 ? 'es' : ''} at position${response.count !== 1 ? 's' : ''}: ${response.positions.slice(0, 3).join(', ')}${response.count > 3 ? '...' : ''}`;
+                const message = `Found ${response.count} match${response.count !== 1 ? 'es' : ''} at position${response.count !== 1 ? 's' : ''}: ${response.positions.slice(0, 3).join(', ')}${response.count > 3 ? '...' : ''}`;
                 showMarkerResult(resultDiv, 'success', message);
             } else {
                 showMarkerResult(resultDiv, 'error', response?.error || 'Marker not found in HTML');
@@ -2105,7 +2105,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             
             await chrome.storage.local.set({ [storageKey]: dataToSave });
             
-            showMarkerResult(resultDiv, 'success', `✅ ${isStart ? 'Start' : 'End'} marker saved for ${currentDomain}`);
+            showMarkerResult(resultDiv, 'success', `${isStart ? 'Start' : 'End'} marker saved for ${currentDomain}`);
             console.log(`Saved ${type} marker for domain:`, currentDomain);
         } catch (error) {
             console.error(`Failed to save ${type} marker:`, error);
@@ -2385,12 +2385,12 @@ document.addEventListener('DOMContentLoaded', async () => {
                 await navigator.clipboard.writeText(currentCustomRangeContent);
                 
                 // Show temporary feedback
-                const originalText = copyCustomRangeBtn.textContent;
-                copyCustomRangeBtn.textContent = '✅ Copied!';
+                const originalHtml = copyCustomRangeBtn.innerHTML;
+                copyCustomRangeBtn.innerHTML = '<span class="m-icon m-icon-sm m-icon-check-circle"></span> Copied!';
                 copyCustomRangeBtn.disabled = true;
                 
                 setTimeout(() => {
-                    copyCustomRangeBtn.textContent = originalText;
+                    copyCustomRangeBtn.innerHTML = originalHtml;
                     copyCustomRangeBtn.disabled = false;
                 }, 1500);
                 
@@ -2505,7 +2505,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             // Update button text temporarily
             if (markdownCopyBtn) {
                 const originalText = markdownCopyBtn.innerHTML;
-                markdownCopyBtn.innerHTML = '<svg class="btn-icon" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>Copied!';
+                markdownCopyBtn.innerHTML = '<span class="m-icon m-icon-sm m-icon-check-circle"></span> Copied!';
                 setTimeout(() => {
                     markdownCopyBtn.innerHTML = originalText;
                 }, 2000);
@@ -2750,7 +2750,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (headerStructureContent) {
             headerStructureContent.innerHTML = `
                 <div class="no-headers-message">
-                    <div class="icon">📄</div>
+                    <div class="icon m-empty-icon"><span class="m-icon m-icon-xl m-icon-file"></span></div>
                     <h4>No Headers Found</h4>
                     <p>This page doesn't contain any H1, H2, H3, or H4 header elements, or they may be dynamically generated.</p>
                 </div>
@@ -2788,7 +2788,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             // Update button text temporarily
             if (headerCopyBtn) {
                 const originalText = headerCopyBtn.innerHTML;
-                headerCopyBtn.innerHTML = '<svg class="btn-icon" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>Copied!';
+                headerCopyBtn.innerHTML = '<span class="m-icon m-icon-sm m-icon-check-circle"></span> Copied!';
                 setTimeout(() => {
                     headerCopyBtn.innerHTML = originalText;
                 }, 2000);
@@ -3150,7 +3150,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (linkStructureContent) {
             linkStructureContent.innerHTML = `
                 <div class="no-links-message">
-                    <div class="icon">🔗</div>
+                    <div class="icon m-empty-icon"><span class="m-icon m-icon-xl m-icon-link"></span></div>
                     <h4>No Links Found</h4>
                     <p>This page doesn't contain any links in the main content area.</p>
                 </div>
@@ -3167,7 +3167,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (imageStructureContent) {
             imageStructureContent.innerHTML = `
                 <div class="no-images-message">
-                    <div class="icon">🖼️</div>
+                    <div class="icon m-empty-icon"><span class="m-icon m-icon-xl m-icon-image"></span></div>
                     <h4>No Images Found</h4>
                     <p>This page doesn't contain any images in the main content area.</p>
                 </div>
@@ -3197,7 +3197,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             
             if (linkCopyBtn) {
                 const originalText = linkCopyBtn.innerHTML;
-                linkCopyBtn.innerHTML = '<svg class="btn-icon" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>Copied!';
+                linkCopyBtn.innerHTML = '<span class="m-icon m-icon-sm m-icon-check-circle"></span> Copied!';
                 setTimeout(() => linkCopyBtn.innerHTML = originalText, 2000);
             }
         } catch (error) {
@@ -3223,7 +3223,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             
             if (imageCopyBtn) {
                 const originalText = imageCopyBtn.innerHTML;
-                imageCopyBtn.innerHTML = '<svg class="btn-icon" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>Copied!';
+                imageCopyBtn.innerHTML = '<span class="m-icon m-icon-sm m-icon-check-circle"></span> Copied!';
                 setTimeout(() => imageCopyBtn.innerHTML = originalText, 2000);
             }
         } catch (error) {
@@ -4198,9 +4198,9 @@ document.addEventListener('DOMContentLoaded', async () => {
             
             // 10. Force Headers tab to be active (both button and pane)
             document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.classList.remove('active');
+                btn.classList.remove('active', 'm-tab-active');
                 if (btn.dataset.tab === 'header-structure') {
-                    btn.classList.add('active');
+                    btn.classList.add('active', 'm-tab-active');
                 }
             });
             

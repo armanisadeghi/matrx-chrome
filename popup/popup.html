@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="../styles/icons.css">
     <link rel="stylesheet" href="popup.css">
 </head>
-<body>
+<body class="m-base">
     <div class="container">
         <div class="header">
             <div class="header-content">
@@ -16,10 +16,8 @@
                     <h1>Matrx</h1>
                     <p class="subtitle">Extract and analyze web content</p>
                 </div>
-                <button class="header-settings-btn" id="headerSettingsBtn">
-                    <svg class="header-settings-icon" viewBox="0 0 24 24">
-                        <path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/>
-                    </svg>
+                <button class="header-settings-btn m-btn m-btn-icon m-btn-ghost" id="headerSettingsBtn">
+                    <span class="m-icon m-icon-sm m-icon-settings header-settings-icon"></span>
                 </button>
             </div>
         </div>
@@ -31,7 +29,7 @@
                     <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/>
                 </svg>
                 <span class="auth-bar-text">Not signed in</span>
-                <button class="auth-bar-btn" id="authBarSignInBtn">Sign In</button>
+                <button class="auth-bar-btn m-btn m-btn-primary m-btn-sm" id="authBarSignInBtn">Sign In</button>
             </div>
             <div class="auth-bar-content auth-bar-authenticated" id="authBarSignedIn" style="display: none;">
                 <svg class="auth-bar-icon auth-bar-icon-ok" viewBox="0 0 24 24" fill="currentColor">
@@ -42,59 +40,41 @@
         </div>
         
         <!-- Tab Navigation -->
-        <div class="tab-navigation">
-            <button class="tab-btn active" data-tab="html-extraction">
-                <svg class="tab-icon" viewBox="0 0 24 24">
-                    <path d="M12 15.5A3.5 3.5 0 0 1 8.5 12A3.5 3.5 0 0 1 12 8.5a3.5 3.5 0 0 1 3.5 3.5a3.5 3.5 0 0 1-3.5 3.5m7.43-2.53c.04-.32.07-.64.07-.97c0-.33-.03-.66-.07-1l2.11-1.63c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.31-.61-.22l-2.49 1c-.52-.39-1.06-.73-1.69-.98l-.37-2.65A.506.506 0 0 0 14 2h-4c-.25 0-.46.18-.5.42l-.37 2.65c-.63.25-1.17.59-1.69.98l-2.49-1c-.22-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64L4.57 11c-.04.34-.07.67-.07 1c0 .33.03.65.07.97l-2.11 1.66c-.19.15-.25.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1.01c.52.4 1.06.74 1.69.99l.37 2.65c.04.24.25.42.5.42h4c.25 0 .46-.18.5-.42l.37-2.65c.63-.26 1.17-.59 1.69-.99l2.49 1.01c.22.08.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.66Z"/>
-                </svg>
+        <div class="tab-navigation m-tabs">
+            <button class="tab-btn m-tab m-tab-active active" data-tab="html-extraction">
+                <span class="m-icon m-icon-sm m-icon-code tab-icon"></span>
                 <span class="tab-text">HTML</span>
             </button>
-            <button class="tab-btn" data-tab="ai-processing">
-                <svg class="tab-icon" viewBox="0 0 24 24">
-                    <path d="M12.5 8c-2.65 0-5.05.99-6.9 2.6L2 7v9h9l-3.62-3.62c1.39-1.16 3.16-1.88 5.12-1.88 3.54 0 6.55 2.31 7.6 5.5l2.37-.78C21.08 11.03 17.15 8 12.5 8z"/>
-                </svg>
+            <button class="tab-btn m-tab" data-tab="ai-processing">
+                <span class="m-icon m-icon-sm m-icon-bot tab-icon"></span>
                 <span class="tab-text">AI</span>
             </button>
-            <button class="tab-btn" data-tab="gemini-ai">
-                <svg class="tab-icon" viewBox="0 0 24 24">
-                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                </svg>
+            <button class="tab-btn m-tab" data-tab="gemini-ai">
+                <span class="m-icon m-icon-sm m-icon-sparkles tab-icon"></span>
                 <span class="tab-text">Gemini</span>
             </button>
-            <button class="tab-btn" data-tab="custom-range">
-                <svg class="tab-icon" viewBox="0 0 24 24">
-                    <path d="M9 11H7v6h2v-6zm4 0h-2v6h2v-6zm4 0h-2v6h2v-6zm2.5-5H19V4h-1V2h-2v2H8V2H6v2H5v2h-.5C3.67 6 3 6.67 3 7.5S3.67 9 4.5 9H5v10c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V9h.5c.83 0 1.5-.67 1.5-1.5S19.33 6 18.5 6z"/>
-                </svg>
+            <button class="tab-btn m-tab" data-tab="custom-range">
+                <span class="m-icon m-icon-sm m-icon-target tab-icon"></span>
                 <span class="tab-text">Custom</span>
             </button>
-            <button class="tab-btn" data-tab="header-structure">
-                <svg class="tab-icon" viewBox="0 0 24 24">
-                    <path d="M3 3v18h18V3H3zm16 16H5V5h14v14zm-2-2H7v-2h10v2zm0-4H7v-2h10v2zm0-4H7V7h10v2z"/>
-                </svg>
+            <button class="tab-btn m-tab" data-tab="header-structure">
+                <span class="m-icon m-icon-sm m-icon-headers tab-icon"></span>
                 <span class="tab-text">Headers</span>
             </button>
-            <button class="tab-btn" data-tab="seo-analyzer">
-                <svg class="tab-icon" viewBox="0 0 24 24">
-                    <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
-                </svg>
+            <button class="tab-btn m-tab" data-tab="seo-analyzer">
+                <span class="m-icon m-icon-sm m-icon-search tab-icon"></span>
                 <span class="tab-text">SEO</span>
             </button>
-            <button class="tab-btn" data-tab="fact-checker">
-                <svg class="tab-icon" viewBox="0 0 24 24">
-                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-                </svg>
+            <button class="tab-btn m-tab" data-tab="fact-checker">
+                <span class="m-icon m-icon-sm m-icon-check-circle tab-icon"></span>
                 <span class="tab-text">Facts</span>
             </button>
-            <button class="tab-btn" data-tab="link-analyzer">
-                <svg class="tab-icon" viewBox="0 0 24 24">
-                    <path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"/>
-                </svg>
+            <button class="tab-btn m-tab" data-tab="link-analyzer">
+                <span class="m-icon m-icon-sm m-icon-link tab-icon"></span>
                 <span class="tab-text">Links</span>
             </button>
-            <button class="tab-btn" data-tab="image-analyzer">
-                <svg class="tab-icon" viewBox="0 0 24 24">
-                    <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
-                </svg>
+            <button class="tab-btn m-tab" data-tab="image-analyzer">
+                <span class="m-icon m-icon-sm m-icon-image tab-icon"></span>
                 <span class="tab-text">Images</span>
             </button>
         </div>
@@ -104,27 +84,27 @@
             <!-- HTML Extraction Tab -->
             <div id="html-extraction" class="tab-pane active">
                 <div class="tab-header">
-                    <h3>🔧 HTML Extraction</h3>
+                    <h3><span class="m-icon m-icon-wrench"></span> HTML Extraction</h3>
                     <p>Extract HTML content with various filtering options</p>
                 </div>
                 
-                <button id="extractBtn" class="extract-btn">
+                <button id="extractBtn" class="extract-btn m-btn m-btn-primary">
                     <span class="btn-text">Extract Current Page</span>
                     <span class="btn-loader" style="display: none;">Extracting...</span>
                 </button>
                 
-                <button id="copyFullBtn" class="copy-btn">
-                    <span class="btn-text">📋 Copy Full HTML</span>
+                <button id="copyFullBtn" class="copy-btn m-btn m-btn-secondary">
+                    <span class="btn-text"><span class="m-icon m-icon-sm m-icon-copy"></span> Copy Full HTML</span>
                     <span class="btn-loader" style="display: none;">Copying...</span>
                 </button>
                 
-                <button id="copySmartBtn" class="copy-btn copy-btn-smart">
-                    <span class="btn-text">✨ Copy Smart HTML</span>
+                <button id="copySmartBtn" class="copy-btn copy-btn-smart m-btn m-btn-secondary">
+                    <span class="btn-text"><span class="m-icon m-icon-sm m-icon-sparkles"></span> Copy Smart HTML</span>
                     <span class="btn-loader" style="display: none;">Copying...</span>
                 </button>
                 
-                <button id="copyCustomSmartBtn" class="copy-btn copy-btn-custom-smart">
-                    <span class="btn-text">🎯 Copy Custom Smart HTML</span>
+                <button id="copyCustomSmartBtn" class="copy-btn copy-btn-custom-smart m-btn m-btn-secondary">
+                    <span class="btn-text"><span class="m-icon m-icon-sm m-icon-target"></span> Copy Custom Smart HTML</span>
                     <span class="btn-loader" style="display: none;">Copying...</span>
                 </button>
             </div>
@@ -132,22 +112,22 @@
             <!-- AI Processing Tab -->
             <div id="ai-processing" class="tab-pane">
                 <div class="tab-header">
-                    <h3>🤖 AI Processing</h3>
+                    <h3><span class="m-icon m-icon-bot"></span> AI Processing</h3>
                     <p>Advanced AI analysis with database storage</p>
                 </div>
                 
-                <button id="testApiBtn" class="test-api-btn">
-                    <span class="btn-text">🤖 Test AI Processing</span>
+                <button id="testApiBtn" class="test-api-btn m-btn m-btn-primary">
+                    <span class="btn-text"><span class="m-icon m-icon-sm m-icon-bot"></span> Test AI Processing</span>
                     <span class="btn-loader" style="display: none;">Processing...</span>
                 </button>
                 
-                <button id="testApiSmartBtn" class="test-api-btn test-api-btn-smart">
-                    <span class="btn-text">✨ Test AI (Smart HTML)</span>
+                <button id="testApiSmartBtn" class="test-api-btn test-api-btn-smart m-btn m-btn-secondary">
+                    <span class="btn-text"><span class="m-icon m-icon-sm m-icon-sparkles"></span> Test AI (Smart HTML)</span>
                     <span class="btn-loader" style="display: none;">Processing...</span>
                 </button>
                 
-                <button id="testApiCustomSmartBtn" class="test-api-btn test-api-btn-custom-smart">
-                    <span class="btn-text">🎯 Test AI (Custom Smart HTML)</span>
+                <button id="testApiCustomSmartBtn" class="test-api-btn test-api-btn-custom-smart m-btn m-btn-secondary">
+                    <span class="btn-text"><span class="m-icon m-icon-sm m-icon-target"></span> Test AI (Custom Smart HTML)</span>
                     <span class="btn-loader" style="display: none;">Processing...</span>
                 </button>
                 
@@ -155,22 +135,22 @@
                     <div class="ai-response-header">AI Processing Results:</div>
                     
                     <div class="ai-tabs">
-                        <button class="ai-tab active" data-tab="ai_content">🤖 AI Content</button>
-                        <button class="ai-tab" data-tab="ai_research_content">🔍 Research</button>
-                        <button class="ai-tab" data-tab="markdown_renderable">📝 Markdown</button>
-                        <button class="ai-tab" data-tab="organized_data">📊 JSON Data</button>
-                        <button class="ai-tab" data-tab="full_response">🔧 Full Response</button>
+                        <button class="ai-tab m-tab m-tab-active active" data-tab="ai_content"><span class="m-icon m-icon-sm m-icon-bot"></span> AI Content</button>
+                        <button class="ai-tab m-tab" data-tab="ai_research_content"><span class="m-icon m-icon-sm m-icon-search"></span> Research</button>
+                        <button class="ai-tab m-tab" data-tab="markdown_renderable"><span class="m-icon m-icon-sm m-icon-file-text"></span> Markdown</button>
+                        <button class="ai-tab m-tab" data-tab="organized_data"><span class="m-icon m-icon-sm m-icon-bar-chart"></span> JSON Data</button>
+                        <button class="ai-tab m-tab" data-tab="full_response"><span class="m-icon m-icon-sm m-icon-wrench"></span> Full Response</button>
                     </div>
                     
                     <div class="ai-response-content" id="aiResponseContent"></div>
                     <div class="ai-response-actions">
-                        <button id="copyAiBtn" class="ai-action-btn">📋 Copy Current</button>
+                        <button id="copyAiBtn" class="ai-action-btn m-btn m-btn-secondary"><span class="m-icon m-icon-sm m-icon-copy"></span> Copy Current</button>
                         <div class="expand-buttons">
-                            <button id="expandAiContentBtn" class="ai-expand-btn">📖 AI Content</button>
-                            <button id="expandResearchBtn" class="ai-expand-btn">📖 Research</button>
-                            <button id="expandMarkdownBtn" class="ai-expand-btn">📖 Markdown</button>
-                            <button id="expandJsonBtn" class="ai-expand-btn">📖 JSON Data</button>
-                            <button id="expandFullResponseBtn" class="ai-expand-btn">📖 Full Response</button>
+                            <button id="expandAiContentBtn" class="ai-expand-btn m-btn m-btn-ghost"><span class="m-icon m-icon-sm m-icon-book-open"></span> AI Content</button>
+                            <button id="expandResearchBtn" class="ai-expand-btn m-btn m-btn-ghost"><span class="m-icon m-icon-sm m-icon-book-open"></span> Research</button>
+                            <button id="expandMarkdownBtn" class="ai-expand-btn m-btn m-btn-ghost"><span class="m-icon m-icon-sm m-icon-book-open"></span> Markdown</button>
+                            <button id="expandJsonBtn" class="ai-expand-btn m-btn m-btn-ghost"><span class="m-icon m-icon-sm m-icon-book-open"></span> JSON Data</button>
+                            <button id="expandFullResponseBtn" class="ai-expand-btn m-btn m-btn-ghost"><span class="m-icon m-icon-sm m-icon-book-open"></span> Full Response</button>
                         </div>
                     </div>
                 </div>
@@ -179,49 +159,49 @@
             <!-- Gemini AI Tab -->
             <div id="gemini-ai" class="tab-pane">
                 <div class="tab-header">
-                    <h3>✨ Gemini AI</h3>
+                    <h3><span class="m-icon m-icon-sparkles"></span> Gemini AI</h3>
                     <p>Direct Gemini API content extraction with local caching</p>
                 </div>
                 
                 <!-- Saved Gemini Results Section -->
                 <div id="geminiSavedResults" class="saved-results" style="display: none;">
                     <div class="saved-results-header">
-                        <h4>📁 Cached Results</h4>
+                        <h4><span class="m-icon m-icon-folder"></span> Cached Results</h4>
                         <span id="geminiCacheTime" class="cache-time"></span>
                     </div>
                     <div class="saved-results-content" id="geminiSavedContent"></div>
                     <div class="saved-results-actions">
-                        <button id="copyGeminiSavedBtn" class="gemini-action-btn">📋 Copy Cached Text</button>
-                        <button id="expandGeminiSavedBtn" class="gemini-action-btn">📖 View Full Text</button>
-                        <button id="refreshGeminiBtn" class="gemini-refresh-btn">🔄 Refresh</button>
+                        <button id="copyGeminiSavedBtn" class="gemini-action-btn m-btn m-btn-secondary"><span class="m-icon m-icon-sm m-icon-copy"></span> Copy Cached Text</button>
+                        <button id="expandGeminiSavedBtn" class="gemini-action-btn m-btn m-btn-ghost"><span class="m-icon m-icon-sm m-icon-book-open"></span> View Full Text</button>
+                        <button id="refreshGeminiBtn" class="gemini-refresh-btn m-btn m-btn-ghost"><span class="m-icon m-icon-sm m-icon-refresh"></span> Refresh</button>
                     </div>
                 </div>
                 
                 <!-- Gemini Extraction Buttons -->
                 <div class="gemini-extraction">
-                    <button id="geminiExtractFullBtn" class="gemini-btn gemini-btn-full">
-                        <span class="btn-text">🤖 Extract Clean Text (Full HTML)</span>
+                    <button id="geminiExtractFullBtn" class="gemini-btn gemini-btn-full m-btn m-btn-primary">
+                        <span class="btn-text"><span class="m-icon m-icon-sm m-icon-bot"></span> Extract Clean Text (Full HTML)</span>
                         <span class="btn-loader" style="display: none;">Extracting...</span>
                     </button>
                     
-                    <button id="geminiExtractSmartBtn" class="gemini-btn gemini-btn-smart">
-                        <span class="btn-text">✨ Extract Clean Text (Smart HTML)</span>
+                    <button id="geminiExtractSmartBtn" class="gemini-btn gemini-btn-smart m-btn m-btn-secondary">
+                        <span class="btn-text"><span class="m-icon m-icon-sm m-icon-sparkles"></span> Extract Clean Text (Smart HTML)</span>
                         <span class="btn-loader" style="display: none;">Extracting...</span>
                     </button>
                     
-                    <button id="geminiExtractCustomBtn" class="gemini-btn gemini-btn-custom">
-                        <span class="btn-text">🎯 Extract Clean Text (Custom HTML)</span>
+                    <button id="geminiExtractCustomBtn" class="gemini-btn gemini-btn-custom m-btn m-btn-secondary">
+                        <span class="btn-text"><span class="m-icon m-icon-sm m-icon-target"></span> Extract Clean Text (Custom HTML)</span>
                         <span class="btn-loader" style="display: none;">Extracting...</span>
                     </button>
                 </div>
                 
                 <!-- New Gemini Results -->
                 <div class="gemini-response" id="geminiResponse" style="display: none;">
-                    <div class="gemini-response-header">🤖 Extracted Clean Text:</div>
+                    <div class="gemini-response-header"><span class="m-icon m-icon-bot"></span> Extracted Clean Text:</div>
                     <div class="gemini-response-content" id="geminiResponseContent"></div>
                     <div class="gemini-response-actions">
-                        <button id="copyGeminiBtn" class="gemini-action-btn">📋 Copy Clean Text</button>
-                        <button id="expandGeminiBtn" class="gemini-action-btn">📖 View Full Text</button>
+                        <button id="copyGeminiBtn" class="gemini-action-btn m-btn m-btn-secondary"><span class="m-icon m-icon-sm m-icon-copy"></span> Copy Clean Text</button>
+                        <button id="expandGeminiBtn" class="gemini-action-btn m-btn m-btn-ghost"><span class="m-icon m-icon-sm m-icon-book-open"></span> View Full Text</button>
                     </div>
                 </div>
             </div>
@@ -229,7 +209,7 @@
             <!-- Custom Range Tab -->
             <div id="custom-range" class="tab-pane">
                 <div class="tab-header">
-                    <h3>🎯 Custom Range Extraction</h3>
+                    <h3><span class="m-icon m-icon-target"></span> Custom Range Extraction</h3>
                     <p>Extract content between specific text markers with optional Gemini processing</p>
                 </div>
                 
@@ -245,12 +225,12 @@
                         <label for="startMarker" class="marker-label">Start Marker (HTML to find):</label>
                         <textarea id="startMarker" class="marker-input" placeholder="Enter HTML marker like: &lt;div class=&quot;article-content&quot;&gt; or &lt;main&gt; or &lt;!-- article start --&gt;" rows="2"></textarea>
                         <div class="marker-actions">
-                            <button id="testStartMarkerBtn" class="marker-test-btn" disabled>
-                                <span class="btn-text">🔍 Test Start</span>
+                            <button id="testStartMarkerBtn" class="marker-test-btn m-btn m-btn-secondary" disabled>
+                                <span class="btn-text"><span class="m-icon m-icon-sm m-icon-search"></span> Test Start</span>
                                 <span class="btn-loader" style="display: none;">Testing...</span>
                             </button>
-                            <button id="saveStartMarkerBtn" class="marker-save-btn" disabled>
-                                <span class="btn-text">💾 Save Start</span>
+                            <button id="saveStartMarkerBtn" class="marker-save-btn m-btn m-btn-secondary" disabled>
+                                <span class="btn-text"><span class="m-icon m-icon-sm m-icon-save"></span> Save Start</span>
                                 <span class="btn-loader" style="display: none;">Saving...</span>
                             </button>
                         </div>
@@ -261,12 +241,12 @@
                         <label for="endMarker" class="marker-label">End Marker (HTML to find):</label>
                         <textarea id="endMarker" class="marker-input" placeholder="Enter HTML marker like: &lt;/article&gt; or &lt;footer&gt; or &lt;!-- article end --&gt;" rows="2"></textarea>
                         <div class="marker-actions">
-                            <button id="testEndMarkerBtn" class="marker-test-btn" disabled>
-                                <span class="btn-text">🔍 Test End</span>
+                            <button id="testEndMarkerBtn" class="marker-test-btn m-btn m-btn-secondary" disabled>
+                                <span class="btn-text"><span class="m-icon m-icon-sm m-icon-search"></span> Test End</span>
                                 <span class="btn-loader" style="display: none;">Testing...</span>
                             </button>
-                            <button id="saveEndMarkerBtn" class="marker-save-btn" disabled>
-                                <span class="btn-text">💾 Save End</span>
+                            <button id="saveEndMarkerBtn" class="marker-save-btn m-btn m-btn-secondary" disabled>
+                                <span class="btn-text"><span class="m-icon m-icon-sm m-icon-save"></span> Save End</span>
                                 <span class="btn-loader" style="display: none;">Saving...</span>
                             </button>
                         </div>
@@ -286,40 +266,40 @@
                 
                 <!-- Action Buttons -->
                 <div class="custom-range-actions">
-                    <button id="previewRangeBtn" class="custom-range-btn preview-btn">
-                        <span class="btn-text">📊 Preview Content</span>
+                    <button id="previewRangeBtn" class="custom-range-btn preview-btn m-btn m-btn-primary">
+                        <span class="btn-text"><span class="m-icon m-icon-sm m-icon-bar-chart"></span> Preview Content</span>
                         <span class="btn-loader" style="display: none;">Analyzing...</span>
                     </button>
                     
-                    <button id="extractRangeBtn" class="custom-range-btn extract-btn" disabled>
-                        <span class="btn-text">📋 Extract Content</span>
+                    <button id="extractRangeBtn" class="custom-range-btn extract-btn m-btn m-btn-secondary" disabled>
+                        <span class="btn-text"><span class="m-icon m-icon-sm m-icon-copy"></span> Extract Content</span>
                         <span class="btn-loader" style="display: none;">Extracting...</span>
                     </button>
                     
-                    <button id="geminiRangeBtn" class="custom-range-btn gemini-btn" disabled>
-                        <span class="btn-text">🤖 Extract + Gemini</span>
+                    <button id="geminiRangeBtn" class="custom-range-btn gemini-btn m-btn m-btn-secondary" disabled>
+                        <span class="btn-text"><span class="m-icon m-icon-sm m-icon-bot"></span> Extract + Gemini</span>
                         <span class="btn-loader" style="display: none;">Processing...</span>
                     </button>
                 </div>
                 
                 <!-- Save/Load Markers -->
                 <div class="marker-management">
-                    <button id="saveMarkersBtn" class="marker-mgmt-btn">💾 Save for Domain</button>
-                    <button id="clearMarkersBtn" class="marker-mgmt-btn">🗑️ Clear Markers</button>
+                    <button id="saveMarkersBtn" class="marker-mgmt-btn m-btn m-btn-secondary"><span class="m-icon m-icon-sm m-icon-save"></span> Save for Domain</button>
+                    <button id="clearMarkersBtn" class="marker-mgmt-btn m-btn m-btn-danger"><span class="m-icon m-icon-sm m-icon-trash"></span> Clear Markers</button>
                 </div>
                 
                 <!-- Custom Range Results -->
                 <div class="custom-range-results" id="customRangeResults" style="display: none;">
                     <div class="results-header">
-                        <h4>📄 Extracted Content</h4>
+                        <h4><span class="m-icon m-icon-file"></span> Extracted Content</h4>
                         <div class="results-info">
                             <span class="results-length" id="resultsLength">0 characters</span>
                         </div>
                     </div>
                     <div class="results-content" id="customRangeContent"></div>
                     <div class="results-actions">
-                        <button id="copyCustomRangeBtn" class="results-action-btn">📋 Copy Content</button>
-                        <button id="expandCustomRangeBtn" class="results-action-btn">📖 View Full Content</button>
+                        <button id="copyCustomRangeBtn" class="results-action-btn m-btn m-btn-secondary"><span class="m-icon m-icon-sm m-icon-copy"></span> Copy Content</button>
+                        <button id="expandCustomRangeBtn" class="results-action-btn m-btn m-btn-ghost"><span class="m-icon m-icon-sm m-icon-book-open"></span> View Full Content</button>
                     </div>
                 </div>
             </div>
@@ -327,11 +307,11 @@
             <!-- Future Feature Tabs (Placeholders) -->
             <div id="header-structure" class="tab-pane">
                 <div class="tab-header">
-                    <h3>📊 Header Structure</h3>
+                    <h3><span class="m-icon m-icon-bar-chart"></span> Header Structure</h3>
                     <p>Analyze page header hierarchy and structure</p>
                 </div>
-                <div class="placeholder-content">
-                    <div class="placeholder-icon">📊</div>
+                <div class="placeholder-content m-empty">
+                    <div class="placeholder-icon m-empty-icon"><span class="m-icon m-icon-xl m-icon-bar-chart"></span></div>
                     <h4>Coming Soon</h4>
                     <p>Header structure analysis will help you understand the page's content hierarchy and organization.</p>
                 </div>
@@ -339,11 +319,11 @@
             
             <div id="seo-analyzer" class="tab-pane">
                 <div class="tab-header">
-                    <h3>🔍 SEO Analyzer</h3>
+                    <h3><span class="m-icon m-icon-search"></span> SEO Analyzer</h3>
                     <p>Comprehensive SEO analysis and recommendations</p>
                 </div>
-                <div class="placeholder-content">
-                    <div class="placeholder-icon">🔍</div>
+                <div class="placeholder-content m-empty">
+                    <div class="placeholder-icon m-empty-icon"><span class="m-icon m-icon-xl m-icon-search"></span></div>
                     <h4>Coming Soon</h4>
                     <p>SEO analysis will provide insights into page optimization, meta tags, and search engine visibility.</p>
                 </div>
@@ -351,11 +331,11 @@
             
             <div id="fact-checker" class="tab-pane">
                 <div class="tab-header">
-                    <h3>✅ Fact Checker</h3>
+                    <h3><span class="m-icon m-icon-check-circle"></span> Fact Checker</h3>
                     <p>Verify claims and statements on the page</p>
                 </div>
-                <div class="placeholder-content">
-                    <div class="placeholder-icon">✅</div>
+                <div class="placeholder-content m-empty">
+                    <div class="placeholder-icon m-empty-icon"><span class="m-icon m-icon-xl m-icon-check-circle"></span></div>
                     <h4>Coming Soon</h4>
                     <p>Fact checking will help verify the accuracy of claims and statements found on the page.</p>
                 </div>
@@ -363,11 +343,11 @@
             
             <div id="link-analyzer" class="tab-pane">
                 <div class="tab-header">
-                    <h3>🔗 Link Analyzer</h3>
+                    <h3><span class="m-icon m-icon-link"></span> Link Analyzer</h3>
                     <p>Analyze internal and external links</p>
                 </div>
-                <div class="placeholder-content">
-                    <div class="placeholder-icon">🔗</div>
+                <div class="placeholder-content m-empty">
+                    <div class="placeholder-icon m-empty-icon"><span class="m-icon m-icon-xl m-icon-link"></span></div>
                     <h4>Coming Soon</h4>
                     <p>Link analysis will examine all links on the page, checking their status and relevance.</p>
                 </div>
@@ -375,11 +355,11 @@
             
             <div id="image-analyzer" class="tab-pane">
                 <div class="tab-header">
-                    <h3>🖼️ Image Analyzer</h3>
+                    <h3><span class="m-icon m-icon-image"></span> Image Analyzer</h3>
                     <p>Analyze images, alt text, and optimization</p>
                 </div>
-                <div class="placeholder-content">
-                    <div class="placeholder-icon">🖼️</div>
+                <div class="placeholder-content m-empty">
+                    <div class="placeholder-icon m-empty-icon"><span class="m-icon m-icon-xl m-icon-image"></span></div>
                     <h4>Coming Soon</h4>
                     <p>Image analysis will examine all images for optimization, accessibility, and SEO best practices.</p>
                 </div>
@@ -401,10 +381,8 @@
         </div>
         
         <div class="footer">
-            <button class="settings-btn" id="settingsLink">
-                <svg class="settings-icon" viewBox="0 0 24 24">
-                    <path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/>
-                </svg>
+            <button class="settings-btn m-btn m-btn-ghost" id="settingsLink">
+                <span class="m-icon m-icon-sm m-icon-settings settings-icon"></span>
                 <span class="settings-text">Settings</span>
             </button>
         </div>

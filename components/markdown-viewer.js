@@ -109,7 +109,7 @@ class MarkdownViewer {
     addCodeBlockCopyButton(preElement) {
         const copyButton = document.createElement('button');
         copyButton.className = 'code-copy-btn';
-        copyButton.innerHTML = '📋';
+        copyButton.innerHTML = '<span class="m-icon m-icon-sm m-icon-copy"></span>';
         copyButton.title = 'Copy code';
         copyButton.style.cssText = `
             position: absolute;
@@ -143,15 +143,15 @@ class MarkdownViewer {
             const code = preElement.querySelector('code').textContent;
             try {
                 await navigator.clipboard.writeText(code);
-                copyButton.innerHTML = '✅';
+                copyButton.innerHTML = '<span class="m-icon m-icon-sm m-icon-check-circle"></span> Copied!';
                 setTimeout(() => {
-                    copyButton.innerHTML = '📋';
+                    copyButton.innerHTML = '<span class="m-icon m-icon-sm m-icon-copy"></span>';
                 }, 1500);
             } catch (error) {
                 console.error('Failed to copy code:', error);
-                copyButton.innerHTML = '❌';
+                copyButton.innerHTML = 'Failed';
                 setTimeout(() => {
-                    copyButton.innerHTML = '📋';
+                    copyButton.innerHTML = '<span class="m-icon m-icon-sm m-icon-copy"></span>';
                 }, 1500);
             }
         });
@@ -163,11 +163,11 @@ class MarkdownViewer {
         if (this.isRenderedView) {
             this.elements.renderedContent.style.display = 'block';
             this.elements.rawContent.style.display = 'none';
-            this.elements.toggleBtn.textContent = '🔄 Show Raw';
+            this.elements.toggleBtn.textContent = 'Show Raw';
         } else {
             this.elements.renderedContent.style.display = 'none';
             this.elements.rawContent.style.display = 'block';
-            this.elements.toggleBtn.textContent = '🔄 Show Rendered';
+            this.elements.toggleBtn.textContent = 'Show Rendered';
         }
     }
     
@@ -181,7 +181,7 @@ class MarkdownViewer {
             
             // Show feedback
             const originalText = this.elements.copyBtn.textContent;
-            this.elements.copyBtn.textContent = '✅ Copied!';
+            this.elements.copyBtn.textContent = 'Copied!';
             this.elements.copyBtn.disabled = true;
             
             setTimeout(() => {
@@ -194,7 +194,7 @@ class MarkdownViewer {
             
             // Show error feedback
             const originalText = this.elements.copyBtn.textContent;
-            this.elements.copyBtn.textContent = '❌ Failed';
+            this.elements.copyBtn.textContent = 'Failed';
             
             setTimeout(() => {
                 this.elements.copyBtn.textContent = originalText;
@@ -213,7 +213,7 @@ class MarkdownViewer {
                 color: #ef4444;
                 text-align: center;
             ">
-                <div style="font-size: 48px; margin-bottom: 20px;">⚠️</div>
+                <div class="m-empty-icon" style="margin-bottom: 20px;"><span class="m-icon m-icon-xl m-icon-alert-triangle"></span></div>
                 <h2 style="margin-bottom: 10px; color: #dc2626;">Error</h2>
                 <p style="color: #64748b;">${message}</p>
             </div>

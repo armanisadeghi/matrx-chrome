@@ -313,7 +313,7 @@ function handleExtractionProcessed(data) {
         
         // Example: Show a subtle notification
         if (data.success) {
-            showNotification('✅ Page processed successfully by backend', 'success');
+            showNotification('Page processed successfully by backend', 'success');
         }
     } catch (error) {
         console.warn('Extraction processed handler failed:', error);
@@ -323,7 +323,7 @@ function handleExtractionProcessed(data) {
 function handleAnalysisComplete(data) {
     try {
         console.log('Analysis complete:', data);
-        showNotification('🔍 Analysis complete', 'info');
+        showNotification('Analysis complete', 'info');
     } catch (error) {
         console.warn('Analysis complete handler failed:', error);
     }

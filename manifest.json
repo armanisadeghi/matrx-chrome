@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Matrx",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "Matrx platform extension for web content extraction and analysis",
   "permissions": [
     "activeTab",
@@ -31,8 +31,12 @@
   "options_page": "options/options.html",
   "content_scripts": [
     {
-      "matches": ["<all_urls>"],
-      "js": ["content/content.js"],
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "content/content.js"
+      ],
       "run_at": "document_end"
     }
   ],
@@ -48,17 +52,19 @@
   "web_accessible_resources": [
     {
       "resources": [
-        "socket/socket-client.js", 
-        "socket/socket.io.min.js", 
-        "lib/supabase.js", 
-        "lib/auth.js", 
-        "lib/gemini-client.js", 
+        "socket/socket-client.js",
+        "socket/socket.io.min.js",
+        "lib/supabase.js",
+        "lib/auth.js",
+        "lib/gemini-client.js",
         "styles/*",
         "components/*",
         "templates/*",
         "popup/template-loader.js"
       ],
-      "matches": ["<all_urls>"]
+      "matches": [
+        "<all_urls>"
+      ]
     }
   ]
-} 
+}

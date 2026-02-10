@@ -6,11 +6,11 @@
     <title>Matrx - {{contentType}}</title>
     <style>
         :root {
-            --matrx-primary: #667eea;
-            --matrx-text-dark: #374151;
-            --matrx-text-light: #64748b;
-            --matrx-border: #e2e8f0;
-            --matrx-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+            --matrx-primary: var(--m-brand, #2563eb);
+            --matrx-text-dark: var(--m-text-primary, #0f172a);
+            --matrx-text-light: var(--m-text-secondary, #475569);
+            --matrx-border: var(--m-border, #e2e8f0);
+            --matrx-shadow: var(--m-shadow-md, 0 4px 12px rgba(0, 0, 0, 0.08));
         }
         
         * {
@@ -20,13 +20,13 @@
         }
         
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: var(--m-font-sans, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif);
             max-width: 1000px;
             margin: 0 auto;
-            padding: 40px 20px;
-            line-height: 1.6;
+            padding: var(--m-space-10, 40px) var(--m-space-5, 20px);
+            line-height: var(--m-leading-normal, 1.6);
             color: var(--matrx-text-dark);
-            background: #f8fafc;
+            background: var(--m-bg-page, #f8f9fb);
         }
         
         .header {
@@ -80,12 +80,12 @@
         }
         
         .copy-btn:hover {
-            background: #5a67d8;
+            background: var(--m-brand-hover, #1d4ed8);
             transform: translateY(-1px);
         }
         
             .copy-btn:disabled {
-                background: #22c55e;
+                background: var(--m-success);
                 cursor: not-allowed;
                 transform: none;
             }
@@ -100,14 +100,14 @@
 </head>
 <body>
     <div class="header">
-        <h1>🤖 Matrx - {{contentType}}</h1>
+        <h1>Matrx - {{contentType}}</h1>
         <p>AI-processed content from your webpage</p>
     </div>
     
     <div class="content" id="content">{{content}}</div>
     
     <div class="actions">
-        <button class="copy-btn" onclick="copyContent()">📋 Copy Content</button>
+        <button class="copy-btn m-btn m-btn-primary" onclick="copyContent()">Copy Content</button>
     </div>
 
     <script>
@@ -118,7 +118,7 @@
             const btn = document.querySelector('.copy-btn');
             
             if (!content) {
-                showCopyFeedback(btn, '❌ No Content', 'error');
+                showCopyFeedback(btn, 'No Content', 'error');
                 return;
             }
             
@@ -126,7 +126,7 @@
                 // Use modern clipboard API as primary method
                 if (navigator.clipboard && navigator.clipboard.writeText) {
                     await navigator.clipboard.writeText(content);
-                    showCopyFeedback(btn, '✅ Copied!', 'success');
+                    showCopyFeedback(btn, 'Copied!', 'success');
                     console.log('Content copied via Clipboard API');
                 } else {
                     // Fallback: create temporary textarea
@@ -144,7 +144,7 @@
                     document.body.removeChild(tempTextarea);
                     
                     if (successful) {
-                        showCopyFeedback(btn, '✅ Copied!', 'success');
+                        showCopyFeedback(btn, 'Copied!', 'success');
                         console.log('Content copied via execCommand');
                     } else {
                         throw new Error('execCommand failed');
@@ -152,7 +152,7 @@
                 }
             } catch (error) {
                 console.error('Copy failed:', error);
-                showCopyFeedback(btn, '❌ Failed', 'error');
+                showCopyFeedback(btn, 'Failed', 'error');
             }
         }
         
@@ -163,7 +163,7 @@
             
             // Update button text and color
             button.textContent = text;
-            button.style.color = type === 'success' ? '#22c55e' : '#ef4444';
+            button.style.color = type === 'success' ? 'var(--m-success)' : 'var(--m-error)';
             button.style.transform = 'scale(1.05)';
             button.disabled = true;
             

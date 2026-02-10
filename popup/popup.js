@@ -248,12 +248,12 @@ document.addEventListener('DOMContentLoaded', async () => {
                 await navigator.clipboard.writeText(content);
                 
                 // Show temporary feedback
-                const originalText = copyAiBtn.textContent;
-                copyAiBtn.textContent = '✅ Copied!';
+                const originalHtml = copyAiBtn.innerHTML;
+                copyAiBtn.innerHTML = '<span class="m-icon m-icon-sm m-icon-check-circle"></span> Copied!';
                 copyAiBtn.disabled = true;
                 
                 setTimeout(() => {
-                    copyAiBtn.textContent = originalText;
+                    copyAiBtn.innerHTML = originalHtml;
                     copyAiBtn.disabled = false;
                 }, 1500);
             }
@@ -763,12 +763,12 @@ document.addEventListener('DOMContentLoaded', async () => {
                 await navigator.clipboard.writeText(currentGeminiContent);
                 
                 // Show temporary feedback
-                const originalText = copyGeminiBtn.textContent;
-                copyGeminiBtn.textContent = '✅ Copied!';
+                const originalHtml = copyGeminiBtn.innerHTML;
+                copyGeminiBtn.innerHTML = '<span class="m-icon m-icon-sm m-icon-check-circle"></span> Copied!';
                 copyGeminiBtn.disabled = true;
                 
                 setTimeout(() => {
-                    copyGeminiBtn.textContent = originalText;
+                    copyGeminiBtn.innerHTML = originalHtml;
                     copyGeminiBtn.disabled = false;
                 }, 1500);
             }
@@ -861,9 +861,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         
         // Update tab active states
         document.querySelectorAll('.ai-tab').forEach(tab => {
-            tab.classList.remove('active');
+            tab.classList.remove('active', 'm-tab-active');
             if (tab.dataset.tab === tabName) {
-                tab.classList.add('active');
+                tab.classList.add('active', 'm-tab-active');
             }
         });
         
@@ -957,11 +957,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 <body>
     <div class="container">
         <div class="header">
-            <h1>📝 Matrx - Markdown Content</h1>
+            <h1>Matrx - Markdown Content</h1>
             <p class="subtitle">AI-processed markdown content from your webpage</p>
             <div class="header-actions">
-                <button id="toggleView" class="toggle-btn">🔄 Show Raw</button>
-                <button id="copyBtn" class="copy-btn">📋 Copy Content</button>
+                <button id="toggleView" class="toggle-btn">Show Raw</button>
+                <button id="copyBtn" class="copy-btn">Copy Content</button>
             </div>
         </div>
         
@@ -1006,7 +1006,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             const codeBlocks = document.querySelectorAll('pre');
             codeBlocks.forEach(pre => {
                 const copyBtn = document.createElement('button');
-                copyBtn.innerHTML = '📋';
+                copyBtn.innerHTML = 'Copy';
                 copyBtn.style.cssText = 'position: absolute; top: 8px; right: 8px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 4px; color: white; padding: 4px 8px; cursor: pointer; font-size: 12px; opacity: 0; transition: opacity 0.2s ease;';
                 pre.appendChild(copyBtn);
                 
@@ -1017,11 +1017,11 @@ document.addEventListener('DOMContentLoaded', async () => {
                     const code = pre.querySelector('code').textContent;
                     try {
                         await navigator.clipboard.writeText(code);
-                        copyBtn.innerHTML = '✅';
-                        setTimeout(() => copyBtn.innerHTML = '📋', 1500);
+                        copyBtn.innerHTML = 'Copied!';
+                        setTimeout(() => copyBtn.innerHTML = 'Copy', 1500);
                     } catch (error) {
-                        copyBtn.innerHTML = '❌';
-                        setTimeout(() => copyBtn.innerHTML = '📋', 1500);
+                        copyBtn.innerHTML = 'Failed';
+                        setTimeout(() => copyBtn.innerHTML = 'Copy', 1500);
                     }
                 });
             });
@@ -1037,11 +1037,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (isRenderedView) {
                 renderedContent.style.display = 'block';
                 rawContent.style.display = 'none';
-                toggleBtn.textContent = '🔄 Show Raw';
+                toggleBtn.textContent = 'Show Raw';
             } else {
                 renderedContent.style.display = 'none';
                 rawContent.style.display = 'block';
-                toggleBtn.textContent = '🔄 Show Rendered';
+                toggleBtn.textContent = 'Show Rendered';
             }
         }
         
@@ -1055,7 +1055,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 await navigator.clipboard.writeText(contentToCopy);
                 
                 const originalText = copyBtn.textContent;
-                copyBtn.textContent = '✅ Copied!';
+                copyBtn.textContent = 'Copied!';
                 copyBtn.disabled = true;
                 
                 setTimeout(() => {
@@ -1065,8 +1065,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                 
             } catch (error) {
                 console.error('Failed to copy:', error);
-                copyBtn.textContent = '❌ Failed';
-                setTimeout(() => copyBtn.textContent = '📋 Copy Content', 2000);
+                copyBtn.textContent = 'Failed';
+                setTimeout(() => copyBtn.textContent = 'Copy Content', 2000);
             }
         }
         
@@ -1412,9 +1412,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         
         // Update tab buttons
         document.querySelectorAll('.tab-btn').forEach(btn => {
-            btn.classList.remove('active');
+            btn.classList.remove('active', 'm-tab-active');
             if (btn.dataset.tab === tabId) {
-                btn.classList.add('active');
+                btn.classList.add('active', 'm-tab-active');
             }
         });
         
@@ -1526,12 +1526,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         try {
             await navigator.clipboard.writeText(savedGeminiData.content);
             
-            const originalText = copyGeminiSavedBtn.textContent;
-            copyGeminiSavedBtn.textContent = '✅ Copied!';
+const originalHtml = copyGeminiSavedBtn.innerHTML;
+                copyGeminiSavedBtn.innerHTML = '<span class="m-icon m-icon-sm m-icon-check-circle"></span> Copied!';
             copyGeminiSavedBtn.disabled = true;
             
             setTimeout(() => {
-                copyGeminiSavedBtn.textContent = originalText;
+                copyGeminiSavedBtn.innerHTML = originalHtml;
                 copyGeminiSavedBtn.disabled = false;
             }, 1500);
         } catch (error) {
@@ -1806,7 +1806,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             });
 
             if (response && response.success) {
-                const message = `✅ Found ${response.count} match${response.count !== 1 ? 'es' : ''} at position${response.count !== 1 ? 's' : ''}: ${response.positions.slice(0, 3).join(', ')}${response.count > 3 ? '...' : ''}`;
+                const message = `Found ${response.count} match${response.count !== 1 ? 'es' : ''} at position${response.count !== 1 ? 's' : ''}: ${response.positions.slice(0, 3).join(', ')}${response.count > 3 ? '...' : ''}`;
                 showMarkerResult(resultDiv, 'success', message);
             } else {
                 showMarkerResult(resultDiv, 'error', response?.error || 'Marker not found in HTML');
@@ -1857,7 +1857,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             
             await chrome.storage.local.set({ [storageKey]: dataToSave });
             
-            showMarkerResult(resultDiv, 'success', `✅ ${isStart ? 'Start' : 'End'} marker saved for ${currentDomain}`);
+            showMarkerResult(resultDiv, 'success', `${isStart ? 'Start' : 'End'} marker saved for ${currentDomain}`);
             console.log(`Saved ${type} marker for domain:`, currentDomain);
         } catch (error) {
             console.error(`Failed to save ${type} marker:`, error);
@@ -2131,12 +2131,12 @@ document.addEventListener('DOMContentLoaded', async () => {
                 await navigator.clipboard.writeText(currentCustomRangeContent);
                 
                 // Show temporary feedback
-                const originalText = copyCustomRangeBtn.textContent;
-                copyCustomRangeBtn.textContent = '✅ Copied!';
+                const originalHtml = copyCustomRangeBtn.innerHTML;
+                copyCustomRangeBtn.innerHTML = '<span class="m-icon m-icon-sm m-icon-check-circle"></span> Copied!';
                 copyCustomRangeBtn.disabled = true;
                 
                 setTimeout(() => {
-                    copyCustomRangeBtn.textContent = originalText;
+                    copyCustomRangeBtn.innerHTML = originalHtml;
                     copyCustomRangeBtn.disabled = false;
                 }, 1500);
                 

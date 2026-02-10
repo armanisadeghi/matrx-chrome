@@ -7,11 +7,11 @@
 :root {
     /* Legacy tokens — mapped to design system where possible */
     --matrx-primary: var(--m-brand, #2563eb);
-    --matrx-secondary: #34A853;
-    --matrx-purple: #667eea;
-    --matrx-purple-dark: #764ba2;
-    --matrx-orange: #f97316;
-    --matrx-orange-dark: #ea580c;
+    --matrx-secondary: var(--m-success);
+    --matrx-purple: var(--m-brand);
+    --matrx-purple-dark: var(--m-brand-hover);
+    --matrx-orange: var(--m-warning);
+    --matrx-orange-dark: var(--m-warning-text);
     --matrx-green: var(--m-success, #16a34a);
     --matrx-green-dark: #16a34a;
     --matrx-red: var(--m-error, #dc2626);
@@ -153,11 +153,11 @@ body {
 }
 
 .matrx-text-view {
-    background: #f8fafc;
+    background: var(--m-bg-inset);
     color: var(--matrx-text-dark);
     white-space: pre-wrap;
     word-wrap: break-word;
-    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    font-family: var(--m-font-mono);
     font-size: 14px;
     line-height: 1.6;
 }
@@ -171,7 +171,7 @@ body {
 .matrx-formatted-view h2, 
 .matrx-formatted-view h3, 
 .matrx-formatted-view h4 {
-    color: #1e293b;
+    color: var(--m-text-primary);
     font-weight: 700;
     margin-top: 2em;
     margin-bottom: 1em;
@@ -187,13 +187,13 @@ body {
 
 .matrx-formatted-view h2 {
     font-size: 2em;
-    border-bottom: 2px solid #e2e8f0;
+    border-bottom: 2px solid var(--m-border);
     padding-bottom: 0.3em;
 }
 
 .matrx-formatted-view h3 {
     font-size: 1.5em;
-    color: #475569;
+    color: var(--m-text-secondary);
 }
 
 .matrx-formatted-view h4 {
@@ -230,8 +230,8 @@ body {
 }
 
 .matrx-formatted-view strong {
-    font-weight: 700;
-    color: #1e293b;
+    font-weight: var(--m-weight-bold);
+    color: var(--m-text-primary);
 }
 
 /* CSS-only view switching using :target pseudo-class */

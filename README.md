@@ -2,7 +2,7 @@
 
 Chrome extension for the [AI Matrx](https://aimatrx.com) platform. Extracts, analyzes, and processes web content with AI-powered tools.
 
-**Current version:** 1.1.0
+**Current version:** 1.1.2
 
 ---
 
