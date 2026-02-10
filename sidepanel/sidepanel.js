@@ -200,15 +200,33 @@ document.addEventListener('DOMContentLoaded', async () => {
     const authBarSignInBtn = document.getElementById('authBarSignInBtn');
     const authBarSettingsBtn = document.getElementById('authBarSettingsBtn');
 
+    // Start screen auth elements
+    const startAuthSignedOut = document.getElementById('startAuthSignedOut');
+    const startAuthSignedIn = document.getElementById('startAuthSignedIn');
+    const startAuthUserEmail = document.getElementById('startAuthUserEmail');
+
     function updateAuthBar() {
-        if (window.supabaseAuth && window.supabaseAuth.isAuthenticated()) {
-            const user = window.supabaseAuth.getUser();
-            authBarUserEmail.textContent = user?.email || 'Signed in';
-            authBarSignedOut.style.display = 'none';
-            authBarSignedIn.style.display = 'flex';
+        const isAuthenticated = window.supabaseAuth && window.supabaseAuth.isAuthenticated();
+        const user = isAuthenticated ? window.supabaseAuth.getUser() : null;
+
+        // Update header auth bar
+        if (isAuthenticated) {
+            if (authBarUserEmail) authBarUserEmail.textContent = user?.email || 'Signed in';
+            if (authBarSignedOut) authBarSignedOut.style.display = 'none';
+            if (authBarSignedIn) authBarSignedIn.style.display = 'flex';
         } else {
-            authBarSignedOut.style.display = 'flex';
-            authBarSignedIn.style.display = 'none';
+            if (authBarSignedOut) authBarSignedOut.style.display = 'flex';
+            if (authBarSignedIn) authBarSignedIn.style.display = 'none';
+        }
+
+        // Update start screen auth section
+        if (isAuthenticated) {
+            if (startAuthUserEmail) startAuthUserEmail.textContent = user?.email || 'Signed in';
+            if (startAuthSignedOut) startAuthSignedOut.style.display = 'none';
+            if (startAuthSignedIn) startAuthSignedIn.style.display = 'block';
+        } else {
+            if (startAuthSignedOut) startAuthSignedOut.style.display = 'block';
+            if (startAuthSignedIn) startAuthSignedIn.style.display = 'none';
         }
     }
 
@@ -218,6 +236,30 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (authBarSettingsBtn) {
         authBarSettingsBtn.addEventListener('click', openSettings);
     }
+
+    // Start screen OAuth handlers
+    async function handleStartScreenOAuth(provider, displayName) {
+        try {
+            if (!window.supabaseAuth) return;
+            let result;
+            if (provider === 'google') result = await window.supabaseAuth.signInWithGoogle();
+            else if (provider === 'apple') result = await window.supabaseAuth.signInWithApple();
+            else if (provider === 'github') result = await window.supabaseAuth.signInWithGitHub();
+            updateAuthBar();
+        } catch (err) {
+            console.warn(`[Sidepanel] ${displayName} sign-in failed:`, err);
+        }
+    }
+
+    const startGoogleBtn = document.getElementById('startGoogleSignInBtn');
+    const startAppleBtn = document.getElementById('startAppleSignInBtn');
+    const startGithubBtn = document.getElementById('startGithubSignInBtn');
+    const startEmailBtn = document.getElementById('startEmailSignInBtn');
+
+    if (startGoogleBtn) startGoogleBtn.addEventListener('click', () => handleStartScreenOAuth('google', 'Google'));
+    if (startAppleBtn) startAppleBtn.addEventListener('click', () => handleStartScreenOAuth('apple', 'Apple'));
+    if (startGithubBtn) startGithubBtn.addEventListener('click', () => handleStartScreenOAuth('github', 'GitHub'));
+    if (startEmailBtn) startEmailBtn.addEventListener('click', openSettings);
 
     // Initialize auth and update bar
     (async function initAuthBar() {
