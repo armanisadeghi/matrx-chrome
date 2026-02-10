@@ -1,36 +1,41 @@
 <!-- Shared CSS styles for all Matrx templates -->
+<!-- NOTE: The canonical design system lives in styles/theme.css and styles/icons.css.
+     The template-loader inlines those files automatically into blob documents.
+     Legacy --matrx-* tokens below are kept for backward compatibility but new code
+     should use --m-* tokens from theme.css instead. -->
 <style>
 :root {
-    --matrx-primary: #4285F4;
+    /* Legacy tokens — mapped to design system where possible */
+    --matrx-primary: var(--m-brand, #2563eb);
     --matrx-secondary: #34A853;
     --matrx-purple: #667eea;
     --matrx-purple-dark: #764ba2;
     --matrx-orange: #f97316;
     --matrx-orange-dark: #ea580c;
-    --matrx-green: #22c55e;
+    --matrx-green: var(--m-success, #16a34a);
     --matrx-green-dark: #16a34a;
-    --matrx-red: #ef4444;
-    --matrx-blue: #3b82f6;
-    
+    --matrx-red: var(--m-error, #dc2626);
+    --matrx-blue: var(--m-brand, #2563eb);
+
     --matrx-bg-gradient: linear-gradient(135deg, var(--matrx-primary) 0%, var(--matrx-secondary) 100%);
     --matrx-text-white: #ffffff;
     --matrx-text-white-80: rgba(255, 255, 255, 0.8);
     --matrx-text-white-60: rgba(255, 255, 255, 0.6);
-    --matrx-text-dark: #374151;
-    --matrx-text-dark-light: #64748b;
-    --matrx-text-dark-lighter: #94a3b8;
-    
+    --matrx-text-dark: var(--m-text-primary, #0f172a);
+    --matrx-text-dark-light: var(--m-text-secondary, #475569);
+    --matrx-text-dark-lighter: var(--m-text-tertiary, #94a3b8);
+
     --matrx-glass-bg: rgba(255, 255, 255, 0.1);
     --matrx-glass-border: rgba(255, 255, 255, 0.2);
-    --matrx-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    --matrx-shadow: var(--m-shadow-lg, 0 12px 32px rgba(0, 0, 0, 0.12));
     --matrx-shadow-hover: 0 4px 12px rgba(66, 133, 244, 0.4);
-    
-    --matrx-border-radius: 8px;
-    --matrx-border-radius-large: 16px;
-    --matrx-spacing-sm: 8px;
-    --matrx-spacing-md: 15px;
-    --matrx-spacing-lg: 20px;
-    --matrx-spacing-xl: 30px;
+
+    --matrx-border-radius: var(--m-radius-md, 8px);
+    --matrx-border-radius-large: var(--m-radius-xl, 16px);
+    --matrx-spacing-sm: var(--m-space-2, 8px);
+    --matrx-spacing-md: var(--m-space-4, 16px);
+    --matrx-spacing-lg: var(--m-space-5, 20px);
+    --matrx-spacing-xl: var(--m-space-8, 32px);
 }
 
 * {

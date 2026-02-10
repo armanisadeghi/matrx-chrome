@@ -53,6 +53,7 @@
         "lib/supabase.js", 
         "lib/auth.js", 
         "lib/gemini-client.js", 
+        "styles/*",
         "components/*",
         "templates/*",
         "popup/template-loader.js"

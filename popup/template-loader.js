@@ -158,18 +158,35 @@ class TemplateLoader {
     }
 
     /**
-     * Load shared styles and inline them into template
+     * Load shared styles and inline them into template.
+     * Includes the design system (theme.css + icons.css) and legacy shared-styles.
      * @returns {Promise<string>} Shared styles CSS
      */
     async getSharedStyles() {
         try {
+            const parts = [];
+
+            // Load design system tokens + components
+            try {
+                const themeUrl = chrome.runtime.getURL('styles/theme.css');
+                const themeResp = await fetch(themeUrl);
+                if (themeResp.ok) parts.push(await themeResp.text());
+            } catch (_) { /* optional */ }
+
+            try {
+                const iconsUrl = chrome.runtime.getURL('styles/icons.css');
+                const iconsResp = await fetch(iconsUrl);
+                if (iconsResp.ok) parts.push(await iconsResp.text());
+            } catch (_) { /* optional */ }
+
+            // Load legacy shared-styles.html
             const stylesUrl = chrome.runtime.getURL('templates/shared-styles.html');
             const response = await fetch(stylesUrl);
             const stylesHtml = await response.text();
-            
-            // Extract CSS from the style tags
             const styleMatch = stylesHtml.match(/<style>([\s\S]*?)<\/style>/);
-            return styleMatch ? styleMatch[1] : '';
+            if (styleMatch) parts.push(styleMatch[1]);
+
+            return parts.join('\n');
         } catch (error) {
             console.error('Error loading shared styles:', error);
             return '';
