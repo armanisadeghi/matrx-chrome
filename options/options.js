@@ -8,13 +8,20 @@ document.addEventListener('DOMContentLoaded', () => {
     const signupForm = document.getElementById('signupForm');
     const signOutBtn = document.getElementById('signOutBtn');
     const googleSignInBtn = document.getElementById('googleSignInBtn');
+    const appleSignInBtn = document.getElementById('appleSignInBtn');
     const githubSignInBtn = document.getElementById('githubSignInBtn');
     const loggedOutState = document.getElementById('loggedOutState');
     const loggedInState = document.getElementById('loggedInState');
     const userEmailSpan = document.getElementById('userEmail');
-    const tabBtns = document.querySelectorAll('.tab-btn');
 
-    // Initialize auth system
+    // Tab switching elements
+    const switchToSignup = document.getElementById('switchToSignup');
+    const switchToSignin = document.getElementById('switchToSignin');
+    const authTitle = document.getElementById('authTitle');
+    const authSubtitleSignin = document.getElementById('authSubtitleSignin');
+    const authSubtitleSignup = document.getElementById('authSubtitleSignup');
+
+    // Initialize auth system (uses the global window.supabaseAuth from lib/auth.js)
     let supabaseAuth = null;
     initializeAuth();
 
@@ -27,12 +34,15 @@ document.addEventListener('DOMContentLoaded', () => {
         await saveConfiguration();
     });
 
-    // Handle auth tabs
-    tabBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            const tab = btn.dataset.tab;
-            switchAuthTab(tab);
-        });
+    // Handle tab/form switching
+    switchToSignup.addEventListener('click', (e) => {
+        e.preventDefault();
+        showSignupForm();
+    });
+
+    switchToSignin.addEventListener('click', (e) => {
+        e.preventDefault();
+        showSigninForm();
     });
 
     // Handle sign in
@@ -52,31 +62,44 @@ document.addEventListener('DOMContentLoaded', () => {
         await handleSignOut();
     });
 
-    // Handle Google OAuth
+    // Handle OAuth providers
     googleSignInBtn.addEventListener('click', async () => {
-        await handleGoogleSignIn();
+        await handleOAuthSignIn('google', 'Google');
     });
 
-    // Handle GitHub OAuth
-    githubSignInBtn.addEventListener('click', async () => {
-        await handleGitHubSignIn();
+    appleSignInBtn.addEventListener('click', async () => {
+        await handleOAuthSignIn('apple', 'Apple');
     });
+
+    githubSignInBtn.addEventListener('click', async () => {
+        await handleOAuthSignIn('github', 'GitHub');
+    });
+
+    // -----------------------------------------------------------------------
+    // Auth initialization
+    // -----------------------------------------------------------------------
 
     async function initializeAuth() {
         try {
             showStatus('loading', 'Initializing authentication...');
-            
-            // Load auth script
-            await loadAuthScript();
-            
-            // Initialize Supabase Auth
-            if (window.SupabaseAuth) {
-                supabaseAuth = new window.SupabaseAuth();
+
+            // Load Supabase library first
+            if (!window.supabase) {
+                await loadScript('lib/supabase.js');
+            }
+            // Load auth module (creates window.supabaseAuth)
+            if (!window.SupabaseAuth) {
+                await loadScript('lib/auth.js');
+            }
+
+            // Use the shared global instance
+            if (window.supabaseAuth) {
+                supabaseAuth = window.supabaseAuth;
                 await supabaseAuth.initialize();
-                
+
                 // Update UI based on auth state
                 updateAuthUI();
-                
+
                 showStatus('success', 'Ready');
                 setTimeout(() => {
                     statusDiv.style.display = 'none';
@@ -88,26 +111,25 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function loadAuthScript() {
+    function loadScript(path) {
         return new Promise((resolve, reject) => {
-            if (window.SupabaseAuth) {
-                resolve();
-                return;
-            }
-
             const script = document.createElement('script');
-            script.src = chrome.runtime.getURL('lib/auth.js');
+            script.src = chrome.runtime.getURL(path);
             script.onload = () => resolve();
-            script.onerror = () => reject(new Error('Failed to load Auth script'));
+            script.onerror = () => reject(new Error(`Failed to load ${path}`));
             document.head.appendChild(script);
         });
     }
+
+    // -----------------------------------------------------------------------
+    // UI State
+    // -----------------------------------------------------------------------
 
     function updateAuthUI() {
         if (!supabaseAuth) return;
 
         const isAuthenticated = supabaseAuth.isAuthenticated();
-        
+
         if (isAuthenticated) {
             const user = supabaseAuth.getUser();
             userEmailSpan.textContent = user?.email || 'Unknown';
@@ -119,30 +141,44 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function switchAuthTab(tab) {
-        tabBtns.forEach(btn => {
-            btn.classList.toggle('active', btn.dataset.tab === tab);
-        });
-        signinForm.classList.toggle('active', tab === 'signin');
-        signupForm.classList.toggle('active', tab === 'signup');
+    function showSignupForm() {
+        signinForm.style.display = 'none';
+        signupForm.style.display = 'flex';
+        authTitle.textContent = 'Create your account';
+        authSubtitleSignin.style.display = 'none';
+        authSubtitleSignup.style.display = 'inline';
     }
+
+    function showSigninForm() {
+        signupForm.style.display = 'none';
+        signinForm.style.display = 'flex';
+        authTitle.textContent = 'Sign in to your account';
+        authSubtitleSignup.style.display = 'none';
+        authSubtitleSignin.style.display = 'inline';
+    }
+
+    // -----------------------------------------------------------------------
+    // Auth handlers
+    // -----------------------------------------------------------------------
 
     async function handleSignIn() {
         try {
             const email = document.getElementById('signinEmail').value;
             const password = document.getElementById('signinPassword').value;
 
+            setButtonLoading('signinSubmitBtn', true);
             showStatus('loading', 'Signing in...');
-            
+
             await supabaseAuth.signIn(email, password);
             updateAuthUI();
-            
+
             showStatus('success', 'Successfully signed in!');
             signinForm.reset();
-            
         } catch (error) {
             console.error('Sign in failed:', error);
             showStatus('error', 'Sign in failed: ' + error.message);
+        } finally {
+            setButtonLoading('signinSubmitBtn', false);
         }
     }
 
@@ -157,77 +193,69 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
+            setButtonLoading('signupSubmitBtn', true);
             showStatus('loading', 'Creating account...');
-            
+
             await supabaseAuth.signUp(email, password);
-            
+
             showStatus('success', 'Account created! Please check your email to verify your account.');
             signupForm.reset();
-            switchAuthTab('signin');
-            
+            showSigninForm();
         } catch (error) {
             console.error('Sign up failed:', error);
             showStatus('error', 'Sign up failed: ' + error.message);
+        } finally {
+            setButtonLoading('signupSubmitBtn', false);
         }
     }
 
     async function handleSignOut() {
         try {
             showStatus('loading', 'Signing out...');
-            
+
             await supabaseAuth.signOut();
             updateAuthUI();
-            
+
             showStatus('success', 'Successfully signed out!');
-            
         } catch (error) {
             console.error('Sign out failed:', error);
             showStatus('error', 'Sign out failed: ' + error.message);
         }
     }
 
-    async function handleGoogleSignIn() {
+    async function handleOAuthSignIn(provider, displayName) {
         try {
-            showStatus('loading', 'Opening Google sign-in...');
-            
-            const result = await supabaseAuth.signInWithGoogle();
+            showStatus('loading', `Opening ${displayName} sign-in...`);
+
+            let result;
+            if (provider === 'google') {
+                result = await supabaseAuth.signInWithGoogle();
+            } else if (provider === 'apple') {
+                result = await supabaseAuth.signInWithApple();
+            } else if (provider === 'github') {
+                result = await supabaseAuth.signInWithGitHub();
+            }
+
             updateAuthUI();
-            
             showStatus('success', `Signed in as ${result.user?.email || 'user'}!`);
-            
         } catch (error) {
-            console.error('Google sign in failed:', error);
+            console.error(`${displayName} sign in failed:`, error);
             if (error.message.includes('user cancelled') || error.message.includes('The user did not approve')) {
                 showStatus('error', 'Sign-in was cancelled.');
             } else {
-                showStatus('error', 'Google sign in failed: ' + error.message);
+                showStatus('error', `${displayName} sign in failed: ${error.message}`);
             }
         }
     }
 
-    async function handleGitHubSignIn() {
-        try {
-            showStatus('loading', 'Opening GitHub sign-in...');
-            
-            const result = await supabaseAuth.signInWithGitHub();
-            updateAuthUI();
-            
-            showStatus('success', `Signed in as ${result.user?.email || 'user'}!`);
-            
-        } catch (error) {
-            console.error('GitHub sign in failed:', error);
-            if (error.message.includes('user cancelled') || error.message.includes('The user did not approve')) {
-                showStatus('error', 'Sign-in was cancelled.');
-            } else {
-                showStatus('error', 'GitHub sign in failed: ' + error.message);
-            }
-        }
-    }
+    // -----------------------------------------------------------------------
+    // Settings
+    // -----------------------------------------------------------------------
 
     async function loadConfiguration() {
         try {
             const config = await getStoredConfig();
-            
+
             if (config.tableName) {
                 document.getElementById('supabaseTableName').value = config.tableName;
             }
@@ -275,7 +303,6 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             showStatus('success', 'Settings saved successfully!');
-
         } catch (error) {
             console.error('Save failed:', error);
             showStatus('error', `Failed to save settings: ${error.message}`);
@@ -294,15 +321,29 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // -----------------------------------------------------------------------
+    // Helpers
+    // -----------------------------------------------------------------------
+
+    function setButtonLoading(btnId, loading) {
+        const btn = document.getElementById(btnId);
+        if (!btn) return;
+        const text = btn.querySelector('.btn-text');
+        const loader = btn.querySelector('.btn-loader');
+        if (text) text.style.display = loading ? 'none' : 'inline';
+        if (loader) loader.style.display = loading ? 'inline' : 'none';
+        btn.disabled = loading;
+    }
+
     function showStatus(type, message) {
         statusDiv.style.display = 'block';
-        statusDiv.className = `status ${type}`;
+        statusDiv.className = `status-toast ${type}`;
         statusMessage.textContent = message;
-        
+
         if (type === 'success') {
             setTimeout(() => {
                 statusDiv.style.display = 'none';
-            }, 5000);
+            }, 4000);
         }
     }
 });

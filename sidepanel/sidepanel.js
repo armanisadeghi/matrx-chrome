@@ -252,6 +252,20 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     })();
 
+    // Re-check auth when storage changes (e.g. user signs in on options page)
+    chrome.storage.onChanged.addListener(async (changes, area) => {
+        if (area === 'local' && window.supabaseAuth) {
+            // Supabase stores session in chrome.storage.local — re-initialize to pick up changes
+            try {
+                window.supabaseAuth.initialized = false;
+                await window.supabaseAuth.initialize();
+                updateAuthBar();
+            } catch (err) {
+                console.warn('[Sidepanel] Auth refresh failed:', err);
+            }
+        }
+    });
+
     // Handle manual URL refresh
     async function handleManualRefresh() {
         try {
