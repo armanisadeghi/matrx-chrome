@@ -337,7 +337,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function showStatus(type, message) {
         statusDiv.style.display = 'block';
-        statusDiv.className = `status-toast ${type}`;
+        statusDiv.className = `status-toast m-toast m-toast-${type}`;
         statusMessage.textContent = message;
 
         if (type === 'success') {

@@ -1,15 +1,9 @@
-/* Reset */
-*, *::before, *::after {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
+/* Options page — design system tokens.
+   Base styles come from theme.css (m-base, m-dark on body).
+   Per-page layout and overrides below. */
 
 /* Page */
 body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background: linear-gradient(135deg, #171717, #1a1a1a, #141414);
-    color: #e5e5e5;
     min-height: 100vh;
     -webkit-font-smoothing: antialiased;
 }
@@ -17,42 +11,34 @@ body {
 .page-wrapper {
     max-width: 440px;
     margin: 0 auto;
-    padding: 48px 16px;
+    padding: var(--m-space-12) var(--m-space-4);
     display: flex;
     flex-direction: column;
-    gap: 24px;
+    gap: var(--m-space-6);
 }
 
 /* Auth Card */
 .auth-card {
-    background: #1e1e1e;
-    border: 1px solid #2a2a2a;
-    border-radius: 16px;
-    padding: 32px;
-    box-shadow:
-        0 20px 50px rgba(8, 112, 184, 0.15),
-        0 0 0 1px rgba(255, 255, 255, 0.03);
-    transition: box-shadow 0.3s ease, transform 0.3s ease;
+    padding: var(--m-space-8);
+    transition: box-shadow var(--m-duration-slow) var(--m-ease), transform var(--m-duration-slow) var(--m-ease);
 }
 
 .auth-card:hover {
-    box-shadow:
-        0 25px 60px rgba(8, 112, 184, 0.2),
-        0 0 0 1px rgba(255, 255, 255, 0.05);
+    box-shadow: var(--m-shadow-lg);
     transform: translateY(-1px);
 }
 
 .auth-header {
     text-align: center;
-    margin-bottom: 24px;
+    margin-bottom: var(--m-space-6);
 }
 
 .auth-logo {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
-    margin-bottom: 16px;
+    gap: var(--m-space-2);
+    margin-bottom: var(--m-space-4);
 }
 
 .logo-icon {
@@ -61,50 +47,50 @@ body {
 }
 
 .logo-text {
-    font-size: 16px;
-    font-weight: 600;
-    color: #fff;
+    font-size: var(--m-text-lg);
+    font-weight: var(--m-weight-semibold);
+    color: var(--m-text-primary);
 }
 
 .auth-title {
     font-size: 22px;
-    font-weight: 700;
-    color: #fff;
-    margin-bottom: 8px;
+    font-weight: var(--m-weight-bold);
+    color: var(--m-text-primary);
+    margin-bottom: var(--m-space-2);
 }
 
 .auth-subtitle {
-    font-size: 13px;
-    color: #a3a3a3;
+    font-size: var(--m-text-base);
+    color: var(--m-text-secondary);
 }
 
 .auth-link {
-    color: #3b82f6;
+    color: var(--m-brand);
     text-decoration: none;
-    font-weight: 500;
+    font-weight: var(--m-weight-medium);
 }
 
 .auth-link:hover {
-    color: #60a5fa;
+    color: var(--m-brand-hover);
 }
 
 /* Forms */
 .auth-form {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: var(--m-space-4);
 }
 
 .form-group {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: var(--m-space-1);
 }
 
 .form-group label {
-    font-size: 13px;
-    font-weight: 500;
-    color: #d4d4d4;
+    font-size: var(--m-text-base);
+    font-weight: var(--m-weight-medium);
+    color: var(--m-text-secondary);
 }
 
 .label-row {
@@ -114,100 +100,49 @@ body {
 }
 
 .forgot-link {
-    font-size: 12px;
+    font-size: var(--m-text-sm);
 }
 
 .form-group input {
-    background: #262626;
-    border: 1px solid #404040;
-    border-radius: 6px;
-    padding: 9px 12px;
-    font-size: 14px;
-    color: #fff;
+    background: var(--m-bg-inset);
+    border: 1px solid var(--m-border);
+    border-radius: var(--m-radius-md);
+    padding: var(--m-space-2) var(--m-space-3);
+    font-size: var(--m-text-md);
+    color: var(--m-text-primary);
     outline: none;
-    transition: border-color 0.15s;
+    transition: border-color var(--m-duration-normal);
 }
 
 .form-group input::placeholder {
-    color: #737373;
+    color: var(--m-text-tertiary);
 }
 
 .form-group input:focus {
-    border-color: #3b82f6;
+    border-color: var(--m-brand);
 }
 
-/* Primary auth button */
+/* Primary auth button — design system handles base; keep per-page overrides */
 .auth-btn-primary {
-    background: #2563eb;
-    color: #fff;
-    border: none;
-    border-radius: 6px;
-    padding: 10px;
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: background 0.15s;
-    margin-top: 4px;
-}
-
-.auth-btn-primary:hover {
-    background: #1d4ed8;
-}
-
-.auth-btn-primary:active {
-    background: #1e40af;
+    margin-top: var(--m-space-1);
 }
 
 .auth-btn-primary .btn-loader {
     display: inline;
 }
 
-/* Divider */
+/* Divider — m-divider-text handles layout; keep auth-divider for spacing */
 .auth-divider {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin: 20px 0;
+    margin: var(--m-space-5) 0;
 }
 
-.divider-line {
-    flex: 1;
-    height: 1px;
-    background: #404040;
-}
-
-.divider-text {
-    font-size: 12px;
-    color: #737373;
-    white-space: nowrap;
-}
-
-/* OAuth 3-column grid */
+/* OAuth 3-column grid — m-oauth-grid handles layout */
 .oauth-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 8px;
+    gap: var(--m-space-2);
 }
 
 .oauth-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    padding: 9px 8px;
-    background: #262626;
-    border: 1px solid #404040;
-    border-radius: 6px;
-    color: #d4d4d4;
-    font-size: 13px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: background 0.15s, border-color 0.15s;
-}
-
-.oauth-btn:hover {
-    background: #333;
-    border-color: #525252;
+    padding: var(--m-space-2);
 }
 
 .oauth-icon {
@@ -220,25 +155,25 @@ body {
 .user-info-card {
     display: flex;
     align-items: center;
-    gap: 12px;
-    background: #1e1e1e;
-    border: 1px solid #333;
-    border-radius: 8px;
-    padding: 16px;
-    margin-bottom: 16px;
+    gap: var(--m-space-3);
+    background: var(--m-bg-elevated);
+    border: 1px solid var(--m-border);
+    border-radius: var(--m-radius-md);
+    padding: var(--m-space-4);
+    margin-bottom: var(--m-space-4);
 }
 
 .user-avatar {
     width: 36px;
     height: 36px;
-    fill: #3b82f6;
+    fill: var(--m-brand);
     flex-shrink: 0;
 }
 
 .user-email {
-    font-size: 14px;
-    font-weight: 500;
-    color: #fff;
+    font-size: var(--m-text-md);
+    font-weight: var(--m-weight-medium);
+    color: var(--m-text-primary);
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -246,48 +181,30 @@ body {
 
 .sign-out-btn {
     width: 100%;
-    background: transparent;
-    color: #a3a3a3;
-    border: 1px solid #404040;
-    border-radius: 6px;
-    padding: 9px;
-    font-size: 13px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.15s;
-}
-
-.sign-out-btn:hover {
-    background: #1e1e1e;
-    color: #ef4444;
-    border-color: #ef4444;
 }
 
 /* Settings Card */
 .settings-card {
-    background: #171717;
-    border: 1px solid #262626;
-    border-radius: 12px;
-    padding: 32px;
+    padding: var(--m-space-8);
 }
 
 .settings-form {
     display: flex;
     flex-direction: column;
-    gap: 24px;
+    gap: var(--m-space-6);
 }
 
 .form-section h3 {
     font-size: 15px;
-    font-weight: 600;
-    color: #fff;
-    margin-bottom: 4px;
+    font-weight: var(--m-weight-semibold);
+    color: var(--m-text-primary);
+    margin-bottom: var(--m-space-1);
 }
 
 .section-description {
-    font-size: 12px;
-    color: #737373;
-    margin-bottom: 12px;
+    font-size: var(--m-text-sm);
+    color: var(--m-text-tertiary);
+    margin-bottom: var(--m-space-3);
 }
 
 .settings-form .form-group {
@@ -295,72 +212,32 @@ body {
 }
 
 .help-text {
-    font-size: 11px;
-    color: #737373;
-    margin-top: 4px;
+    font-size: var(--m-text-xs);
+    color: var(--m-text-tertiary);
+    margin-top: var(--m-space-1);
 }
 
 .help-text a {
-    color: #3b82f6;
+    color: var(--m-brand);
     text-decoration: none;
 }
 
 .help-text a:hover {
-    color: #60a5fa;
+    color: var(--m-brand-hover);
 }
 
-/* Save button */
+/* Form actions */
 .form-actions {
-    padding-top: 4px;
+    padding-top: var(--m-space-1);
 }
 
 .save-btn {
     width: 100%;
-    background: #2563eb;
-    color: #fff;
-    border: none;
-    border-radius: 6px;
-    padding: 10px;
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: background 0.15s;
 }
 
-.save-btn:hover {
-    background: #1d4ed8;
-}
-
-/* Status toast */
+/* Status toast — m-toast handles base; m-toast-success/error/loading from theme.css */
 .status-toast {
-    position: fixed;
-    bottom: 24px;
-    left: 50%;
-    transform: translateX(-50%);
-    padding: 10px 20px;
-    border-radius: 8px;
-    font-size: 13px;
-    font-weight: 500;
-    z-index: 100;
     max-width: 400px;
     text-align: center;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
-}
-
-.status-toast.loading {
-    background: #1e3a5f;
-    border: 1px solid #2563eb;
-    color: #93c5fd;
-}
-
-.status-toast.success {
-    background: #14532d;
-    border: 1px solid #22c55e;
-    color: #86efac;
-}
-
-.status-toast.error {
-    background: #450a0a;
-    border: 1px solid #ef4444;
-    color: #fca5a5;
+    z-index: 100;
 }
