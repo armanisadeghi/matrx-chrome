@@ -1,8 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
     const settingsForm = document.getElementById('settingsForm');
-    const testBtn = document.getElementById('testBtn');
-    const testSocketBtn = document.getElementById('testSocketBtn');
-    const testAuthBtn = document.getElementById('testAuthBtn');
     const statusDiv = document.getElementById('status');
     const statusMessage = document.getElementById('statusMessage');
 
@@ -24,25 +21,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // Load existing configuration
     loadConfiguration();
 
-    // Handle form submission
+    // Handle settings form submission
     settingsForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         await saveConfiguration();
-    });
-
-    // Handle test connection
-    testBtn.addEventListener('click', async () => {
-        await testConnection();
-    });
-
-    // Handle test socket connection
-    testSocketBtn.addEventListener('click', async () => {
-        await testSocketConnection();
-    });
-
-    // Handle test authenticated socket connection
-    testAuthBtn.addEventListener('click', async () => {
-        await testAuthenticatedSocket();
     });
 
     // Handle auth tabs
@@ -92,19 +74,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 supabaseAuth = new window.SupabaseAuth();
                 await supabaseAuth.initialize();
                 
-                // Handle OAuth redirect if present
-                await handleOAuthRedirect();
-                
                 // Update UI based on auth state
-                await updateAuthUI();
+                updateAuthUI();
                 
-                // Only show success if not processing OAuth
-                if (!window.location.hash.includes('access_token')) {
-                    showStatus('success', 'Authentication initialized');
-                    setTimeout(() => {
-                        statusDiv.style.display = 'none';
-                    }, 2000);
-                }
+                showStatus('success', 'Ready');
+                setTimeout(() => {
+                    statusDiv.style.display = 'none';
+                }, 2000);
             }
         } catch (error) {
             console.error('Auth initialization failed:', error);
@@ -127,13 +103,13 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    async function updateAuthUI() {
+    function updateAuthUI() {
         if (!supabaseAuth) return;
 
         const isAuthenticated = supabaseAuth.isAuthenticated();
         
         if (isAuthenticated) {
-            const user = await supabaseAuth.getUser();
+            const user = supabaseAuth.getUser();
             userEmailSpan.textContent = user?.email || 'Unknown';
             loggedOutState.style.display = 'none';
             loggedInState.style.display = 'block';
@@ -144,12 +120,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function switchAuthTab(tab) {
-        // Update tab buttons
         tabBtns.forEach(btn => {
             btn.classList.toggle('active', btn.dataset.tab === tab);
         });
-
-        // Update forms
         signinForm.classList.toggle('active', tab === 'signin');
         signupForm.classList.toggle('active', tab === 'signup');
     }
@@ -162,11 +135,9 @@ document.addEventListener('DOMContentLoaded', () => {
             showStatus('loading', 'Signing in...');
             
             await supabaseAuth.signIn(email, password);
-            await updateAuthUI();
+            updateAuthUI();
             
             showStatus('success', 'Successfully signed in!');
-            
-            // Clear form
             signinForm.reset();
             
         } catch (error) {
@@ -191,11 +162,7 @@ document.addEventListener('DOMContentLoaded', () => {
             await supabaseAuth.signUp(email, password);
             
             showStatus('success', 'Account created! Please check your email to verify your account.');
-            
-            // Clear form
             signupForm.reset();
-            
-            // Switch to sign in tab
             switchAuthTab('signin');
             
         } catch (error) {
@@ -209,7 +176,7 @@ document.addEventListener('DOMContentLoaded', () => {
             showStatus('loading', 'Signing out...');
             
             await supabaseAuth.signOut();
-            await updateAuthUI();
+            updateAuthUI();
             
             showStatus('success', 'Successfully signed out!');
             
@@ -221,118 +188,39 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function handleGoogleSignIn() {
         try {
-            showStatus('loading', 'Redirecting to Google...');
+            showStatus('loading', 'Opening Google sign-in...');
             
-            await supabaseAuth.signInWithGoogle();
-            // The user will be redirected to Google and back
+            const result = await supabaseAuth.signInWithGoogle();
+            updateAuthUI();
+            
+            showStatus('success', `Signed in as ${result.user?.email || 'user'}!`);
             
         } catch (error) {
             console.error('Google sign in failed:', error);
-            showStatus('error', 'Google sign in failed: ' + error.message);
+            if (error.message.includes('user cancelled') || error.message.includes('The user did not approve')) {
+                showStatus('error', 'Sign-in was cancelled.');
+            } else {
+                showStatus('error', 'Google sign in failed: ' + error.message);
+            }
         }
     }
 
     async function handleGitHubSignIn() {
         try {
-            showStatus('loading', 'Redirecting to GitHub...');
+            showStatus('loading', 'Opening GitHub sign-in...');
             
-            await supabaseAuth.signInWithGitHub();
-            // The user will be redirected to GitHub and back
+            const result = await supabaseAuth.signInWithGitHub();
+            updateAuthUI();
+            
+            showStatus('success', `Signed in as ${result.user?.email || 'user'}!`);
             
         } catch (error) {
             console.error('GitHub sign in failed:', error);
-            showStatus('error', 'GitHub sign in failed: ' + error.message);
-        }
-    }
-
-    // Handle OAuth redirect on page load
-    async function handleOAuthRedirect() {
-        try {
-            if (window.location.hash.includes('access_token') || window.location.hash.includes('error')) {
-                showStatus('loading', 'Processing authentication...');
-                
-                // Wait a moment for the auth system to process the redirect
-                setTimeout(async () => {
-                    try {
-                        await updateAuthUI();
-                        
-                        if (supabaseAuth && supabaseAuth.isAuthenticated()) {
-                            const user = await supabaseAuth.getUser();
-                            showStatus('success', `Successfully signed in as ${user.email}!`);
-                        } else {
-                            showStatus('error', 'Authentication failed. Please try again.');
-                        }
-                        
-                        // Clear the hash from URL
-                        window.history.replaceState(null, null, window.location.pathname);
-                    } catch (error) {
-                        console.error('OAuth redirect processing failed:', error);
-                        showStatus('error', 'Authentication processing failed: ' + error.message);
-                    }
-                }, 1000);
+            if (error.message.includes('user cancelled') || error.message.includes('The user did not approve')) {
+                showStatus('error', 'Sign-in was cancelled.');
+            } else {
+                showStatus('error', 'GitHub sign in failed: ' + error.message);
             }
-        } catch (error) {
-            console.error('OAuth redirect handling failed:', error);
-        }
-    }
-
-    async function testAuthenticatedSocket() {
-        try {
-            if (!supabaseAuth || !supabaseAuth.isAuthenticated()) {
-                showStatus('error', 'Please sign in first to test authenticated socket connection');
-                return;
-            }
-
-            const socketServerUrl = document.getElementById('socketServerUrl').value.trim() || 'http://localhost:8000';
-
-            testAuthBtn.disabled = true;
-            testAuthBtn.textContent = 'Testing...';
-            showStatus('loading', 'Testing authenticated Socket.IO connection...');
-
-            // Load Socket.IO script if not already loaded
-            if (!window.io) {
-                await loadSocketIOScript();
-            }
-
-            // Get auth token
-            const authToken = await supabaseAuth.getAccessToken();
-
-            const testSocket = window.io(socketServerUrl, {
-                timeout: 5000,
-                reconnection: false,
-                auth: {
-                    token: authToken
-                }
-            });
-
-            const testPromise = new Promise((resolve, reject) => {
-                const timeout = setTimeout(() => {
-                    testSocket.disconnect();
-                    reject(new Error('Connection timeout'));
-                }, 5000);
-
-                testSocket.on('connect', () => {
-                    clearTimeout(timeout);
-                    testSocket.disconnect();
-                    resolve('Connected successfully with authentication');
-                });
-
-                testSocket.on('connect_error', (error) => {
-                    clearTimeout(timeout);
-                    testSocket.disconnect();
-                    reject(error);
-                });
-            });
-
-            await testPromise;
-            showStatus('success', 'Authenticated Socket.IO connection successful!');
-
-        } catch (error) {
-            console.error('Authenticated socket test failed:', error);
-            showStatus('error', `Authenticated socket test failed: ${error.message}`);
-        } finally {
-            testAuthBtn.disabled = false;
-            testAuthBtn.textContent = 'Test Auth Socket';
         }
     }
 
@@ -340,12 +228,6 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const config = await getStoredConfig();
             
-            if (config.url) {
-                document.getElementById('supabaseUrl').value = config.url;
-            }
-            if (config.anonKey) {
-                document.getElementById('supabaseAnonKey').value = config.anonKey;
-            }
             if (config.tableName) {
                 document.getElementById('supabaseTableName').value = config.tableName;
             }
@@ -362,33 +244,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function saveConfiguration() {
         try {
-            const url = document.getElementById('supabaseUrl').value.trim();
-            const anonKey = document.getElementById('supabaseAnonKey').value.trim();
             const tableName = document.getElementById('supabaseTableName').value.trim() || 'html_extractions';
-            const socketServerUrl = document.getElementById('socketServerUrl').value.trim() || 'http://localhost:8000';
+            const socketServerUrl = document.getElementById('socketServerUrl').value.trim();
             const geminiApiKey = document.getElementById('geminiApiKey').value.trim();
 
-            if (!url || !anonKey) {
-                showStatus('error', 'Please fill in all required fields');
-                return;
+            // Validate socket URL format if provided
+            if (socketServerUrl) {
+                try {
+                    new URL(socketServerUrl);
+                } catch {
+                    showStatus('error', 'Please enter a valid Socket.IO server URL');
+                    return;
+                }
             }
 
-            // Validate URL formats
-            try {
-                new URL(url);
-                new URL(socketServerUrl);
-            } catch {
-                showStatus('error', 'Please enter valid URLs');
-                return;
-            }
+            showStatus('loading', 'Saving settings...');
 
-            showStatus('loading', 'Saving configuration...');
-
-            // Save to Chrome storage
             await new Promise((resolve, reject) => {
                 chrome.storage.sync.set({
-                    supabaseUrl: url,
-                    supabaseAnonKey: anonKey,
                     supabaseTableName: tableName,
                     socketServerUrl: socketServerUrl,
                     geminiApiKey: geminiApiKey
@@ -401,157 +274,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             });
 
-            showStatus('success', 'Configuration saved successfully!');
+            showStatus('success', 'Settings saved successfully!');
 
         } catch (error) {
             console.error('Save failed:', error);
-            showStatus('error', `Failed to save configuration: ${error.message}`);
+            showStatus('error', `Failed to save settings: ${error.message}`);
         }
-    }
-
-    async function testConnection() {
-        try {
-            const url = document.getElementById('supabaseUrl').value.trim();
-            const anonKey = document.getElementById('supabaseAnonKey').value.trim();
-            const tableName = document.getElementById('supabaseTableName').value.trim() || 'html_extractions';
-
-            if (!url || !anonKey) {
-                showStatus('error', 'Please fill in URL and anon key before testing');
-                return;
-            }
-
-            testBtn.disabled = true;
-            testBtn.textContent = 'Testing...';
-            showStatus('loading', 'Testing connection to Supabase...');
-
-            console.log('Testing connection with:', { url, tableName, anonKeyLength: anonKey.length });
-
-            // Test connection by making a simple query
-            const testUrl = `${url}/rest/v1/${tableName}?limit=1`;
-            console.log('Making request to:', testUrl);
-            
-            const response = await fetch(testUrl, {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${anonKey}`,
-                    'apikey': anonKey,
-                    'Content-Type': 'application/json'
-                }
-            });
-
-            console.log('Response status:', response.status);
-            console.log('Response headers:', [...response.headers.entries()]);
-
-            if (response.ok) {
-                const data = await response.json();
-                console.log('Response data:', data);
-                showStatus('success', 'Connection successful! Your configuration is working.');
-            } else {
-                const errorText = await response.text();
-                console.error('Error response:', errorText);
-                
-                let errorMessage = 'Connection failed';
-                
-                if (response.status === 401) {
-                    errorMessage = 'Authentication failed - check your anon key';
-                } else if (response.status === 404) {
-                    errorMessage = `Table "${tableName}" not found - please create it first`;
-                } else {
-                    errorMessage = `Connection failed (${response.status}): ${errorText}`;
-                }
-                
-                showStatus('error', errorMessage);
-            }
-
-        } catch (error) {
-            console.error('Test failed:', error);
-            showStatus('error', `Test failed: ${error.message}`);
-        } finally {
-            testBtn.disabled = false;
-            testBtn.textContent = 'Test Connection';
-        }
-    }
-
-    async function testSocketConnection() {
-        try {
-            const socketServerUrl = document.getElementById('socketServerUrl').value.trim() || 'http://localhost:8000';
-
-            // Validate URL format
-            try {
-                new URL(socketServerUrl);
-            } catch {
-                showStatus('error', 'Please enter a valid Socket.IO server URL');
-                return;
-            }
-
-            testSocketBtn.disabled = true;
-            testSocketBtn.textContent = 'Testing...';
-            showStatus('loading', 'Testing Socket.IO connection...');
-
-            // Load Socket.IO script if not already loaded
-            if (!window.io) {
-                await loadSocketIOScript();
-            }
-
-            const testSocket = window.io(socketServerUrl, {
-                timeout: 5000,
-                reconnection: false
-            });
-
-            const testPromise = new Promise((resolve, reject) => {
-                const timeout = setTimeout(() => {
-                    testSocket.disconnect();
-                    reject(new Error('Connection timeout'));
-                }, 5000);
-
-                testSocket.on('connect', () => {
-                    clearTimeout(timeout);
-                    testSocket.disconnect();
-                    resolve('Connected successfully');
-                });
-
-                testSocket.on('connect_error', (error) => {
-                    clearTimeout(timeout);
-                    testSocket.disconnect();
-                    reject(error);
-                });
-            });
-
-            await testPromise;
-            showStatus('success', 'Socket.IO connection successful!');
-
-        } catch (error) {
-            console.error('Socket test failed:', error);
-            showStatus('error', `Socket test failed: ${error.message}`);
-        } finally {
-            testSocketBtn.disabled = false;
-            testSocketBtn.textContent = 'Test Socket';
-        }
-    }
-
-    function loadSocketIOScript() {
-        return new Promise((resolve, reject) => {
-            if (window.io) {
-                resolve();
-                return;
-            }
-
-            const script = document.createElement('script');
-            script.src = chrome.runtime.getURL('socket/socket.io.min.js');
-            script.onload = () => resolve();
-            script.onerror = () => reject(new Error('Failed to load Socket.IO script'));
-            document.head.appendChild(script);
-        });
     }
 
     function getStoredConfig() {
         return new Promise((resolve) => {
-            chrome.storage.sync.get(['supabaseUrl', 'supabaseAnonKey', 'supabaseTableName', 'socketServerUrl', 'geminiApiKey'], (result) => {
+            chrome.storage.sync.get(['supabaseTableName', 'socketServerUrl', 'geminiApiKey'], (result) => {
                 resolve({
-                    url: result.supabaseUrl || '',
-                    anonKey: result.supabaseAnonKey || '',
                     tableName: result.supabaseTableName || 'html_extractions',
-                    socketServerUrl: result.socketServerUrl || 'http://localhost:8000',
+                    socketServerUrl: result.socketServerUrl || '',
                     geminiApiKey: result.geminiApiKey || ''
                 });
             });
@@ -563,7 +299,6 @@ document.addEventListener('DOMContentLoaded', () => {
         statusDiv.className = `status ${type}`;
         statusMessage.textContent = message;
         
-        // Auto-hide success messages after 5 seconds
         if (type === 'success') {
             setTimeout(() => {
                 statusDiv.style.display = 'none';
@@ -571,26 +306,3 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 });
-
-// Global function for copy button
-function copyToClipboard(button) {
-    const codeBlock = button.parentElement.querySelector('code');
-    const text = codeBlock.textContent;
-    
-    navigator.clipboard.writeText(text).then(() => {
-        button.textContent = 'Copied!';
-        button.classList.add('copied');
-        
-        setTimeout(() => {
-            button.textContent = 'Copy SQL';
-            button.classList.remove('copied');
-        }, 2000);
-    }).catch(err => {
-        console.error('Failed to copy text: ', err);
-        button.textContent = 'Copy failed';
-        
-        setTimeout(() => {
-            button.textContent = 'Copy SQL';
-        }, 2000);
-    });
-} 

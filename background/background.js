@@ -6,12 +6,11 @@ chrome.runtime.onInstalled.addListener((details) => {
     if (details.reason === 'install') {
         console.log('Matrx extension installed');
         
-        // Set default configuration
+        // Set default configuration (only user-configurable settings)
         chrome.storage.sync.set({
-            supabaseUrl: '',
-            supabaseAnonKey: '',
             supabaseTableName: 'html_extractions',
-            userId: ''
+            socketServerUrl: '',
+            geminiApiKey: ''
         });
         
         // Open options page for initial setup
@@ -21,15 +20,12 @@ chrome.runtime.onInstalled.addListener((details) => {
 
 // Handle extension icon click to open side panel
 chrome.action.onClicked.addListener(async (tab) => {
-    // Open the side panel for the current tab
     await chrome.sidePanel.open({ tabId: tab.id });
 });
 
 // Listen for tab updates (URL changes, page loads)
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-    // Only respond to URL changes or when loading is complete
     if (changeInfo.url || changeInfo.status === 'complete') {
-        // Send message to side panel about the URL change
         chrome.runtime.sendMessage({
             action: 'tabUpdated',
             tabId: tabId,
@@ -45,33 +41,18 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 // Handle messages from content scripts and popup
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.action === 'getConfig') {
-        // Get Supabase configuration
-        chrome.storage.sync.get(['supabaseUrl', 'supabaseAnonKey', 'supabaseTableName', 'userId'], (result) => {
+        // Return user-configurable settings only (auth is handled by lib/auth.js)
+        chrome.storage.sync.get(['supabaseTableName', 'socketServerUrl', 'geminiApiKey'], (result) => {
             sendResponse({
-                url: result.supabaseUrl,
-                anonKey: result.supabaseAnonKey,
                 tableName: result.supabaseTableName || 'html_extractions',
-                userId: result.userId
+                socketServerUrl: result.socketServerUrl || '',
+                geminiApiKey: result.geminiApiKey || ''
             });
         });
-        return true; // Keep the message channel open
-    }
-    
-    if (request.action === 'saveConfig') {
-        // Save Supabase configuration
-        chrome.storage.sync.set({
-            supabaseUrl: request.config.url,
-            supabaseAnonKey: request.config.anonKey,
-            supabaseTableName: request.config.tableName || 'html_extractions',
-            userId: request.config.userId
-        }, () => {
-            sendResponse({ success: true });
-        });
-        return true; // Keep the message channel open
+        return true;
     }
     
     if (request.action === 'copyToClipboard') {
-        // Handle copy request from blob URL
         chrome.storage.local.get([request.contentId], async (result) => {
             const contentData = result[request.contentId];
             if (!contentData) {
@@ -87,11 +68,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
             }
             
             try {
-                // Use the background script's clipboard access
                 await navigator.clipboard.writeText(contentToCopy);
                 sendResponse({ success: true });
                 
-                // Clean up old content after successful copy
                 setTimeout(() => {
                     chrome.storage.local.remove([request.contentId]);
                 }, 5000);
@@ -100,11 +79,11 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                 sendResponse({ success: false, error: error.message });
             }
         });
-        return true; // Keep the message channel open for async response
+        return true;
     }
 });
 
-// Optional: Add context menu for quick access
+// Context menu for quick access
 chrome.runtime.onInstalled.addListener(() => {
     chrome.contextMenus.create({
         id: 'extractHTML',
@@ -116,10 +95,9 @@ chrome.runtime.onInstalled.addListener(() => {
 // Handle context menu clicks
 chrome.contextMenus.onClicked.addListener((info, tab) => {
     if (info.menuItemId === 'extractHTML') {
-        // Send message to content script
         chrome.tabs.sendMessage(tab.id, { 
             action: 'extractHTML',
             url: tab.url 
         });
     }
-}); 
+});

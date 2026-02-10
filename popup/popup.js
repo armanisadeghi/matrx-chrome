@@ -454,8 +454,14 @@ document.addEventListener('DOMContentLoaded', async () => {
                 }
             };
 
+            // Get the backend API URL from settings
+            const apiBaseUrl = await getApiBaseUrl();
+            if (!apiBaseUrl) {
+                throw new Error('Backend API URL not configured. Please set the Socket.IO Server URL in settings.');
+            }
+
             // Make API request
-            const apiResponse = await fetch('https://8000-jatindotpy-matrxscraper-iklzanw3l2b.ws-us120.gitpod.io/execute_task/default_service', {
+            const apiResponse = await fetch(`${apiBaseUrl}/execute_task/default_service`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -537,8 +543,14 @@ document.addEventListener('DOMContentLoaded', async () => {
                 }
             };
 
+            // Get the backend API URL from settings
+            const apiBaseUrl = await getApiBaseUrl();
+            if (!apiBaseUrl) {
+                throw new Error('Backend API URL not configured. Please set the Socket.IO Server URL in settings.');
+            }
+
             // Make API request
-            const apiResponse = await fetch('https://8000-jatindotpy-matrxscraper-iklzanw3l2b.ws-us120.gitpod.io/execute_task/default_service', {
+            const apiResponse = await fetch(`${apiBaseUrl}/execute_task/default_service`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -620,8 +632,14 @@ document.addEventListener('DOMContentLoaded', async () => {
                 }
             };
 
+            // Get the backend API URL from settings
+            const apiBaseUrl = await getApiBaseUrl();
+            if (!apiBaseUrl) {
+                throw new Error('Backend API URL not configured. Please set the Socket.IO Server URL in settings.');
+            }
+
             // Make API request
-            const apiResponse = await fetch('https://8000-jatindotpy-matrxscraper-iklzanw3l2b.ws-us120.gitpod.io/execute_task/default_service', {
+            const apiResponse = await fetch(`${apiBaseUrl}/execute_task/default_service`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -713,6 +731,17 @@ document.addEventListener('DOMContentLoaded', async () => {
             alert('No extracted content available');
         }
     });
+
+    // Get the backend API base URL from settings (Socket.IO Server URL)
+    async function getApiBaseUrl() {
+        return new Promise((resolve) => {
+            chrome.storage.sync.get(['socketServerUrl'], (result) => {
+                const url = result.socketServerUrl || '';
+                // Strip trailing slash if present
+                resolve(url ? url.replace(/\/+$/, '') : '');
+            });
+        });
+    }
 
     async function ensureContentScript(tabId) {
         try {

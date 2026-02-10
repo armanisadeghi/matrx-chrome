@@ -195,21 +195,17 @@ async function handleHTMLExtraction(url) {
 
 async function sendToSupabase(data) {
     try {
-        // Get Supabase configuration from storage
-        const config = await getSupabaseConfig();
-        
-        if (!config.url || !config.anonKey) {
-            console.warn('Supabase configuration not found - skipping database save');
-            return {
-                success: false,
-                error: 'Supabase not configured. Please configure your Supabase settings to save extractions to database.'
-            };
-        }
+        // Hardcoded Supabase config — this extension only works with AI Matrx
+        const SUPABASE_URL = 'https://txzxabzwovsujtloxrus.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR4enhhYnp3b3ZzdWp0bG94cnVzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjIxMTU5NzEsImV4cCI6MjAzNzY5MTk3MX0.7mmSbQYGIdc_yZuwawXKSEYr2OUBDfDHqnqUSrIUamk';
 
-        // Get authentication headers if available
+        // Get table name from settings (user-configurable)
+        const tableName = await getTableName();
+
+        // Build auth headers
         let authHeaders = {
             'Content-Type': 'application/json',
-            'apikey': config.anonKey,
+            'apikey': SUPABASE_ANON_KEY,
             'Prefer': 'return=representation'
         };
 
@@ -220,16 +216,15 @@ async function sendToSupabase(data) {
                 authHeaders = { ...authHeaders, ...additionalHeaders };
                 console.log('Using authenticated request to Supabase');
             } else {
-                // Use anon key as fallback
-                authHeaders['Authorization'] = `Bearer ${config.anonKey}`;
+                authHeaders['Authorization'] = `Bearer ${SUPABASE_ANON_KEY}`;
                 console.log('Using anonymous request to Supabase');
             }
         } catch (error) {
             console.warn('Failed to get auth headers, using anon key:', error);
-            authHeaders['Authorization'] = `Bearer ${config.anonKey}`;
+            authHeaders['Authorization'] = `Bearer ${SUPABASE_ANON_KEY}`;
         }
 
-        const response = await fetch(`${config.url}/rest/v1/${config.tableName || 'html_extractions'}`, {
+        const response = await fetch(`${SUPABASE_URL}/rest/v1/${tableName}`, {
             method: 'POST',
             headers: authHeaders,
             body: JSON.stringify(data)
@@ -260,23 +255,18 @@ async function sendToSupabase(data) {
     }
 }
 
-async function getSupabaseConfig() {
+async function getTableName() {
     return new Promise((resolve) => {
-        chrome.storage.sync.get(['supabaseUrl', 'supabaseAnonKey', 'supabaseTableName'], (result) => {
-            resolve({
-                url: result.supabaseUrl,
-                anonKey: result.supabaseAnonKey,
-                tableName: result.supabaseTableName || 'html_extractions'
-            });
+        chrome.storage.sync.get(['supabaseTableName'], (result) => {
+            resolve(result.supabaseTableName || 'html_extractions');
         });
     });
 }
 
 async function getUserId() {
     try {
-        // Try to get user ID from authentication first
         if (typeof window !== 'undefined' && window.supabaseAuth && window.supabaseAuth.isAuthenticated()) {
-            const authUserId = await window.supabaseAuth.getUserId();
+            const authUserId = window.supabaseAuth.getUserId();
             if (authUserId) {
                 return authUserId;
             }
@@ -284,18 +274,7 @@ async function getUserId() {
     } catch (error) {
         console.warn('Failed to get authenticated user ID:', error);
     }
-    
-    // Fallback to stored user ID (legacy support)
-    try {
-        return new Promise((resolve) => {
-            chrome.storage.sync.get(['userId'], (result) => {
-                resolve(result.userId || null);
-            });
-        });
-    } catch (error) {
-        console.warn('Failed to get stored user ID:', error);
-        return null;
-    }
+    return null;
 }
 
 // Listen for socket messages from background script (optional)

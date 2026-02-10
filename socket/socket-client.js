@@ -4,7 +4,7 @@ class ExtensionSocketClient {
         this.socket = null;
         this.isConnected = false;
         this.config = {
-            serverUrl: 'http://localhost:8000', // Default to localhost
+            serverUrl: '', // Configured via extension settings
             reconnection: true,
             reconnectionDelay: 1000,
             reconnectionAttempts: 5,
@@ -17,9 +17,11 @@ class ExtensionSocketClient {
         try {
             // Get socket configuration from storage
             const config = await this.getSocketConfig();
-            if (config.serverUrl) {
-                this.config.serverUrl = config.serverUrl;
+            if (!config.serverUrl) {
+                console.log('Socket.IO server URL not configured, skipping connection');
+                return;
             }
+            this.config.serverUrl = config.serverUrl;
             
             // Load and initialize authentication
             await this.initializeAuth();
@@ -294,11 +296,11 @@ class ExtensionSocketClient {
             if (typeof chrome !== 'undefined' && chrome.storage) {
                 chrome.storage.sync.get(['socketServerUrl'], (result) => {
                     resolve({
-                        serverUrl: result.socketServerUrl || 'http://localhost:8000'
+                        serverUrl: result.socketServerUrl || ''
                     });
                 });
             } else {
-                resolve({ serverUrl: 'http://localhost:8000' });
+                resolve({ serverUrl: '' });
             }
         });
     }

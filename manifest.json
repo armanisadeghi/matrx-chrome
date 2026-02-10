@@ -7,13 +7,10 @@
     "activeTab",
     "storage",
     "contextMenus",
-    "cookies",
     "identity",
     "tabs",
-    "clipboardWrite",
     "scripting",
-    "sidePanel",
-    "downloads"
+    "sidePanel"
   ],
   "host_permissions": [
     "https://*/*",
