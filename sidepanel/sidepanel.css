@@ -562,13 +562,61 @@ body {
     color: var(--m-text-tertiary);
 }
 
+/* Colorful icon variations per tab */
+.tab-btn[data-tab="header-structure"] .tab-icon {
+    color: #2563eb; /* Blue */
+}
+
+.tab-btn[data-tab="text-content"] .tab-icon {
+    color: #7c3aed; /* Purple */
+}
+
+.tab-btn[data-tab="link-analyzer"] .tab-icon {
+    color: #ec4899; /* Pink */
+}
+
+.tab-btn[data-tab="image-analyzer"] .tab-icon {
+    color: #f59e0b; /* Amber */
+}
+
+.tab-btn[data-tab="summary-generator"] .tab-icon {
+    color: #06b6d4; /* Cyan */
+}
+
+.tab-btn[data-tab="markdown-viewer"] .tab-icon {
+    color: #10b981; /* Emerald */
+}
+
+.tab-btn[data-tab="gemini-ai"] .tab-icon {
+    color: #f43f5e; /* Rose */
+}
+
+.tab-btn[data-tab="html-extraction"] .tab-icon {
+    color: #8b5cf6; /* Violet */
+}
+
+.tab-btn[data-tab="ai-processing"] .tab-icon {
+    color: #14b8a6; /* Teal */
+}
+
+.tab-btn[data-tab="custom-range"] .tab-icon {
+    color: #f97316; /* Orange */
+}
+
+.tab-btn[data-tab="seo-analyzer"] .tab-icon {
+    color: #6366f1; /* Indigo */
+}
+
+.tab-btn[data-tab="fact-checker"] .tab-icon {
+    color: #22c55e; /* Lime */
+}
+
 .tab-btn:hover .tab-icon {
     transform: scale(1.08);
-    color: var(--m-brand);
 }
 
 .tab-btn.active .tab-icon {
-    color: var(--m-brand);
+    filter: brightness(1.1);
 }
 
 .tab-text {
@@ -577,6 +625,15 @@ body {
     text-align: center;
     line-height: 1.2;
     letter-spacing: 0.03em;
+    color: var(--m-text-secondary);
+}
+
+.tab-btn:hover .tab-text {
+    color: var(--m-text-primary);
+}
+
+.tab-btn.active .tab-text {
+    color: var(--m-brand);
 }
 
 /* Tab Content - More space for side panel */
@@ -612,7 +669,7 @@ body {
 }
 
 .tab-header h3 {
-    color: white;
+    color: var(--m-text-primary);
     font-size: 16px;
     font-weight: 600;
     margin-bottom: 4px;
@@ -623,7 +680,7 @@ body {
 }
 
 .tab-header p {
-    color: rgba(255, 255, 255, 0.7);
+    color: var(--m-text-secondary);
     font-size: 12px;
     line-height: 1.4;
 }
@@ -695,15 +752,15 @@ body {
 
 /* AI Response Section - More space */
 .ai-response {
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 10px;
+    background: var(--m-bg-inset);
+    border-radius: var(--m-radius-lg);
     padding: 16px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 1px solid var(--m-border);
     margin: 16px 0;
 }
 
 .ai-response-header {
-    color: rgba(255, 255, 255, 0.9);
+    color: var(--m-text-primary);
     font-size: 13px;
     font-weight: 600;
     margin-bottom: 12px;
@@ -719,13 +776,13 @@ body {
 }
 
 .ai-tab {
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: var(--m-bg-card);
+    border: 1px solid var(--m-border);
     border-radius: 6px;
     padding: 6px 10px;
     font-size: 10px;
     font-weight: 500;
-    color: rgba(255, 255, 255, 0.8);
+    color: var(--m-text-secondary);
     cursor: pointer;
     transition: all 0.2s ease;
     flex: 1;
@@ -734,24 +791,24 @@ body {
 }
 
 .ai-tab:hover {
-    background: rgba(255, 255, 255, 0.2);
-    color: white;
+    background: var(--m-bg-hover);
+    color: var(--m-text-primary);
 }
 
 .ai-tab.active {
-    background: rgba(255, 255, 255, 0.25);
-    color: white;
-    border-color: rgba(255, 255, 255, 0.4);
+    background: var(--m-brand-subtle);
+    color: var(--m-brand);
+    border-color: var(--m-brand);
 }
 
 .ai-response-content {
-    color: white;
+    color: var(--m-text-primary);
     font-size: 11px;
     line-height: 1.5;
     max-height: 300px;
     overflow-y: auto;
     padding: 12px;
-    background: rgba(0, 0, 0, 0.1);
+    background: var(--m-bg-page);
     border-radius: 8px;
     white-space: pre-wrap;
     word-wrap: break-word;
@@ -771,20 +828,20 @@ body {
 }
 
 .ai-action-btn, .ai-expand-btn {
-    background: rgba(255, 255, 255, 0.15);
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    background: var(--m-bg-card);
+    border: 1px solid var(--m-border);
     border-radius: 6px;
     padding: 8px 10px;
     font-size: 10px;
     font-weight: 500;
-    color: white;
+    color: var(--m-text-primary);
     cursor: pointer;
     transition: all 0.2s ease;
 }
 
 .ai-action-btn:hover, .ai-expand-btn:hover {
-    background: rgba(255, 255, 255, 0.25);
-    border-color: rgba(255, 255, 255, 0.5);
+    background: var(--m-bg-hover);
+    border-color: var(--m-border-strong);
 }
 
 .ai-markdown-btn, .gemini-markdown-btn {
@@ -801,11 +858,11 @@ body {
 
 /* Gemini Styles */
 .saved-results {
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--m-bg-inset);
     border-radius: 8px;
     padding: 12px;
     margin-bottom: 16px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--m-border);
 }
 
 .saved-results-header {
@@ -816,24 +873,24 @@ body {
 }
 
 .saved-results-header h4 {
-    color: white;
+    color: var(--m-text-primary);
     font-size: 12px;
     font-weight: 600;
 }
 
 .cache-time {
-    color: rgba(255, 255, 255, 0.6);
+    color: var(--m-text-secondary);
     font-size: 10px;
     font-family: monospace;
 }
 
 .saved-results-content {
-    background: rgba(0, 0, 0, 0.2);
+    background: var(--m-bg-page);
     border-radius: 6px;
     padding: 10px;
     font-size: 11px;
     line-height: 1.4;
-    color: rgba(255, 255, 255, 0.9);
+    color: var(--m-text-primary);
     max-height: 100px;
     overflow-y: auto;
     white-space: pre-wrap;
@@ -848,27 +905,27 @@ body {
 
 .gemini-action-btn, .gemini-refresh-btn {
     flex: 1;
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: var(--m-bg-card);
+    border: 1px solid var(--m-border);
     border-radius: 6px;
     padding: 6px 8px;
     font-size: 10px;
     font-weight: 500;
-    color: rgba(255, 255, 255, 0.9);
+    color: var(--m-text-primary);
     cursor: pointer;
     transition: all 0.2s ease;
 }
 
 .gemini-refresh-btn {
-    background: rgba(255, 87, 34, 0.2);
-    border-color: rgba(255, 87, 34, 0.4);
-    color: #ff8a65;
+    background: rgba(249, 115, 22, 0.08);
+    border-color: rgba(249, 115, 22, 0.3);
+    color: #f97316;
 }
 
 .gemini-action-btn:hover, .gemini-refresh-btn:hover {
-    background: rgba(255, 255, 255, 0.15);
-    border-color: rgba(255, 255, 255, 0.3);
-    color: white;
+    background: var(--m-bg-hover);
+    border-color: var(--m-border-strong);
+    color: var(--m-text-primary);
 }
 
 .gemini-extraction {
@@ -931,15 +988,15 @@ body {
 }
 
 .gemini-response {
-    background: rgba(255, 255, 255, 0.1);
+    background: var(--m-bg-inset);
     border-radius: 8px;
     padding: 16px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 1px solid var(--m-border);
     margin: 16px 0;
 }
 
 .gemini-response-header {
-    color: rgba(255, 255, 255, 0.9);
+    color: var(--m-text-primary);
     font-size: 13px;
     font-weight: 600;
     margin-bottom: 12px;
@@ -948,13 +1005,13 @@ body {
 }
 
 .gemini-response-content {
-    color: white;
+    color: var(--m-text-primary);
     font-size: 11px;
     line-height: 1.5;
     max-height: 300px;
     overflow-y: auto;
     padding: 12px;
-    background: rgba(0, 0, 0, 0.1);
+    background: var(--m-bg-page);
     border-radius: 6px;
     white-space: pre-wrap;
     word-wrap: break-word;
@@ -968,24 +1025,24 @@ body {
 
 /* Custom Range Tab Styles - Adapted for side panel */
 .domain-info {
-    background: rgba(255, 255, 255, 0.1);
+    background: var(--m-bg-inset);
     border-radius: 6px;
     padding: 10px 12px;
     margin-bottom: 16px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 1px solid var(--m-border);
     display: flex;
     align-items: center;
     gap: 8px;
 }
 
 .domain-label {
-    color: rgba(255, 255, 255, 0.7);
+    color: var(--m-text-secondary);
     font-size: 11px;
     font-weight: 500;
 }
 
 .domain-value {
-    color: white;
+    color: var(--m-text-primary);
     font-size: 11px;
     font-weight: 600;
     font-family: monospace;
@@ -1001,7 +1058,7 @@ body {
 
 .marker-label {
     display: block;
-    color: rgba(255, 255, 255, 0.9);
+    color: var(--m-text-primary);
     font-size: 11px;
     font-weight: 500;
     margin-bottom: 6px;
@@ -1009,25 +1066,26 @@ body {
 
 .marker-input {
     width: 100%;
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: var(--m-bg-card);
+    border: 1px solid var(--m-border);
     border-radius: 6px;
     padding: 10px 12px;
     font-size: 11px;
-    color: white;
+    color: var(--m-text-primary);
     resize: vertical;
     min-height: 45px;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 .marker-input::placeholder {
-    color: rgba(255, 255, 255, 0.5);
+    color: var(--m-text-tertiary);
 }
 
 .marker-input:focus {
     outline: none;
-    border-color: rgba(255, 255, 255, 0.4);
-    background: rgba(255, 255, 255, 0.15);
+    border-color: var(--m-brand);
+    background: var(--m-bg-card);
+    box-shadow: 0 0 0 3px var(--m-brand-ring);
 }
 
 .marker-actions {
@@ -1037,13 +1095,13 @@ body {
 }
 
 .marker-test-btn, .marker-save-btn {
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: var(--m-bg-card);
+    border: 1px solid var(--m-border);
     border-radius: 4px;
     padding: 6px 10px;
     font-size: 10px;
     font-weight: 500;
-    color: rgba(255, 255, 255, 0.9);
+    color: var(--m-text-primary);
     cursor: pointer;
     transition: all 0.2s ease;
     flex: 1;
@@ -1054,9 +1112,9 @@ body {
 }
 
 .marker-test-btn:hover:not(:disabled), .marker-save-btn:hover:not(:disabled) {
-    background: rgba(255, 255, 255, 0.15);
-    border-color: rgba(255, 255, 255, 0.3);
-    color: white;
+    background: var(--m-bg-hover);
+    border-color: var(--m-border-strong);
+    color: var(--m-text-primary);
 }
 
 .marker-test-btn:disabled, .marker-save-btn:disabled {
@@ -1095,11 +1153,11 @@ body {
 }
 
 .character-count {
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--m-bg-inset);
     border-radius: 6px;
     padding: 12px;
     margin-bottom: 16px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--m-border);
 }
 
 .count-info {
@@ -1110,7 +1168,7 @@ body {
 }
 
 .count-label {
-    color: rgba(255, 255, 255, 0.7);
+    color: var(--m-text-secondary);
     font-size: 11px;
     font-weight: 500;
 }
@@ -1123,17 +1181,17 @@ body {
 }
 
 .count-unit {
-    color: rgba(255, 255, 255, 0.6);
+    color: var(--m-text-secondary);
     font-size: 10px;
 }
 
 .count-preview {
-    background: rgba(0, 0, 0, 0.2);
+    background: var(--m-bg-page);
     border-radius: 4px;
     padding: 8px;
     font-size: 10px;
     line-height: 1.4;
-    color: rgba(255, 255, 255, 0.8);
+    color: var(--m-text-primary);
     max-height: 80px;
     overflow-y: auto;
     white-space: pre-wrap;
@@ -1214,32 +1272,28 @@ body {
 
 .marker-mgmt-btn {
     flex: 1;
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: var(--m-bg-card);
+    border: 1px solid var(--m-border);
     border-radius: 6px;
     padding: 10px 12px;
     font-size: 10px;
     font-weight: 500;
-    color: rgba(255, 255, 255, 0.9);
+    color: var(--m-text-primary);
     cursor: pointer;
     transition: all 0.2s ease;
 }
 
 .marker-mgmt-btn:hover {
-    background: rgba(255, 255, 255, 0.15);
-    border-color: rgba(255, 255, 255, 0.3);
-    color: white;
-}
-
-.marker-mgmt-btn:active {
-    transform: scale(0.98);
+    background: var(--m-bg-hover);
+    border-color: var(--m-border-strong);
+    color: var(--m-text-primary);
 }
 
 .custom-range-results {
-    background: rgba(255, 255, 255, 0.1);
+    background: var(--m-bg-inset);
     border-radius: 8px;
     padding: 14px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 1px solid var(--m-border);
     margin-top: 16px;
 }
 
@@ -1251,24 +1305,24 @@ body {
 }
 
 .results-header h4 {
-    color: white;
+    color: var(--m-text-primary);
     font-size: 12px;
     font-weight: 600;
 }
 
 .results-length {
-    color: rgba(255, 255, 255, 0.7);
+    color: var(--m-text-secondary);
     font-size: 10px;
     font-family: monospace;
 }
 
 .results-content {
-    background: rgba(0, 0, 0, 0.2);
+    background: var(--m-bg-page);
     border-radius: 6px;
     padding: 12px;
     font-size: 11px;
     line-height: 1.5;
-    color: white;
+    color: var(--m-text-primary);
     max-height: 200px;
     overflow-y: auto;
     white-space: pre-wrap;
@@ -1283,20 +1337,20 @@ body {
 
 .results-action-btn {
     flex: 1;
-    background: rgba(255, 255, 255, 0.15);
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    background: var(--m-bg-card);
+    border: 1px solid var(--m-border);
     border-radius: 6px;
     padding: 8px 12px;
     font-size: 10px;
     font-weight: 500;
-    color: white;
+    color: var(--m-text-primary);
     cursor: pointer;
     transition: all 0.2s ease;
 }
 
 .results-action-btn:hover {
-    background: rgba(255, 255, 255, 0.25);
-    border-color: rgba(255, 255, 255, 0.5);
+    background: var(--m-bg-hover);
+    border-color: var(--m-border-strong);
 }
 
 .results-action-btn:active {
@@ -1307,7 +1361,7 @@ body {
 .placeholder-content {
     text-align: center;
     padding: 40px 20px;
-    color: rgba(255, 255, 255, 0.7);
+    color: var(--m-text-secondary);
 }
 
 .placeholder-icon {
@@ -1480,7 +1534,7 @@ body {
     gap: 16px;
     padding: 24px;
     text-align: left;
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--m-bg-inset);
     border-radius: 8px;
     margin-bottom: 16px;
 }
@@ -1491,23 +1545,23 @@ body {
 }
 
 .text-status .status-text h4 {
-    color: white;
+    color: var(--m-text-primary);
     font-size: 16px;
     font-weight: 600;
     margin: 0 0 8px 0;
 }
 
 .text-status .status-text p {
-    color: rgba(255, 255, 255, 0.7);
+    color: var(--m-text-secondary);
     font-size: 13px;
     margin: 0;
     line-height: 1.4;
 }
 
 .text-content-container {
-    background: rgba(255, 255, 255, 0.1);
+    background: var(--m-bg-card);
     border-radius: 8px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 1px solid var(--m-border);
     overflow: hidden;
 }
 
@@ -1516,12 +1570,12 @@ body {
     justify-content: space-between;
     align-items: center;
     padding: 12px 16px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-    background: rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid var(--m-border);
+    background: var(--m-bg-inset);
 }
 
 .text-content-header h4 {
-    color: white;
+    color: var(--m-text-primary);
     font-size: 14px;
     font-weight: 600;
     margin: 0;
@@ -1534,11 +1588,11 @@ body {
 }
 
 .text-copy-btn, .text-refresh-btn {
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: var(--m-bg-card);
+    border: 1px solid var(--m-border);
     border-radius: 6px;
     padding: 6px 12px;
-    color: rgba(255, 255, 255, 0.8);
+    color: var(--m-text-primary);
     font-size: 11px;
     font-weight: 500;
     cursor: pointer;
@@ -1549,14 +1603,14 @@ body {
 }
 
 .text-copy-btn:hover, .text-refresh-btn:hover {
-    background: rgba(255, 255, 255, 0.2);
-    color: white;
+    background: var(--m-bg-hover);
+    color: var(--m-text-primary);
 }
 
 .text-stats {
     padding: 12px 16px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    background: rgba(255, 255, 255, 0.02);
+    border-bottom: 1px solid var(--m-border);
+    background: var(--m-bg-page);
     display: flex;
     gap: 24px;
     flex-wrap: wrap;
@@ -1564,8 +1618,8 @@ body {
 
 .text-content-display {
     padding: 16px;
-    background: #2d2d2d;
-    color: #e8eaed;
+    background: var(--m-bg-page);
+    color: var(--m-text-primary);
     font-size: 12px;
     line-height: 1.6;
     word-wrap: break-word;
@@ -1575,15 +1629,15 @@ body {
 .no-text-message {
     text-align: center;
     padding: 48px 24px;
-    color: rgba(255, 255, 255, 0.5);
+    color: var(--m-text-secondary);
     font-style: italic;
 }
 
 /* Summary Tab Styles - Replicated from Markdown Tab */
 .summary-viewer-container {
-    background: rgba(255, 255, 255, 0.1);
+    background: var(--m-bg-card);
     border-radius: 8px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 1px solid var(--m-border);
     overflow: hidden;
 }
 
@@ -1592,12 +1646,12 @@ body {
     justify-content: space-between;
     align-items: center;
     padding: 12px 16px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-    background: rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid var(--m-border);
+    background: var(--m-bg-inset);
 }
 
 .summary-header h4 {
-    color: white;
+    color: var(--m-text-primary);
     font-size: 14px;
     font-weight: 600;
     margin: 0;
@@ -1610,11 +1664,11 @@ body {
 }
 
 .summary-view-toggle {
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: var(--m-bg-card);
+    border: 1px solid var(--m-border);
     border-radius: 6px;
     padding: 6px 12px;
-    color: rgba(255, 255, 255, 0.8);
+    color: var(--m-text-primary);
     font-size: 11px;
     font-weight: 500;
     cursor: pointer;
@@ -1625,8 +1679,8 @@ body {
 }
 
 .summary-view-toggle:hover {
-    background: rgba(255, 255, 255, 0.2);
-    color: white;
+    background: var(--m-bg-hover);
+    color: var(--m-text-primary);
 }
 
 .summary-view-toggle.active {
@@ -1667,13 +1721,13 @@ body {
 }
 
 .summary-raw-content {
-    background: rgba(0, 0, 0, 0.2);
+    background: var(--m-bg-page);
     border-radius: 6px;
     padding: 16px;
     font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
     font-size: 11px;
     line-height: 1.5;
-    color: rgba(255, 255, 255, 0.9);
+    color: var(--m-text-primary);
     white-space: pre-wrap;
     word-wrap: break-word;
     overflow-x: auto;
@@ -1685,70 +1739,8 @@ body {
     margin-top: 16px;
 }
 
-.generate-summary-btn {
-    width: 100%;
-    background: linear-gradient(135deg, #FF5722 0%, #E64A19 100%);
-    border: none;
-    border-radius: 8px;
-    padding: 12px 16px;
-    font-size: 12px;
-    font-weight: 600;
-    color: white;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    box-shadow: 0 2px 8px rgba(255, 87, 34, 0.3);
-    min-height: 42px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-}
-
-.generate-summary-btn:hover {
-    background: linear-gradient(135deg, #E64A19 0%, #D84315 100%);
-    box-shadow: 0 4px 12px rgba(255, 87, 34, 0.4);
-    transform: translateY(-1px);
-}
-
-.generate-summary-btn:active {
-    transform: translateY(0);
-    box-shadow: 0 2px 6px rgba(255, 87, 34, 0.3);
-}
-
-.generate-summary-btn:disabled {
-    background: #666666;
-    cursor: not-allowed;
-    transform: none;
-    box-shadow: none;
-}
-
-.generate-summary-btn .btn-icon {
-    width: 16px;
-    height: 16px;
-    fill: currentColor;
-}
-
-.generate-summary-btn .btn-loader {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.generate-summary-btn .btn-loader svg {
-    width: 16px;
-    height: 16px;
-    fill: currentColor;
-}
-
-.info-item {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    font-size: 10px;
-}
-
 .label {
-    color: rgba(255, 255, 255, 0.7);
+    color: var(--m-text-secondary);
     font-weight: 500;
     font-size: 9px;
     text-transform: uppercase;
@@ -1756,16 +1748,16 @@ body {
 }
 
 .value {
-    color: white;
+    color: var(--m-text-primary);
     font-weight: 500;
     font-family: monospace;
     font-size: 10px;
     word-break: break-all;
     line-height: 1.3;
     padding: 4px 8px;
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--m-bg-inset);
     border-radius: 4px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--m-border);
 }
 
 .footer {
@@ -1777,11 +1769,11 @@ body {
 }
 
 .settings-btn {
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: var(--m-bg-card);
+    border: 1px solid var(--m-border);
     border-radius: 8px;
     padding: 8px 16px;
-    color: rgba(255, 255, 255, 0.8);
+    color: var(--m-text-primary);
     cursor: pointer;
     transition: all 0.2s ease;
     font-size: 11px;
@@ -1865,26 +1857,26 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.1);
+    background: var(--m-bg-inset);
     border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.3);
+    background: var(--m-border-strong);
     border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.5);
+    background: var(--m-border);
 }
 
 /* Markdown Viewer Tab Styles */
 .markdown-status {
     text-align: center;
     padding: 40px 20px;
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--m-bg-inset);
     border-radius: 8px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--m-border);
 }
 
 .status-icon {
@@ -1898,14 +1890,14 @@ body {
 }
 
 .status-text h4 {
-    color: white;
+    color: var(--m-text-primary);
     font-size: 16px;
     font-weight: 600;
     margin-bottom: 8px;
 }
 
 .status-text p {
-    color: rgba(255, 255, 255, 0.7);
+    color: var(--m-text-secondary);
     font-size: 12px;
     line-height: 1.5;
     max-width: 300px;
@@ -1913,23 +1905,23 @@ body {
 }
 
 .markdown-viewer-container {
-    background: rgba(255, 255, 255, 0.1);
+    background: var(--m-bg-card);
     border-radius: 8px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 1px solid var(--m-border);
     overflow: hidden;
 }
 
 .markdown-header {
-    background: rgba(255, 255, 255, 0.1);
+    background: var(--m-bg-inset);
     padding: 12px 16px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    border-bottom: 1px solid var(--m-border);
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
 
 .markdown-header h4 {
-    color: white;
+    color: var(--m-text-primary);
     font-size: 14px;
     font-weight: 600;
     margin: 0;
@@ -1941,13 +1933,13 @@ body {
 }
 
 .markdown-view-toggle, .markdown-copy-btn {
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: var(--m-bg-card);
+    border: 1px solid var(--m-border);
     border-radius: 4px;
     padding: 6px 10px;
     font-size: 10px;
     font-weight: 500;
-    color: rgba(255, 255, 255, 0.8);
+    color: var(--m-text-primary);
     cursor: pointer;
     transition: all 0.2s ease;
     display: flex;
@@ -1956,15 +1948,15 @@ body {
 }
 
 .markdown-view-toggle:hover, .markdown-copy-btn:hover {
-    background: rgba(255, 255, 255, 0.15);
-    border-color: rgba(255, 255, 255, 0.3);
-    color: white;
+    background: var(--m-bg-hover);
+    border-color: var(--m-border-strong);
+    color: var(--m-text-primary);
 }
 
 .markdown-view-toggle.active {
-    background: rgba(255, 255, 255, 0.2);
-    border-color: rgba(255, 255, 255, 0.4);
-    color: white;
+    background: var(--m-brand-subtle);
+    border-color: var(--m-brand);
+    color: var(--m-brand);
 }
 
 .markdown-view-toggle:active, .markdown-copy-btn:active {
@@ -1987,7 +1979,7 @@ body {
 }
 
 .markdown-rendered-content {
-    color: #e8eaed;
+    color: var(--m-text-primary);
     font-size: 12px;
     line-height: 1.6;
 }
@@ -1999,7 +1991,7 @@ body {
 .markdown-rendered-content h4,
 .markdown-rendered-content h5,
 .markdown-rendered-content h6 {
-    color: #ffffff;
+    color: var(--m-text-primary);
     font-weight: 600;
     margin-top: 1.5em;
     margin-bottom: 0.75em;
@@ -2008,33 +2000,31 @@ body {
 
 .markdown-rendered-content h1 {
     font-size: 18px;
-    border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+    border-bottom: 2px solid var(--m-border);
     padding-bottom: 0.3em;
     margin-top: 0;
 }
 
 .markdown-rendered-content h2 {
     font-size: 16px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    border-bottom: 1px solid var(--m-border);
     padding-bottom: 0.2em;
 }
 
 .markdown-rendered-content h3 {
     font-size: 14px;
-    color: rgba(255, 255, 255, 0.95);
+    color: var(--m-text-primary);
 }
 
 .markdown-rendered-content h4 {
     font-size: 13px;
-    color: rgba(255, 255, 255, 0.9);
+    color: var(--m-text-primary);
 }
-
-/* Duplicate styles removed - using the more comprehensive styles below */
 
 .markdown-rendered-content p {
     margin-bottom: 1em;
     line-height: 1.6;
-    color: rgba(255, 255, 255, 0.9);
+    color: var(--m-text-primary);
 }
 
 .markdown-rendered-content ul,
@@ -2046,12 +2036,12 @@ body {
 .markdown-rendered-content li {
     margin-bottom: 0.3em;
     line-height: 1.5;
-    color: rgba(255, 255, 255, 0.9);
+    color: var(--m-text-primary);
 }
 
 .markdown-rendered-content blockquote {
-    border-left: 3px solid rgba(255, 255, 255, 0.4);
-    background: rgba(255, 255, 255, 0.05);
+    border-left: 3px solid var(--m-brand);
+    background: var(--m-brand-subtle);
     margin: 1em 0;
     padding: 0.75em 1.25em;
     font-style: italic;
