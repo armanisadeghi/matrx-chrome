@@ -135,6 +135,60 @@ document.addEventListener('DOMContentLoaded', async () => {
         headerSettingsBtn.addEventListener('click', openSettings);
     }
 
+    // -----------------------------------------------------------------------
+    // Auth status bar
+    // -----------------------------------------------------------------------
+    const authBarSignedOut = document.getElementById('authBarSignedOut');
+    const authBarSignedIn = document.getElementById('authBarSignedIn');
+    const authBarUserEmail = document.getElementById('authBarUserEmail');
+    const authBarSignInBtn = document.getElementById('authBarSignInBtn');
+
+    function updateAuthBar() {
+        if (window.supabaseAuth && window.supabaseAuth.isAuthenticated()) {
+            const user = window.supabaseAuth.getUser();
+            if (authBarUserEmail) authBarUserEmail.textContent = user?.email || 'Signed in';
+            if (authBarSignedOut) authBarSignedOut.style.display = 'none';
+            if (authBarSignedIn) authBarSignedIn.style.display = 'flex';
+        } else {
+            if (authBarSignedOut) authBarSignedOut.style.display = 'flex';
+            if (authBarSignedIn) authBarSignedIn.style.display = 'none';
+        }
+    }
+
+    if (authBarSignInBtn) {
+        authBarSignInBtn.addEventListener('click', openSettings);
+    }
+
+    // Initialize auth and update bar
+    (async function initAuthBar() {
+        try {
+            if (!window.supabase) {
+                await new Promise((resolve, reject) => {
+                    const s = document.createElement('script');
+                    s.src = chrome.runtime.getURL('lib/supabase.js');
+                    s.onload = resolve;
+                    s.onerror = reject;
+                    document.head.appendChild(s);
+                });
+            }
+            if (!window.SupabaseAuth) {
+                await new Promise((resolve, reject) => {
+                    const s = document.createElement('script');
+                    s.src = chrome.runtime.getURL('lib/auth.js');
+                    s.onload = resolve;
+                    s.onerror = reject;
+                    document.head.appendChild(s);
+                });
+            }
+            if (window.supabaseAuth) {
+                await window.supabaseAuth.initialize();
+            }
+            updateAuthBar();
+        } catch (err) {
+            console.warn('[Popup] Auth bar init failed:', err);
+        }
+    })();
+
     // Handle expand AI content buttons click
     expandAiContentBtn.addEventListener('click', () => {
         if (currentAiData.ai_content) {

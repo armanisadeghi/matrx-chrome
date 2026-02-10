@@ -197,7 +197,7 @@ async function sendToSupabase(data) {
     try {
         // Hardcoded Supabase config — this extension only works with AI Matrx
         const SUPABASE_URL = 'https://txzxabzwovsujtloxrus.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR4enhhYnp3b3ZzdWp0bG94cnVzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjIxMTU5NzEsImV4cCI6MjAzNzY5MTk3MX0.7mmSbQYGIdc_yZuwawXKSEYr2OUBDfDHqnqUSrIUamk';
+        const SUPABASE_API_KEY = 'sb_publishable_4pvkRT-9-_dB0PWqF1sp1w_W9leRIoW';
 
         // Get table name from settings (user-configurable)
         const tableName = await getTableName();
@@ -205,23 +205,29 @@ async function sendToSupabase(data) {
         // Build auth headers
         let authHeaders = {
             'Content-Type': 'application/json',
-            'apikey': SUPABASE_ANON_KEY,
+            'apikey': SUPABASE_API_KEY,
             'Prefer': 'return=representation'
         };
 
-        // Try to get auth token from supabaseAuth if available
+        // Get auth token — user must be signed in for database writes
         try {
             if (typeof window !== 'undefined' && window.supabaseAuth && window.supabaseAuth.isAuthenticated()) {
                 const additionalHeaders = await window.supabaseAuth.getAuthHeaders();
                 authHeaders = { ...authHeaders, ...additionalHeaders };
                 console.log('Using authenticated request to Supabase');
             } else {
-                authHeaders['Authorization'] = `Bearer ${SUPABASE_ANON_KEY}`;
-                console.log('Using anonymous request to Supabase');
+                console.warn('User not authenticated — database write will be rejected by RLS');
+                return {
+                    success: false,
+                    error: 'You must be signed in to save extractions. Open extension settings to sign in.'
+                };
             }
         } catch (error) {
-            console.warn('Failed to get auth headers, using anon key:', error);
-            authHeaders['Authorization'] = `Bearer ${SUPABASE_ANON_KEY}`;
+            console.error('Failed to get auth headers:', error);
+            return {
+                success: false,
+                error: 'Authentication error. Please sign in again via extension settings.'
+            };
         }
 
         const response = await fetch(`${SUPABASE_URL}/rest/v1/${tableName}`, {

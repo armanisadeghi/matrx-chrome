@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Matrx",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Matrx platform extension for web content extraction and analysis",
   "permissions": [
     "activeTab",
