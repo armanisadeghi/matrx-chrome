@@ -54,7 +54,7 @@ export function TextContent() {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Badge>{wordCount.toLocaleString()} words</Badge>
-          <span className="text-[var(--m-text-xs)] text-[var(--m-text-tertiary)]">
+          <span className="text-xs text-[color:var(--m-text-tertiary)]">
             {(text.length / 1024).toFixed(1)} KB
           </span>
         </div>
@@ -73,7 +73,7 @@ export function TextContent() {
       </div>
 
       <div className="bg-[var(--m-bg-inset)] rounded-[var(--m-radius-md)] p-3 max-h-[500px] overflow-auto">
-        <p className="text-[var(--m-text-sm)] text-[var(--m-text-secondary)] whitespace-pre-wrap leading-relaxed">
+        <p className="text-sm text-[color:var(--m-text-secondary)] whitespace-pre-wrap leading-relaxed">
           {text}
         </p>
       </div>

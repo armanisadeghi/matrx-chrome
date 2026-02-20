@@ -96,10 +96,10 @@ export function ScrapeQueuePanel() {
         <div className="p-2.5 bg-[var(--m-warning-subtle)] border border-[var(--m-warning-text)]/20 rounded-[var(--m-radius-md)] flex items-center gap-2">
           <Send className="w-4 h-4 text-[var(--m-warning-text)] shrink-0" />
           <div className="flex-1 min-w-0">
-            <p className="text-[var(--m-text-xs)] font-medium text-[var(--m-warning-text)]">
+            <p className="text-xs font-medium text-[var(--m-warning-text)]">
               This page is in your scrape queue
             </p>
-            <p className="text-[10px] text-[var(--m-text-tertiary)] truncate">
+            <p className="text-[10px] text-[color:var(--m-text-tertiary)] truncate">
               {matchBanner.title || matchBanner.url}
             </p>
           </div>
@@ -123,7 +123,7 @@ export function ScrapeQueuePanel() {
       )}
 
       <div className="flex items-center justify-between">
-        <span className="text-[var(--m-text-sm)] font-medium text-[var(--m-text-primary)]">
+        <span className="text-sm font-medium text-[color:var(--m-text-primary)]">
           Scrape Queue
         </span>
         <Button size="sm" variant="ghost" icon onClick={fetchQueue}>
@@ -132,7 +132,7 @@ export function ScrapeQueuePanel() {
       </div>
 
       {error && (
-        <p className="text-[var(--m-text-xs)] text-[var(--m-error)]">{error}</p>
+        <p className="text-xs text-[var(--m-error)]">{error}</p>
       )}
 
       {queue.length === 0 ? (
@@ -152,10 +152,10 @@ export function ScrapeQueuePanel() {
               >
                 <div className="flex items-start gap-2">
                   <div className="flex-1 min-w-0">
-                    <p className="text-[var(--m-text-sm)] text-[var(--m-text-primary)] truncate">
+                    <p className="text-sm text-[color:var(--m-text-primary)] truncate">
                       {item.title || new URL(item.url).hostname}
                     </p>
-                    <p className="text-[var(--m-text-xs)] text-[var(--m-text-tertiary)] truncate">
+                    <p className="text-xs text-[color:var(--m-text-tertiary)] truncate">
                       {item.url}
                     </p>
                   </div>
@@ -181,7 +181,7 @@ export function ScrapeQueuePanel() {
                       rel="noopener noreferrer"
                       className="p-1 hover:bg-[var(--m-bg-hover)] rounded-[var(--m-radius-sm)]"
                     >
-                      <ExternalLink className="w-3.5 h-3.5 text-[var(--m-text-tertiary)]" />
+                      <ExternalLink className="w-3.5 h-3.5 text-[color:var(--m-text-tertiary)]" />
                     </a>
                   </div>
                 </div>

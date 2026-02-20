@@ -13,7 +13,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         {label && (
           <label
             htmlFor={id}
-            className="text-[var(--m-text-sm)] font-medium text-[var(--m-text-secondary)]"
+            className="text-sm font-medium text-[color:var(--m-text-secondary)]"
           >
             {label}
           </label>
@@ -22,10 +22,10 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           ref={ref}
           id={id}
           className={`
-            w-full px-3 py-2 text-[var(--m-text-md)]
+            w-full px-3 py-2 text-md
             bg-[var(--m-bg-card)] border border-[var(--m-border)]
-            rounded-[var(--m-radius-md)] text-[var(--m-text-primary)]
-            placeholder:text-[var(--m-text-tertiary)]
+            rounded-[var(--m-radius-md)] text-[color:var(--m-text-primary)]
+            placeholder:text-[color:var(--m-text-tertiary)]
             focus:outline-none focus:border-[var(--m-brand)] focus:ring-2 focus:ring-[var(--m-brand-ring)]
             disabled:opacity-50 disabled:cursor-not-allowed
             transition-all duration-[var(--m-transition)]
@@ -35,12 +35,12 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           {...props}
         />
         {hint && !error && (
-          <span className="text-[var(--m-text-xs)] text-[var(--m-text-tertiary)]">
+          <span className="text-xs text-[color:var(--m-text-tertiary)]">
             {hint}
           </span>
         )}
         {error && (
-          <span className="text-[var(--m-text-xs)] text-[var(--m-error)]">
+          <span className="text-xs text-[var(--m-error)]">
             {error}
           </span>
         )}
@@ -65,7 +65,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
         {label && (
           <label
             htmlFor={id}
-            className="text-[var(--m-text-sm)] font-medium text-[var(--m-text-secondary)]"
+            className="text-sm font-medium text-[color:var(--m-text-secondary)]"
           >
             {label}
           </label>
@@ -74,10 +74,10 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
           ref={ref}
           id={id}
           className={`
-            w-full px-3 py-2 text-[var(--m-text-md)]
+            w-full px-3 py-2 text-md
             bg-[var(--m-bg-card)] border border-[var(--m-border)]
-            rounded-[var(--m-radius-md)] text-[var(--m-text-primary)]
-            placeholder:text-[var(--m-text-tertiary)]
+            rounded-[var(--m-radius-md)] text-[color:var(--m-text-primary)]
+            placeholder:text-[color:var(--m-text-tertiary)]
             focus:outline-none focus:border-[var(--m-brand)] focus:ring-2 focus:ring-[var(--m-brand-ring)]
             disabled:opacity-50 disabled:cursor-not-allowed
             transition-all duration-[var(--m-transition)]
@@ -88,12 +88,12 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
           {...props}
         />
         {hint && !error && (
-          <span className="text-[var(--m-text-xs)] text-[var(--m-text-tertiary)]">
+          <span className="text-xs text-[color:var(--m-text-tertiary)]">
             {hint}
           </span>
         )}
         {error && (
-          <span className="text-[var(--m-text-xs)] text-[var(--m-error)]">
+          <span className="text-xs text-[var(--m-error)]">
             {error}
           </span>
         )}

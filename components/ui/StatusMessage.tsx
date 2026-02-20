@@ -7,7 +7,7 @@ const statusConfig: Record<StatusType, { icon: typeof CheckCircle; bg: string; t
   success: { icon: CheckCircle, bg: 'bg-[var(--m-success-subtle)]', text: 'text-[var(--m-success-text)]' },
   error: { icon: AlertTriangle, bg: 'bg-[var(--m-error-subtle)]', text: 'text-[var(--m-error-text)]' },
   info: { icon: Info, bg: 'bg-[var(--m-info-subtle)]', text: 'text-[var(--m-info-text)]' },
-  loading: { icon: Loader2, bg: 'bg-[var(--m-bg-inset)]', text: 'text-[var(--m-text-secondary)]' },
+  loading: { icon: Loader2, bg: 'bg-[var(--m-bg-inset)]', text: 'text-[color:var(--m-text-secondary)]' },
 };
 
 interface StatusMessageProps {
@@ -25,7 +25,7 @@ export function StatusMessage({ type, children, className = '' }: StatusMessageP
       className={`
         flex items-center gap-2 px-3 py-2
         rounded-[var(--m-radius-md)]
-        text-[var(--m-text-sm)]
+        text-sm
         ${config.bg} ${config.text}
         ${className}
       `}

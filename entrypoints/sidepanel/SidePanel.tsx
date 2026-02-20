@@ -66,7 +66,7 @@ export function SidePanel() {
           <div className="w-6 h-6 rounded-[var(--m-radius-sm)] bg-[var(--m-brand)] flex items-center justify-center">
             <span className="text-white text-[10px] font-bold">M</span>
           </div>
-          <span className="text-[var(--m-text-md)] font-semibold text-[var(--m-text-primary)]">
+          <span className="text-md font-semibold text-[color:var(--m-text-primary)]">
             Matrx
           </span>
           <Badge>v2.0</Badge>
@@ -77,7 +77,7 @@ export function SidePanel() {
           ) : (
             <button
               onClick={() => setShowAuth(!showAuth)}
-              className="text-[var(--m-text-xs)] text-[var(--m-brand)] hover:underline cursor-pointer px-2 py-1"
+              className="text-xs text-[var(--m-brand)] hover:underline cursor-pointer px-2 py-1"
             >
               Sign In
             </button>
@@ -91,10 +91,10 @@ export function SidePanel() {
           {tab.favIconUrl && (
             <img src={tab.favIconUrl} className="w-3.5 h-3.5 rounded-sm" alt="" />
           )}
-          <span className="text-[var(--m-text-xs)] text-[var(--m-text-secondary)] truncate flex-1">
+          <span className="text-xs text-[color:var(--m-text-secondary)] truncate flex-1">
             {tab.domain}
           </span>
-          <span className="text-[var(--m-text-xs)] text-[var(--m-text-tertiary)] truncate max-w-[120px]">
+          <span className="text-xs text-[color:var(--m-text-tertiary)] truncate max-w-[120px]">
             {tab.title}
           </span>
         </div>

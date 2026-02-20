@@ -112,7 +112,7 @@ export function SourceDetailView({ topicId, source, onBack, onSourceUpdated }: S
         <Button size="sm" variant="ghost" icon onClick={onBack}>
           <ArrowLeft className="w-3.5 h-3.5" />
         </Button>
-        <span className="text-[var(--m-text-sm)] font-medium text-[var(--m-text-primary)] truncate flex-1">
+        <span className="text-sm font-medium text-[color:var(--m-text-primary)] truncate flex-1">
           {source.title || source.hostname || 'Source'}
         </span>
         <Badge
@@ -130,7 +130,7 @@ export function SourceDetailView({ topicId, source, onBack, onSourceUpdated }: S
       {rescraping && (
         <div className="flex items-center gap-2 px-3 py-1.5 bg-[var(--m-brand-subtle)] border-b border-[var(--m-border)]">
           <Loader2 className="w-3 h-3 animate-spin text-[var(--m-brand)]" />
-          <span className="text-[var(--m-text-xs)] text-[var(--m-brand)]">{rescrapStatus}</span>
+          <span className="text-xs text-[var(--m-brand)]">{rescrapStatus}</span>
         </div>
       )}
 
@@ -148,18 +148,18 @@ export function SourceDetailView({ topicId, source, onBack, onSourceUpdated }: S
                   href={source.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-[var(--m-text-xs)] text-[var(--m-brand)] hover:underline truncate flex-1"
+                  className="text-xs text-[var(--m-brand)] hover:underline truncate flex-1"
                 >
                   {source.url}
                 </a>
                 <button onClick={copyUrl} className="p-1 hover:bg-[var(--m-bg-hover)] rounded cursor-pointer transition-colors">
-                  {copied ? <Check className="w-3 h-3 text-[var(--m-success)]" /> : <Copy className="w-3 h-3 text-[var(--m-text-tertiary)]" />}
+                  {copied ? <Check className="w-3 h-3 text-[var(--m-success)]" /> : <Copy className="w-3 h-3 text-[color:var(--m-text-tertiary)]" />}
                 </button>
                 <a href={source.url} target="_blank" rel="noopener noreferrer" className="p-1 hover:bg-[var(--m-bg-hover)] rounded cursor-pointer transition-colors">
-                  <ExternalLink className="w-3 h-3 text-[var(--m-text-tertiary)]" />
+                  <ExternalLink className="w-3 h-3 text-[color:var(--m-text-tertiary)]" />
                 </a>
               </div>
-              <div className="flex flex-wrap gap-2 text-[var(--m-text-xs)] text-[var(--m-text-tertiary)]">
+              <div className="flex flex-wrap gap-2 text-xs text-[color:var(--m-text-tertiary)]">
                 <span>Type: {source.source_type}</span>
                 <span>Origin: {source.origin}</span>
                 {source.hostname && <span>Host: {source.hostname}</span>}
@@ -186,7 +186,7 @@ export function SourceDetailView({ topicId, source, onBack, onSourceUpdated }: S
             {/* Tags */}
             {tags.length > 0 && (
               <div>
-                <span className="text-[var(--m-text-xs)] font-medium text-[var(--m-text-primary)] mb-1 block">
+                <span className="text-xs font-medium text-[color:var(--m-text-primary)] mb-1 block">
                   Tags
                 </span>
                 <div className="flex flex-wrap gap-1.5">
@@ -195,7 +195,7 @@ export function SourceDetailView({ topicId, source, onBack, onSourceUpdated }: S
                       key={tag.id}
                       onClick={() => handleAssignTag(tag.id)}
                       disabled={loadingTags}
-                      className="px-2 py-0.5 text-[var(--m-text-xs)] bg-[var(--m-bg-inset)] text-[var(--m-text-secondary)] rounded-[var(--m-radius-full)] hover:bg-[var(--m-brand-subtle)] hover:text-[var(--m-brand)] cursor-pointer transition-colors"
+                      className="px-2 py-0.5 text-xs bg-[var(--m-bg-inset)] text-[color:var(--m-text-secondary)] rounded-[var(--m-radius-full)] hover:bg-[var(--m-brand-subtle)] hover:text-[var(--m-brand)] cursor-pointer transition-colors"
                     >
                       {tag.name}
                     </button>
@@ -207,16 +207,16 @@ export function SourceDetailView({ topicId, source, onBack, onSourceUpdated }: S
             {/* Content versions */}
             <div>
               <div className="flex items-center gap-2 mb-2">
-                <FileText className="w-3.5 h-3.5 text-[var(--m-text-tertiary)]" />
-                <span className="text-[var(--m-text-xs)] font-medium text-[var(--m-text-primary)]">
+                <FileText className="w-3.5 h-3.5 text-[color:var(--m-text-tertiary)]" />
+                <span className="text-xs font-medium text-[color:var(--m-text-primary)]">
                   Content ({content.length} version{content.length !== 1 ? 's' : ''})
                 </span>
               </div>
 
               {content.length === 0 ? (
                 <div className="p-3 bg-[var(--m-bg-inset)] rounded-[var(--m-radius-md)] text-center">
-                  <AlertTriangle className="w-5 h-5 text-[var(--m-text-tertiary)] mx-auto mb-1" />
-                  <p className="text-[var(--m-text-xs)] text-[var(--m-text-tertiary)]">
+                  <AlertTriangle className="w-5 h-5 text-[color:var(--m-text-tertiary)] mx-auto mb-1" />
+                  <p className="text-xs text-[color:var(--m-text-tertiary)]">
                     No content captured yet
                   </p>
                 </div>
@@ -239,17 +239,17 @@ export function SourceDetailView({ topicId, source, onBack, onSourceUpdated }: S
                           <Badge variant={c.is_good_scrape ? 'success' : 'warning'}>
                             {c.is_good_scrape ? 'Good' : 'Poor'}
                           </Badge>
-                          <span className="text-[var(--m-text-xs)] text-[var(--m-text-tertiary)]">
+                          <span className="text-xs text-[color:var(--m-text-tertiary)]">
                             {c.char_count.toLocaleString()} chars
                           </span>
                         </div>
-                        <span className="text-[var(--m-text-xs)] text-[var(--m-text-tertiary)]">
+                        <span className="text-xs text-[color:var(--m-text-tertiary)]">
                           {c.capture_method}
                         </span>
                       </div>
 
                       {c.failure_reason && (
-                        <p className="text-[var(--m-text-xs)] text-[var(--m-error)] mb-1">
+                        <p className="text-xs text-[var(--m-error)] mb-1">
                           {c.failure_reason}
                         </p>
                       )}
@@ -259,12 +259,12 @@ export function SourceDetailView({ topicId, source, onBack, onSourceUpdated }: S
                         <div>
                           <button
                             onClick={() => setExpandedContent(expandedContent === c.id ? null : c.id)}
-                            className="text-[var(--m-text-xs)] text-[var(--m-brand)] hover:underline cursor-pointer"
+                            className="text-xs text-[var(--m-brand)] hover:underline cursor-pointer"
                           >
                             {expandedContent === c.id ? 'Hide content' : 'Show content'}
                           </button>
                           {expandedContent === c.id && (
-                            <pre className="mt-1 p-2 text-[var(--m-text-xs)] bg-[var(--m-bg-inset)] rounded-[var(--m-radius-sm)] overflow-auto max-h-[200px] whitespace-pre-wrap break-words">
+                            <pre className="mt-1 p-2 text-xs bg-[var(--m-bg-inset)] rounded-[var(--m-radius-sm)] overflow-auto max-h-[200px] whitespace-pre-wrap break-words">
                               {c.content.slice(0, 5000)}
                               {c.content.length > 5000 && '\n... (truncated)'}
                             </pre>

@@ -28,13 +28,13 @@ export function Tabs({ tabs, activeTab, onTabChange, className = '' }: TabsProps
           onClick={() => onTabChange(tab.id)}
           className={`
             flex items-center gap-1.5 px-3 py-2
-            text-[var(--m-text-sm)] font-medium whitespace-nowrap
+            text-sm font-medium whitespace-nowrap
             border-b-2 cursor-pointer
             transition-all duration-[var(--m-transition)]
             ${
               activeTab === tab.id
                 ? 'border-[var(--m-brand)] text-[var(--m-brand)]'
-                : 'border-transparent text-[var(--m-text-tertiary)] hover:text-[var(--m-text-secondary)] hover:border-[var(--m-border)]'
+                : 'border-transparent text-[color:var(--m-text-tertiary)] hover:text-[color:var(--m-text-secondary)] hover:border-[var(--m-border)]'
             }
           `}
         >

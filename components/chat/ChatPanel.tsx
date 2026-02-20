@@ -360,7 +360,7 @@ export function ChatPanel() {
               className="p-1.5 rounded-[var(--m-radius-sm)] hover:bg-[var(--m-bg-hover)] cursor-pointer transition-colors"
               title="Conversation history"
             >
-              <History className="w-3.5 h-3.5 text-[var(--m-text-tertiary)]" />
+              <History className="w-3.5 h-3.5 text-[color:var(--m-text-tertiary)]" />
             </button>
           </div>
         </div>
@@ -382,7 +382,7 @@ export function ChatPanel() {
                     setInput(prompt);
                     setTimeout(() => inputRef.current?.focus(), 0);
                   }}
-                  className="text-left px-3 py-2 rounded-[var(--m-radius-md)] border border-[var(--m-border)] text-[var(--m-text-sm)] text-[var(--m-text-secondary)] hover:bg-[var(--m-bg-hover)] hover:border-[var(--m-border-strong)] transition-all cursor-pointer"
+                  className="text-left px-3 py-2 rounded-[var(--m-radius-md)] border border-[var(--m-border)] text-sm text-[color:var(--m-text-secondary)] hover:bg-[var(--m-bg-hover)] hover:border-[var(--m-border-strong)] transition-all cursor-pointer"
                 >
                   {prompt}
                 </button>
@@ -421,14 +421,14 @@ export function ChatPanel() {
             className="p-1.5 rounded-[var(--m-radius-sm)] hover:bg-[var(--m-bg-hover)] cursor-pointer transition-colors"
             title="Conversation history"
           >
-            <History className="w-3.5 h-3.5 text-[var(--m-text-tertiary)]" />
+            <History className="w-3.5 h-3.5 text-[color:var(--m-text-tertiary)]" />
           </button>
           <button
             onClick={startNewConversation}
             className="p-1.5 rounded-[var(--m-radius-sm)] hover:bg-[var(--m-bg-hover)] cursor-pointer transition-colors"
             title="New conversation"
           >
-            <Plus className="w-3.5 h-3.5 text-[var(--m-text-tertiary)]" />
+            <Plus className="w-3.5 h-3.5 text-[color:var(--m-text-tertiary)]" />
           </button>
           <Button size="sm" variant="ghost" icon onClick={startNewConversation}>
             <Trash2 className="w-3.5 h-3.5" />
@@ -439,7 +439,7 @@ export function ChatPanel() {
       {/* Status message from agent */}
       {statusMessage && (
         <div className="px-3 py-1.5 bg-[var(--m-info-subtle)] border-b border-[var(--m-border)]">
-          <p className="text-[var(--m-text-xs)] text-[var(--m-info-text)] truncate">
+          <p className="text-xs text-[var(--m-info-text)] truncate">
             {statusMessage}
           </p>
         </div>
@@ -458,15 +458,15 @@ export function ChatPanel() {
               </div>
             )}
             <div
-              className={`max-w-[85%] rounded-[var(--m-radius-lg)] px-3 py-2 text-[var(--m-text-sm)] ${
+              className={`max-w-[85%] rounded-[var(--m-radius-lg)] px-3 py-2 text-sm ${
                 msg.role === 'user'
                   ? 'bg-[var(--m-brand)] text-white'
-                  : 'bg-[var(--m-bg-inset)] text-[var(--m-text-primary)]'
+                  : 'bg-[var(--m-bg-inset)] text-[color:var(--m-text-primary)]'
               }`}
             >
               {msg.role === 'assistant' ? (
                 <div
-                  className="prose prose-sm max-w-none [&_pre]:bg-[var(--m-bg-active)] [&_pre]:p-2 [&_pre]:rounded-[var(--m-radius-sm)] [&_pre]:text-[var(--m-text-xs)] [&_code]:text-[var(--m-text-xs)] [&_p]:my-1"
+                  className="prose prose-sm max-w-none [&_pre]:bg-[var(--m-bg-active)] [&_pre]:p-2 [&_pre]:rounded-[var(--m-radius-sm)] [&_pre]:text-xs [&_code]:text-xs [&_p]:my-1"
                   dangerouslySetInnerHTML={{
                     __html:
                       renderMarkdown(msg.content) ||
@@ -484,7 +484,7 @@ export function ChatPanel() {
             </div>
             {msg.role === 'user' && (
               <div className="w-6 h-6 rounded-full bg-[var(--m-bg-inset)] flex items-center justify-center shrink-0">
-                <User className="w-3.5 h-3.5 text-[var(--m-text-secondary)]" />
+                <User className="w-3.5 h-3.5 text-[color:var(--m-text-secondary)]" />
               </div>
             )}
           </div>
@@ -536,10 +536,10 @@ const ChatInput = forwardRef<HTMLTextAreaElement, ChatInputProps>(
           onKeyDown={onKeyDown}
           placeholder="Ask about this page..."
           rows={1}
-          className="flex-1 px-3 py-2 text-[var(--m-text-sm)]
+          className="flex-1 px-3 py-2 text-sm
             bg-[var(--m-bg-card)] border border-[var(--m-border)]
-            rounded-[var(--m-radius-lg)] text-[var(--m-text-primary)]
-            placeholder:text-[var(--m-text-tertiary)]
+            rounded-[var(--m-radius-lg)] text-[color:var(--m-text-primary)]
+            placeholder:text-[color:var(--m-text-tertiary)]
             focus:outline-none focus:border-[var(--m-brand)] focus:ring-2 focus:ring-[var(--m-brand-ring)]
             resize-none max-h-[120px] min-h-[36px]"
           style={{ height: 'auto' }}

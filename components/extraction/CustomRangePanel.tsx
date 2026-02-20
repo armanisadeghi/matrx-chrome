@@ -152,7 +152,7 @@ export function CustomRangePanel() {
                 )}
               </Button>
             </div>
-            <pre className="text-[var(--m-text-xs)] text-[var(--m-text-secondary)] bg-[var(--m-bg-inset)] p-2 rounded-[var(--m-radius-sm)] max-h-[200px] overflow-auto whitespace-pre-wrap break-words">
+            <pre className="text-xs text-[color:var(--m-text-secondary)] bg-[var(--m-bg-inset)] p-2 rounded-[var(--m-radius-sm)] max-h-[200px] overflow-auto whitespace-pre-wrap break-words">
               {result.substring(0, 2000)}
               {result.length > 2000 && '\n\n... (truncated)'}
             </pre>

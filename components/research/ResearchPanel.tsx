@@ -340,14 +340,14 @@ export function ResearchPanel() {
     return (
       <div className="flex flex-col gap-3 p-3">
         <div className="flex items-center justify-between">
-          <span className="text-[var(--m-text-sm)] font-medium text-[var(--m-text-primary)]">
+          <span className="text-sm font-medium text-[color:var(--m-text-primary)]">
             Research Topics
           </span>
           <div className="flex items-center gap-2">
             <select
               value={projectId}
               onChange={(e) => setProjectId(e.target.value)}
-              className="w-[160px] px-2 py-1 text-[var(--m-text-xs)] bg-[var(--m-bg-inset)] border border-[var(--m-border)] rounded-[var(--m-radius-sm)] text-[var(--m-text-primary)] focus:outline-none focus:border-[var(--m-brand)]"
+              className="w-[160px] px-2 py-1 text-xs bg-[var(--m-bg-inset)] border border-[var(--m-border)] rounded-[var(--m-radius-sm)] text-[color:var(--m-text-primary)] focus:outline-none focus:border-[var(--m-brand)]"
             >
               <option value="">Select project...</option>
               {projects.map((p) => (
@@ -399,11 +399,11 @@ export function ResearchPanel() {
           >
             <BookOpen className="w-4 h-4 text-[var(--m-brand)] shrink-0" />
             <div className="flex-1 min-w-0">
-              <p className="text-[var(--m-text-sm)] font-medium text-[var(--m-text-primary)] truncate">
+              <p className="text-sm font-medium text-[color:var(--m-text-primary)] truncate">
                 {topic.name}
               </p>
               {topic.description && (
-                <p className="text-[var(--m-text-xs)] text-[var(--m-text-tertiary)] truncate">
+                <p className="text-xs text-[color:var(--m-text-tertiary)] truncate">
                   {topic.description}
                 </p>
               )}
@@ -411,7 +411,7 @@ export function ResearchPanel() {
             <Badge variant={topic.status === 'active' ? 'success' : 'default'}>
               {topic.status}
             </Badge>
-            <ChevronRight className="w-4 h-4 text-[var(--m-text-tertiary)] shrink-0" />
+            <ChevronRight className="w-4 h-4 text-[color:var(--m-text-tertiary)] shrink-0" />
           </button>
         ))}
       </div>
@@ -426,7 +426,7 @@ export function ResearchPanel() {
           <Button size="sm" variant="ghost" icon onClick={() => setView('topics')}>
             <ArrowLeft className="w-3.5 h-3.5" />
           </Button>
-          <span className="text-[var(--m-text-sm)] font-medium text-[var(--m-text-primary)]">
+          <span className="text-sm font-medium text-[color:var(--m-text-primary)]">
             New Research Topic
           </span>
         </div>
@@ -434,7 +434,7 @@ export function ResearchPanel() {
         <div className="flex-1 overflow-auto p-3">
           <div className="flex flex-col gap-3">
             <div>
-              <label className="block text-[var(--m-text-xs)] font-medium text-[var(--m-text-primary)] mb-1">
+              <label className="block text-xs font-medium text-[color:var(--m-text-primary)] mb-1">
                 Topic Name
               </label>
               <input
@@ -442,12 +442,12 @@ export function ResearchPanel() {
                 value={newTopicName}
                 onChange={(e) => setNewTopicName(e.target.value)}
                 placeholder="e.g., Machine Learning in Healthcare"
-                className="w-full px-2.5 py-1.5 text-[var(--m-text-sm)] bg-[var(--m-bg-inset)] border border-[var(--m-border)] rounded-[var(--m-radius-sm)] text-[var(--m-text-primary)] placeholder:text-[var(--m-text-tertiary)] focus:outline-none focus:border-[var(--m-brand)]"
+                className="w-full px-2.5 py-1.5 text-sm bg-[var(--m-bg-inset)] border border-[var(--m-border)] rounded-[var(--m-radius-sm)] text-[color:var(--m-text-primary)] placeholder:text-[color:var(--m-text-tertiary)] focus:outline-none focus:border-[var(--m-brand)]"
               />
             </div>
 
             <div>
-              <label className="block text-[var(--m-text-xs)] font-medium text-[var(--m-text-primary)] mb-1">
+              <label className="block text-xs font-medium text-[color:var(--m-text-primary)] mb-1">
                 Description (optional)
               </label>
               <textarea
@@ -455,7 +455,7 @@ export function ResearchPanel() {
                 onChange={(e) => setNewTopicDescription(e.target.value)}
                 placeholder="Brief description of your research goals..."
                 rows={3}
-                className="w-full px-2.5 py-1.5 text-[var(--m-text-sm)] bg-[var(--m-bg-inset)] border border-[var(--m-border)] rounded-[var(--m-radius-sm)] text-[var(--m-text-primary)] placeholder:text-[var(--m-text-tertiary)] focus:outline-none focus:border-[var(--m-brand)] resize-none"
+                className="w-full px-2.5 py-1.5 text-sm bg-[var(--m-bg-inset)] border border-[var(--m-border)] rounded-[var(--m-radius-sm)] text-[color:var(--m-text-primary)] placeholder:text-[color:var(--m-text-tertiary)] focus:outline-none focus:border-[var(--m-brand)] resize-none"
               />
             </div>
 
@@ -474,7 +474,7 @@ export function ResearchPanel() {
 
               {suggestedKeywords.length > 0 && (
                 <div className="mt-2">
-                  <p className="text-[var(--m-text-xs)] text-[var(--m-text-tertiary)] mb-1.5">
+                  <p className="text-xs text-[color:var(--m-text-tertiary)] mb-1.5">
                     Click to toggle — selected keywords will be added to the topic:
                   </p>
                   <div className="flex flex-wrap gap-1.5">
@@ -482,10 +482,10 @@ export function ResearchPanel() {
                       <button
                         key={kw}
                         onClick={() => toggleSuggestion(kw)}
-                        className={`px-2 py-0.5 text-[var(--m-text-xs)] font-medium rounded-[var(--m-radius-full)] cursor-pointer transition-colors ${
+                        className={`px-2 py-0.5 text-xs font-medium rounded-[var(--m-radius-full)] cursor-pointer transition-colors ${
                           selectedSuggestions.has(kw)
                             ? 'bg-[var(--m-brand-subtle)] text-[var(--m-brand)] ring-1 ring-[var(--m-brand)]'
-                            : 'bg-[var(--m-bg-inset)] text-[var(--m-text-tertiary)] line-through'
+                            : 'bg-[var(--m-bg-inset)] text-[color:var(--m-text-tertiary)] line-through'
                         }`}
                       >
                         {kw}
@@ -535,7 +535,7 @@ export function ResearchPanel() {
         <Button size="sm" variant="ghost" icon onClick={() => setView('topics')}>
           <ArrowLeft className="w-3.5 h-3.5" />
         </Button>
-        <span className="text-[var(--m-text-sm)] font-medium text-[var(--m-text-primary)] truncate">
+        <span className="text-sm font-medium text-[color:var(--m-text-primary)] truncate">
           {selectedTopic?.name}
         </span>
         <Badge variant={selectedTopic?.status === 'active' ? 'success' : 'default'}>
@@ -547,7 +547,7 @@ export function ResearchPanel() {
       {running && (
         <div className="flex items-center gap-2 px-3 py-1.5 bg-[var(--m-brand-subtle)] border-b border-[var(--m-border)]">
           <Loader2 className="w-3 h-3 animate-spin text-[var(--m-brand)]" />
-          <span className="text-[var(--m-text-xs)] text-[var(--m-brand)]">{statusMessage}</span>
+          <span className="text-xs text-[var(--m-brand)]">{statusMessage}</span>
         </div>
       )}
 
@@ -577,8 +577,8 @@ export function ResearchPanel() {
             {/* Keywords */}
             <div>
               <div className="flex items-center gap-2 mb-2">
-                <Tag className="w-3.5 h-3.5 text-[var(--m-text-tertiary)]" />
-                <span className="text-[var(--m-text-sm)] font-medium text-[var(--m-text-primary)]">
+                <Tag className="w-3.5 h-3.5 text-[color:var(--m-text-tertiary)]" />
+                <span className="text-sm font-medium text-[color:var(--m-text-primary)]">
                   Keywords ({keywords.length})
                 </span>
               </div>
@@ -592,7 +592,7 @@ export function ResearchPanel() {
                     if (e.key === 'Enter') handleAddKeyword();
                   }}
                   placeholder="Add keyword..."
-                  className="flex-1 px-2 py-1 text-[var(--m-text-xs)] bg-[var(--m-bg-inset)] border border-[var(--m-border)] rounded-[var(--m-radius-sm)] text-[var(--m-text-primary)] placeholder:text-[var(--m-text-tertiary)] focus:outline-none focus:border-[var(--m-brand)]"
+                  className="flex-1 px-2 py-1 text-xs bg-[var(--m-bg-inset)] border border-[var(--m-border)] rounded-[var(--m-radius-sm)] text-[color:var(--m-text-primary)] placeholder:text-[color:var(--m-text-tertiary)] focus:outline-none focus:border-[var(--m-brand)]"
                 />
                 <Button
                   size="sm"
@@ -609,10 +609,10 @@ export function ResearchPanel() {
                 {keywords.map((kw) => (
                   <span
                     key={kw.id}
-                    className={`inline-flex items-center gap-1 px-2 py-0.5 text-[var(--m-text-xs)] font-medium rounded-[var(--m-radius-full)] ${
+                    className={`inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium rounded-[var(--m-radius-full)] ${
                       kw.is_stale
                         ? 'bg-[var(--m-warning-subtle)] text-[var(--m-warning-text)]'
-                        : 'bg-[var(--m-bg-inset)] text-[var(--m-text-secondary)]'
+                        : 'bg-[var(--m-bg-inset)] text-[color:var(--m-text-secondary)]'
                     }`}
                   >
                     {kw.keyword}
@@ -627,7 +627,7 @@ export function ResearchPanel() {
                   </span>
                 ))}
                 {keywords.length === 0 && (
-                  <span className="text-[var(--m-text-xs)] text-[var(--m-text-tertiary)]">
+                  <span className="text-xs text-[color:var(--m-text-tertiary)]">
                     No keywords yet
                   </span>
                 )}
@@ -637,8 +637,8 @@ export function ResearchPanel() {
             {/* Sources summary */}
             <div>
               <div className="flex items-center gap-2 mb-2">
-                <FileText className="w-3.5 h-3.5 text-[var(--m-text-tertiary)]" />
-                <span className="text-[var(--m-text-sm)] font-medium text-[var(--m-text-primary)]">
+                <FileText className="w-3.5 h-3.5 text-[color:var(--m-text-tertiary)]" />
+                <span className="text-sm font-medium text-[color:var(--m-text-primary)]">
                   Sources ({sources.length})
                 </span>
               </div>
@@ -664,10 +664,10 @@ export function ResearchPanel() {
                     className="flex items-center gap-2 p-2 bg-[var(--m-bg-card)] rounded-[var(--m-radius-sm)] border border-[var(--m-border)] hover:bg-[var(--m-bg-hover)] cursor-pointer transition-colors text-left w-full"
                   >
                     <div className="flex-1 min-w-0">
-                      <p className="text-[var(--m-text-xs)] text-[var(--m-text-primary)] truncate">
+                      <p className="text-xs text-[color:var(--m-text-primary)] truncate">
                         {source.title || source.hostname}
                       </p>
-                      <p className="text-[var(--m-text-xs)] text-[var(--m-text-tertiary)] truncate">
+                      <p className="text-xs text-[color:var(--m-text-tertiary)] truncate">
                         {source.url}
                       </p>
                     </div>
@@ -685,7 +685,7 @@ export function ResearchPanel() {
                   </button>
                 ))}
                 {sources.length > 20 && (
-                  <p className="text-[var(--m-text-xs)] text-[var(--m-text-tertiary)] text-center py-1">
+                  <p className="text-xs text-[color:var(--m-text-tertiary)] text-center py-1">
                     +{sources.length - 20} more sources
                   </p>
                 )}
@@ -695,8 +695,8 @@ export function ResearchPanel() {
             {/* Tags */}
             <div>
               <div className="flex items-center gap-2 mb-2">
-                <Tag className="w-3.5 h-3.5 text-[var(--m-text-tertiary)]" />
-                <span className="text-[var(--m-text-sm)] font-medium text-[var(--m-text-primary)]">
+                <Tag className="w-3.5 h-3.5 text-[color:var(--m-text-tertiary)]" />
+                <span className="text-sm font-medium text-[color:var(--m-text-primary)]">
                   Tags ({tags.length})
                 </span>
               </div>
@@ -709,7 +709,7 @@ export function ResearchPanel() {
                     if (e.key === 'Enter') handleAddTag();
                   }}
                   placeholder="Add tag..."
-                  className="flex-1 px-2 py-1 text-[var(--m-text-xs)] bg-[var(--m-bg-inset)] border border-[var(--m-border)] rounded-[var(--m-radius-sm)] text-[var(--m-text-primary)] placeholder:text-[var(--m-text-tertiary)] focus:outline-none focus:border-[var(--m-brand)]"
+                  className="flex-1 px-2 py-1 text-xs bg-[var(--m-bg-inset)] border border-[var(--m-border)] rounded-[var(--m-radius-sm)] text-[color:var(--m-text-primary)] placeholder:text-[color:var(--m-text-tertiary)] focus:outline-none focus:border-[var(--m-brand)]"
                 />
                 <Button
                   size="sm"
@@ -726,7 +726,7 @@ export function ResearchPanel() {
                 {tags.map((tag) => (
                   <span
                     key={tag.id}
-                    className="inline-flex items-center gap-1 px-2 py-0.5 text-[var(--m-text-xs)] font-medium rounded-[var(--m-radius-full)] bg-[var(--m-brand-subtle)] text-[var(--m-brand)]"
+                    className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium rounded-[var(--m-radius-full)] bg-[var(--m-brand-subtle)] text-[var(--m-brand)]"
                   >
                     {tag.name}
                     <button
@@ -739,7 +739,7 @@ export function ResearchPanel() {
                   </span>
                 ))}
                 {tags.length === 0 && (
-                  <span className="text-[var(--m-text-xs)] text-[var(--m-text-tertiary)]">
+                  <span className="text-xs text-[color:var(--m-text-tertiary)]">
                     No tags yet
                   </span>
                 )}
@@ -749,8 +749,8 @@ export function ResearchPanel() {
             {/* Document */}
             <div>
               <div className="flex items-center gap-2 mb-2">
-                <ScrollText className="w-3.5 h-3.5 text-[var(--m-text-tertiary)]" />
-                <span className="text-[var(--m-text-sm)] font-medium text-[var(--m-text-primary)]">
+                <ScrollText className="w-3.5 h-3.5 text-[color:var(--m-text-tertiary)]" />
+                <span className="text-sm font-medium text-[color:var(--m-text-primary)]">
                   Document
                 </span>
               </div>
@@ -760,12 +760,12 @@ export function ResearchPanel() {
                     <Badge variant={document.is_current ? 'success' : 'default'}>
                       v{document.version || 1}
                     </Badge>
-                    <span className="text-[var(--m-text-xs)] text-[var(--m-text-tertiary)]">
+                    <span className="text-xs text-[color:var(--m-text-tertiary)]">
                       {new Date(document.created_at).toLocaleDateString()}
                     </span>
                   </div>
                   {document.content && (
-                    <p className="text-[var(--m-text-xs)] text-[var(--m-text-secondary)] line-clamp-3 mb-2">
+                    <p className="text-xs text-[color:var(--m-text-secondary)] line-clamp-3 mb-2">
                       {(document.content as string).slice(0, 200)}...
                     </p>
                   )}
@@ -782,7 +782,7 @@ export function ResearchPanel() {
                 </div>
               ) : (
                 <div className="flex flex-col items-center gap-2 py-3">
-                  <p className="text-[var(--m-text-xs)] text-[var(--m-text-tertiary)]">
+                  <p className="text-xs text-[color:var(--m-text-tertiary)]">
                     No document generated yet
                   </p>
                   <Button size="sm" variant="primary" onClick={handleGenerateDocument} disabled={generatingDoc} loading={generatingDoc}>
@@ -797,18 +797,18 @@ export function ResearchPanel() {
             {costs && (
               <div>
                 <div className="flex items-center gap-2 mb-2">
-                  <DollarSign className="w-3.5 h-3.5 text-[var(--m-text-tertiary)]" />
-                  <span className="text-[var(--m-text-sm)] font-medium text-[var(--m-text-primary)]">
+                  <DollarSign className="w-3.5 h-3.5 text-[color:var(--m-text-tertiary)]" />
+                  <span className="text-sm font-medium text-[color:var(--m-text-primary)]">
                     Costs
                   </span>
                 </div>
-                <div className="p-2.5 bg-[var(--m-bg-inset)] rounded-[var(--m-radius-md)] text-[var(--m-text-xs)] flex flex-col gap-1">
+                <div className="p-2.5 bg-[var(--m-bg-inset)] rounded-[var(--m-radius-md)] text-xs flex flex-col gap-1">
                   {Object.entries(costs).map(([key, value]) => (
                     <div key={key} className="flex items-center justify-between">
-                      <span className="text-[var(--m-text-tertiary)] capitalize">
+                      <span className="text-[color:var(--m-text-tertiary)] capitalize">
                         {key.replace(/_/g, ' ')}
                       </span>
-                      <span className="text-[var(--m-text-primary)] font-medium">
+                      <span className="text-[color:var(--m-text-primary)] font-medium">
                         {typeof value === 'number' ? `$${value.toFixed(4)}` : String(value)}
                       </span>
                     </div>

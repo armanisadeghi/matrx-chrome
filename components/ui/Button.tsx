@@ -14,21 +14,21 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 const variantStyles: Record<Variant, string> = {
   default:
-    'bg-[var(--m-bg-card)] border border-[var(--m-border)] text-[var(--m-text-primary)] hover:bg-[var(--m-bg-hover)] hover:border-[var(--m-border-strong)]',
+    'bg-[var(--m-bg-card)] border border-[var(--m-border)] text-[color:var(--m-text-primary)] hover:bg-[var(--m-bg-hover)] hover:border-[var(--m-border-strong)]',
   primary:
-    'bg-[var(--m-brand)] text-[var(--m-text-inverse)] hover:bg-[var(--m-brand-hover)] active:bg-[var(--m-brand-active)] border border-transparent',
+    'bg-[var(--m-brand)] text-[color:var(--m-text-inverse)] hover:bg-[var(--m-brand-hover)] active:bg-[var(--m-brand-active)] border border-transparent',
   secondary:
     'bg-transparent border border-[var(--m-brand)] text-[var(--m-brand)] hover:bg-[var(--m-brand-subtle)]',
   ghost:
-    'bg-transparent border border-transparent text-[var(--m-text-secondary)] hover:bg-[var(--m-bg-hover)] hover:text-[var(--m-text-primary)]',
+    'bg-transparent border border-transparent text-[color:var(--m-text-secondary)] hover:bg-[var(--m-bg-hover)] hover:text-[color:var(--m-text-primary)]',
   danger:
-    'bg-transparent border border-[var(--m-border)] text-[var(--m-text-primary)] hover:bg-[var(--m-error-subtle)] hover:text-[var(--m-error)] hover:border-[var(--m-error)]',
+    'bg-transparent border border-[var(--m-border)] text-[color:var(--m-text-primary)] hover:bg-[var(--m-error-subtle)] hover:text-[var(--m-error)] hover:border-[var(--m-error)]',
 };
 
 const sizeStyles: Record<Size, string> = {
-  sm: 'px-2.5 py-1 text-[var(--m-text-sm)] gap-1 rounded-[var(--m-radius-sm)]',
-  md: 'px-3 py-1.5 text-[var(--m-text-sm)] gap-1.5 rounded-[var(--m-radius-md)]',
-  lg: 'px-4 py-2 text-[var(--m-text-md)] gap-2 rounded-[var(--m-radius-md)]',
+  sm: 'px-2.5 py-1 text-sm gap-1 rounded-[var(--m-radius-sm)]',
+  md: 'px-3 py-1.5 text-sm gap-1.5 rounded-[var(--m-radius-md)]',
+  lg: 'px-4 py-2 text-md gap-2 rounded-[var(--m-radius-md)]',
 };
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(

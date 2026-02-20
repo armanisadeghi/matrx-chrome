@@ -37,7 +37,7 @@ export function ImageAnalysis() {
     <div className="flex flex-col gap-2">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <span className="text-[var(--m-text-sm)] text-[var(--m-text-secondary)]">
+          <span className="text-sm text-[color:var(--m-text-secondary)]">
             {images.length} images
           </span>
           {missingAlt > 0 && (
@@ -75,18 +75,18 @@ export function ImageAnalysis() {
                     }}
                   />
                 ) : (
-                  <ImageIcon className="w-4 h-4 text-[var(--m-text-tertiary)]" />
+                  <ImageIcon className="w-4 h-4 text-[color:var(--m-text-tertiary)]" />
                 )}
               </div>
               <div className="flex flex-col min-w-0 flex-1">
-                <span className="text-[var(--m-text-sm)] text-[var(--m-text-primary)] truncate">
+                <span className="text-sm text-[color:var(--m-text-primary)] truncate">
                   {img.alt || (
                     <span className="text-[var(--m-warning-text)] italic">
                       No alt text
                     </span>
                   )}
                 </span>
-                <span className="text-[var(--m-text-xs)] text-[var(--m-text-tertiary)] truncate">
+                <span className="text-xs text-[color:var(--m-text-tertiary)] truncate">
                   {img.src?.split('/').pop()}
                 </span>
               </div>

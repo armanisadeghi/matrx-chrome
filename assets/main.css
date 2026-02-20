@@ -5,6 +5,16 @@
    ============================================ */
 
 :root {
+  /* Override Tailwind's default font-size theme variables.
+     text-xs/sm/lg/xl utilities reference --text-* vars.
+     Our :root block (outside @layer) overrides @layer theme. */
+  --text-xs: 11px;
+  --text-sm: 12px;
+  --text-base: 13px;
+  --text-md: 14px;
+  --text-lg: 16px;
+  --text-xl: 20px;
+
   /* Brand */
   --m-brand: #2563eb;
   --m-brand-hover: #1d4ed8;

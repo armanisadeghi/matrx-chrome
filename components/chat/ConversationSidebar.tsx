@@ -49,7 +49,7 @@ export function ConversationSidebar({
     <div className="flex flex-col h-full bg-[var(--m-bg-card)] border-r border-[var(--m-border)]">
       {/* Header */}
       <div className="flex items-center justify-between px-3 py-2 border-b border-[var(--m-border)]">
-        <span className="text-[var(--m-text-sm)] font-medium text-[var(--m-text-primary)]">
+        <span className="text-sm font-medium text-[color:var(--m-text-primary)]">
           History
         </span>
         <div className="flex items-center gap-1">
@@ -65,7 +65,7 @@ export function ConversationSidebar({
             className="p-1 rounded-[var(--m-radius-sm)] hover:bg-[var(--m-bg-hover)] cursor-pointer transition-colors"
             title="Close sidebar"
           >
-            <ChevronLeft className="w-3.5 h-3.5 text-[var(--m-text-tertiary)]" />
+            <ChevronLeft className="w-3.5 h-3.5 text-[color:var(--m-text-tertiary)]" />
           </button>
         </div>
       </div>
@@ -78,8 +78,8 @@ export function ConversationSidebar({
           </div>
         ) : conversations.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-8 px-3">
-            <MessageSquare className="w-8 h-8 text-[var(--m-text-tertiary)] mb-2" />
-            <p className="text-[var(--m-text-xs)] text-[var(--m-text-tertiary)] text-center">
+            <MessageSquare className="w-8 h-8 text-[color:var(--m-text-tertiary)] mb-2" />
+            <p className="text-xs text-[color:var(--m-text-tertiary)] text-center">
               No conversations yet
             </p>
           </div>
@@ -95,15 +95,15 @@ export function ConversationSidebar({
                     : 'hover:bg-[var(--m-bg-hover)]'
                 }`}
               >
-                <p className="text-[var(--m-text-xs)] font-medium text-[var(--m-text-primary)] truncate">
+                <p className="text-xs font-medium text-[color:var(--m-text-primary)] truncate">
                   {conv.title || 'Untitled conversation'}
                 </p>
                 <div className="flex items-center gap-2 mt-0.5">
-                  <span className="text-[10px] text-[var(--m-text-tertiary)] flex items-center gap-0.5">
+                  <span className="text-[10px] text-[color:var(--m-text-tertiary)] flex items-center gap-0.5">
                     <Clock className="w-2.5 h-2.5" />
                     {formatTime(conv.updated_at)}
                   </span>
-                  <span className="text-[10px] text-[var(--m-text-tertiary)]">
+                  <span className="text-[10px] text-[color:var(--m-text-tertiary)]">
                     {conv.message_count} msgs
                   </span>
                 </div>

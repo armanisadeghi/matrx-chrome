@@ -63,7 +63,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
               key={t.id}
               className={`
                 flex items-center gap-2 px-3 py-2 rounded-[var(--m-radius-md)]
-                text-white text-[var(--m-text-sm)] font-medium
+                text-white text-sm font-medium
                 shadow-[var(--m-shadow-lg)] animate-slide-in
                 ${bgColors[t.type]}
               `}

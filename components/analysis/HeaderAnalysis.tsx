@@ -40,9 +40,9 @@ export function HeaderAnalysis() {
     1: 'text-[var(--m-brand)]',
     2: 'text-[var(--m-success-text)]',
     3: 'text-[var(--m-warning-text)]',
-    4: 'text-[var(--m-text-secondary)]',
-    5: 'text-[var(--m-text-tertiary)]',
-    6: 'text-[var(--m-text-tertiary)]',
+    4: 'text-[color:var(--m-text-secondary)]',
+    5: 'text-[color:var(--m-text-tertiary)]',
+    6: 'text-[color:var(--m-text-tertiary)]',
   };
 
   if (error) {
@@ -52,7 +52,7 @@ export function HeaderAnalysis() {
   return (
     <div className="flex flex-col gap-2">
       <div className="flex items-center justify-between">
-        <span className="text-[var(--m-text-sm)] text-[var(--m-text-secondary)]">
+        <span className="text-sm text-[color:var(--m-text-secondary)]">
           {headers.length} headers found
         </span>
         <Button size="sm" variant="ghost" icon onClick={analyze} loading={loading}>
@@ -81,7 +81,7 @@ export function HeaderAnalysis() {
                 H{h.level}
               </Badge>
               <span
-                className={`text-[var(--m-text-sm)] leading-snug ${levelColors[h.level] || ''}`}
+                className={`text-sm leading-snug ${levelColors[h.level] || ''}`}
               >
                 {h.text}
               </span>

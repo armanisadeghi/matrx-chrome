@@ -31,7 +31,7 @@ export function LoginForm() {
           disabled={loading}
           className="flex items-center justify-center gap-1.5 px-3 py-2
             bg-[var(--m-bg-card)] border border-[var(--m-border)]
-            rounded-[var(--m-radius-md)] text-[var(--m-text-sm)] font-medium
+            rounded-[var(--m-radius-md)] text-sm font-medium
             hover:bg-[var(--m-bg-hover)] hover:border-[var(--m-border-strong)]
             transition-all cursor-pointer disabled:opacity-50"
         >
@@ -61,7 +61,7 @@ export function LoginForm() {
           disabled={loading}
           className="flex items-center justify-center gap-1.5 px-3 py-2
             bg-[var(--m-bg-card)] border border-[var(--m-border)]
-            rounded-[var(--m-radius-md)] text-[var(--m-text-sm)] font-medium
+            rounded-[var(--m-radius-md)] text-sm font-medium
             hover:bg-[var(--m-bg-hover)] hover:border-[var(--m-border-strong)]
             transition-all cursor-pointer disabled:opacity-50"
         >
@@ -74,7 +74,7 @@ export function LoginForm() {
           disabled={loading}
           className="flex items-center justify-center gap-1.5 px-3 py-2
             bg-[var(--m-bg-card)] border border-[var(--m-border)]
-            rounded-[var(--m-radius-md)] text-[var(--m-text-sm)] font-medium
+            rounded-[var(--m-radius-md)] text-sm font-medium
             hover:bg-[var(--m-bg-hover)] hover:border-[var(--m-border-strong)]
             transition-all cursor-pointer disabled:opacity-50"
         >
@@ -88,7 +88,7 @@ export function LoginForm() {
       {/* Divider */}
       <div className="relative flex items-center">
         <div className="flex-1 border-t border-[var(--m-border)]" />
-        <span className="px-3 text-[var(--m-text-xs)] text-[var(--m-text-tertiary)]">
+        <span className="px-3 text-xs text-[color:var(--m-text-tertiary)]">
           Or continue with email
         </span>
         <div className="flex-1 border-t border-[var(--m-border)]" />
@@ -119,7 +119,7 @@ export function LoginForm() {
 
       <button
         onClick={() => setMode(mode === 'signin' ? 'signup' : 'signin')}
-        className="text-[var(--m-text-xs)] text-[var(--m-brand)] hover:underline cursor-pointer text-center"
+        className="text-xs text-[var(--m-brand)] hover:underline cursor-pointer text-center"
       >
         {mode === 'signin'
           ? "Don't have an account? Sign up"

@@ -63,10 +63,10 @@ export function OptionsPage() {
             <span className="text-white text-lg font-bold">M</span>
           </div>
           <div>
-            <h1 className="text-[var(--m-text-xl)] font-bold text-[var(--m-text-primary)]">
+            <h1 className="text-xl font-bold text-[color:var(--m-text-primary)]">
               Matrx Settings
             </h1>
-            <p className="text-[var(--m-text-sm)] text-[var(--m-text-secondary)]">
+            <p className="text-sm text-[color:var(--m-text-secondary)]">
               Configure your extension preferences
             </p>
           </div>
@@ -77,7 +77,7 @@ export function OptionsPage() {
           <CardHeader>
             <div className="flex items-center gap-2">
               <Shield className="w-4 h-4 text-[var(--m-brand)]" />
-              <h2 className="text-[var(--m-text-md)] font-semibold">Authentication</h2>
+              <h2 className="text-md font-semibold">Authentication</h2>
             </div>
             {isAuthenticated && <Badge variant="success">Connected</Badge>}
           </CardHeader>
@@ -86,15 +86,15 @@ export function OptionsPage() {
               <div className="flex flex-col gap-3">
                 <div className="flex items-center gap-3 p-3 bg-[var(--m-bg-inset)] rounded-[var(--m-radius-md)]">
                   <div className="w-10 h-10 rounded-full bg-[var(--m-brand-subtle)] flex items-center justify-center">
-                    <span className="text-[var(--m-brand)] font-semibold text-[var(--m-text-lg)]">
+                    <span className="text-[var(--m-brand)] font-semibold text-lg">
                       {user?.email?.[0]?.toUpperCase() || '?'}
                     </span>
                   </div>
                   <div>
-                    <p className="text-[var(--m-text-md)] font-medium text-[var(--m-text-primary)]">
+                    <p className="text-md font-medium text-[color:var(--m-text-primary)]">
                       {user?.email}
                     </p>
-                    <p className="text-[var(--m-text-xs)] text-[var(--m-text-tertiary)]">
+                    <p className="text-xs text-[color:var(--m-text-tertiary)]">
                       ID: {user?.id?.substring(0, 8)}...
                     </p>
                   </div>
@@ -112,7 +112,7 @@ export function OptionsPage() {
           <CardHeader>
             <div className="flex items-center gap-2">
               <Moon className="w-4 h-4 text-[var(--m-brand)]" />
-              <h2 className="text-[var(--m-text-md)] font-semibold">Appearance</h2>
+              <h2 className="text-md font-semibold">Appearance</h2>
             </div>
           </CardHeader>
           <CardBody>
@@ -124,11 +124,11 @@ export function OptionsPage() {
                   className={`flex flex-col items-center gap-1.5 p-3 rounded-[var(--m-radius-md)] border cursor-pointer transition-all ${
                     theme === value
                       ? 'border-[var(--m-brand)] bg-[var(--m-brand-subtle)] text-[var(--m-brand)]'
-                      : 'border-[var(--m-border)] text-[var(--m-text-tertiary)] hover:border-[var(--m-border-strong)] hover:text-[var(--m-text-secondary)]'
+                      : 'border-[var(--m-border)] text-[color:var(--m-text-tertiary)] hover:border-[var(--m-border-strong)] hover:text-[color:var(--m-text-secondary)]'
                   }`}
                 >
                   <Icon className="w-5 h-5" />
-                  <span className="text-[var(--m-text-sm)] font-medium">{label}</span>
+                  <span className="text-sm font-medium">{label}</span>
                 </button>
               ))}
             </div>
@@ -141,29 +141,29 @@ export function OptionsPage() {
             <CardHeader>
               <div className="flex items-center gap-2">
                 <Folder className="w-4 h-4 text-[var(--m-brand)]" />
-                <h2 className="text-[var(--m-text-md)] font-semibold">Default Project</h2>
+                <h2 className="text-md font-semibold">Default Project</h2>
               </div>
               {defaultProjectId && <Badge variant="info">Set</Badge>}
             </CardHeader>
             <CardBody>
               <div className="flex flex-col gap-2">
-                <label className="text-[var(--m-text-sm)] font-medium text-[var(--m-text-primary)]">
+                <label className="text-sm font-medium text-[color:var(--m-text-primary)]">
                   Project
                 </label>
                 {loadingProjects ? (
-                  <div className="flex items-center gap-2 text-[var(--m-text-sm)] text-[var(--m-text-tertiary)]">
+                  <div className="flex items-center gap-2 text-sm text-[color:var(--m-text-tertiary)]">
                     <Loader2 className="w-4 h-4 animate-spin" />
                     Loading projects...
                   </div>
                 ) : projects.length === 0 ? (
-                  <p className="text-[var(--m-text-sm)] text-[var(--m-text-tertiary)]">
+                  <p className="text-sm text-[color:var(--m-text-tertiary)]">
                     No projects found. Create one in the Matrx web app.
                   </p>
                 ) : (
                   <select
                     value={defaultProjectId}
                     onChange={(e) => handleProjectChange(e.target.value)}
-                    className="w-full px-3 py-2 text-[var(--m-text-sm)] bg-[var(--m-bg-input)] text-[var(--m-text-primary)] border border-[var(--m-border)] rounded-[var(--m-radius-md)] focus:outline-none focus:ring-1 focus:ring-[var(--m-brand)]"
+                    className="w-full px-3 py-2 text-sm bg-[var(--m-bg-input)] text-[color:var(--m-text-primary)] border border-[var(--m-border)] rounded-[var(--m-radius-md)] focus:outline-none focus:ring-1 focus:ring-[var(--m-brand)]"
                   >
                     <option value="">Select a default project...</option>
                     {projects.map((p) => (
@@ -171,7 +171,7 @@ export function OptionsPage() {
                     ))}
                   </select>
                 )}
-                <p className="text-[var(--m-text-xs)] text-[var(--m-text-tertiary)]">
+                <p className="text-xs text-[color:var(--m-text-tertiary)]">
                   Used as the default in Research and Quick Scrape panels
                 </p>
               </div>
@@ -180,7 +180,7 @@ export function OptionsPage() {
         )}
 
         {/* Version */}
-        <p className="text-center text-[var(--m-text-xs)] text-[var(--m-text-tertiary)] mt-2">
+        <p className="text-center text-xs text-[color:var(--m-text-tertiary)] mt-2">
           Matrx Extension v2.0.0
         </p>
       </div>

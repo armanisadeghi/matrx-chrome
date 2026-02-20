@@ -207,7 +207,7 @@ export function SeoPanel() {
   return (
     <div className="flex flex-col gap-3 p-3">
       <div className="flex items-center justify-between">
-        <span className="text-[var(--m-text-sm)] font-medium text-[var(--m-text-primary)]">
+        <span className="text-sm font-medium text-[color:var(--m-text-primary)]">
           SEO Analyzer
         </span>
         <Button
@@ -223,14 +223,14 @@ export function SeoPanel() {
       </div>
 
       {tab && (
-        <div className="flex items-center gap-2 text-[var(--m-text-xs)] text-[var(--m-text-tertiary)]">
+        <div className="flex items-center gap-2 text-xs text-[color:var(--m-text-tertiary)]">
           <Globe className="w-3 h-3" />
           <span className="truncate">{tab.url}</span>
         </div>
       )}
 
       {error && (
-        <div className="p-2.5 bg-[var(--m-error-subtle)] text-[var(--m-error)] text-[var(--m-text-xs)] rounded-[var(--m-radius-md)]">
+        <div className="p-2.5 bg-[var(--m-error-subtle)] text-[var(--m-error)] text-xs rounded-[var(--m-radius-md)]">
           {error}
         </div>
       )}
@@ -249,11 +249,11 @@ export function SeoPanel() {
                 key={stat.label}
                 className="flex flex-col items-center p-2 bg-[var(--m-bg-card)] rounded-[var(--m-radius-md)] border border-[var(--m-border)]"
               >
-                <span className="text-[var(--m-text-tertiary)]">{stat.icon}</span>
-                <span className="text-[var(--m-text-lg)] font-semibold text-[var(--m-text-primary)]">
+                <span className="text-[color:var(--m-text-tertiary)]">{stat.icon}</span>
+                <span className="text-lg font-semibold text-[color:var(--m-text-primary)]">
                   {stat.value}
                 </span>
-                <span className="text-[var(--m-text-xs)] text-[var(--m-text-tertiary)]">
+                <span className="text-xs text-[color:var(--m-text-tertiary)]">
                   {stat.label}
                 </span>
               </div>
@@ -267,7 +267,7 @@ export function SeoPanel() {
             const passes = report.issues.filter((i) => i.severity === 'pass').length;
             return (
               <div className="flex items-center gap-3 p-2.5 bg-[var(--m-bg-card)] rounded-[var(--m-radius-md)] border border-[var(--m-border)]">
-                <span className={`text-[var(--m-text-xl)] font-bold ${scoreColor(errors, warnings)}`}>
+                <span className={`text-xl font-bold ${scoreColor(errors, warnings)}`}>
                   {Math.round((passes / (passes + errors + warnings)) * 100)}%
                 </span>
                 <div className="flex gap-2">
@@ -281,7 +281,7 @@ export function SeoPanel() {
 
           {/* Issues list */}
           <div>
-            <span className="text-[var(--m-text-xs)] font-medium text-[var(--m-text-primary)] block mb-2">
+            <span className="text-xs font-medium text-[color:var(--m-text-primary)] block mb-2">
               Issues
             </span>
             <div className="flex flex-col gap-1.5">
@@ -292,7 +292,7 @@ export function SeoPanel() {
                 >
                   {severityIcon(issue.severity)}
                   <div className="flex-1 min-w-0">
-                    <span className="text-[var(--m-text-xs)] text-[var(--m-text-primary)]">
+                    <span className="text-xs text-[color:var(--m-text-primary)]">
                       {issue.message}
                     </span>
                   </div>
@@ -304,25 +304,25 @@ export function SeoPanel() {
 
           {/* Meta info */}
           <div>
-            <span className="text-[var(--m-text-xs)] font-medium text-[var(--m-text-primary)] block mb-2">
+            <span className="text-xs font-medium text-[color:var(--m-text-primary)] block mb-2">
               Page Meta
             </span>
-            <div className="p-2.5 bg-[var(--m-bg-inset)] rounded-[var(--m-radius-md)] text-[var(--m-text-xs)] flex flex-col gap-1">
+            <div className="p-2.5 bg-[var(--m-bg-inset)] rounded-[var(--m-radius-md)] text-xs flex flex-col gap-1">
               <p>
-                <span className="text-[var(--m-text-tertiary)]">Title:</span>{' '}
-                <span className="text-[var(--m-text-primary)]">{report.meta.title || '(none)'}</span>
+                <span className="text-[color:var(--m-text-tertiary)]">Title:</span>{' '}
+                <span className="text-[color:var(--m-text-primary)]">{report.meta.title || '(none)'}</span>
               </p>
               <p>
-                <span className="text-[var(--m-text-tertiary)]">Description:</span>{' '}
-                <span className="text-[var(--m-text-primary)]">
+                <span className="text-[color:var(--m-text-tertiary)]">Description:</span>{' '}
+                <span className="text-[color:var(--m-text-primary)]">
                   {report.meta.description ? report.meta.description.slice(0, 100) + (report.meta.description.length > 100 ? '...' : '') : '(none)'}
                 </span>
               </p>
               <div className="flex gap-3">
-                <span className="text-[var(--m-text-tertiary)]">
+                <span className="text-[color:var(--m-text-tertiary)]">
                   Links: {report.links.internal} internal / {report.links.external} external
                 </span>
-                <span className="text-[var(--m-text-tertiary)]">
+                <span className="text-[color:var(--m-text-tertiary)]">
                   Images: {report.images.withAlt} with alt / {report.images.withoutAlt} missing
                 </span>
               </div>
@@ -333,11 +333,11 @@ export function SeoPanel() {
 
       {!report && !analyzing && !error && (
         <div className="flex flex-col items-center justify-center py-8 text-center">
-          <BarChart2 className="w-10 h-10 text-[var(--m-text-tertiary)] mb-3" />
-          <p className="text-[var(--m-text-sm)] font-medium text-[var(--m-text-secondary)]">
+          <BarChart2 className="w-10 h-10 text-[color:var(--m-text-tertiary)] mb-3" />
+          <p className="text-sm font-medium text-[color:var(--m-text-secondary)]">
             SEO Page Analyzer
           </p>
-          <p className="text-[var(--m-text-xs)] text-[var(--m-text-tertiary)] mt-1">
+          <p className="text-xs text-[color:var(--m-text-tertiary)] mt-1">
             Click "Analyze Page" to check the current page for SEO issues including title, meta, headings, images, and content.
           </p>
         </div>

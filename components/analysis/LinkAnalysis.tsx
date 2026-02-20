@@ -47,19 +47,19 @@ export function LinkAnalysis() {
         <div className="flex items-center gap-2">
           <button
             onClick={() => setFilter('all')}
-            className={`text-[var(--m-text-xs)] px-2 py-0.5 rounded-[var(--m-radius-full)] cursor-pointer ${filter === 'all' ? 'bg-[var(--m-brand-subtle)] text-[var(--m-brand)]' : 'text-[var(--m-text-tertiary)] hover:text-[var(--m-text-secondary)]'}`}
+            className={`text-xs px-2 py-0.5 rounded-[var(--m-radius-full)] cursor-pointer ${filter === 'all' ? 'bg-[var(--m-brand-subtle)] text-[var(--m-brand)]' : 'text-[color:var(--m-text-tertiary)] hover:text-[color:var(--m-text-secondary)]'}`}
           >
             All ({links.length})
           </button>
           <button
             onClick={() => setFilter('internal')}
-            className={`text-[var(--m-text-xs)] px-2 py-0.5 rounded-[var(--m-radius-full)] cursor-pointer ${filter === 'internal' ? 'bg-[var(--m-brand-subtle)] text-[var(--m-brand)]' : 'text-[var(--m-text-tertiary)] hover:text-[var(--m-text-secondary)]'}`}
+            className={`text-xs px-2 py-0.5 rounded-[var(--m-radius-full)] cursor-pointer ${filter === 'internal' ? 'bg-[var(--m-brand-subtle)] text-[var(--m-brand)]' : 'text-[color:var(--m-text-tertiary)] hover:text-[color:var(--m-text-secondary)]'}`}
           >
             Internal ({internalCount})
           </button>
           <button
             onClick={() => setFilter('external')}
-            className={`text-[var(--m-text-xs)] px-2 py-0.5 rounded-[var(--m-radius-full)] cursor-pointer ${filter === 'external' ? 'bg-[var(--m-brand-subtle)] text-[var(--m-brand)]' : 'text-[var(--m-text-tertiary)] hover:text-[var(--m-text-secondary)]'}`}
+            className={`text-xs px-2 py-0.5 rounded-[var(--m-radius-full)] cursor-pointer ${filter === 'external' ? 'bg-[var(--m-brand-subtle)] text-[var(--m-brand)]' : 'text-[color:var(--m-text-tertiary)] hover:text-[color:var(--m-text-secondary)]'}`}
           >
             External ({externalCount})
           </button>
@@ -82,15 +82,15 @@ export function LinkAnalysis() {
               className="flex items-start gap-2 px-2 py-1.5 rounded-[var(--m-radius-sm)] hover:bg-[var(--m-bg-hover)] group"
             >
               {link.isExternal ? (
-                <ExternalLink className="w-3 h-3 shrink-0 mt-0.5 text-[var(--m-text-tertiary)]" />
+                <ExternalLink className="w-3 h-3 shrink-0 mt-0.5 text-[color:var(--m-text-tertiary)]" />
               ) : (
-                <Link2 className="w-3 h-3 shrink-0 mt-0.5 text-[var(--m-text-tertiary)]" />
+                <Link2 className="w-3 h-3 shrink-0 mt-0.5 text-[color:var(--m-text-tertiary)]" />
               )}
               <div className="flex flex-col min-w-0">
-                <span className="text-[var(--m-text-sm)] text-[var(--m-brand)] truncate">
+                <span className="text-sm text-[var(--m-brand)] truncate">
                   {link.text || '(no text)'}
                 </span>
-                <span className="text-[var(--m-text-xs)] text-[var(--m-text-tertiary)] truncate">
+                <span className="text-xs text-[color:var(--m-text-tertiary)] truncate">
                   {link.href}
                 </span>
               </div>

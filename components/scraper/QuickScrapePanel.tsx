@@ -188,7 +188,7 @@ export function QuickScrapePanel() {
       {/* Scrape current page */}
       <div className="bg-[var(--m-bg-card)] rounded-[var(--m-radius-lg)] border border-[var(--m-border)] p-3">
         <div className="flex items-center justify-between mb-2">
-          <span className="text-[var(--m-text-sm)] font-medium text-[var(--m-text-primary)]">
+          <span className="text-sm font-medium text-[color:var(--m-text-primary)]">
             Current Page
           </span>
           <Button
@@ -201,14 +201,14 @@ export function QuickScrapePanel() {
             Scrape
           </Button>
         </div>
-        <p className="text-[var(--m-text-xs)] text-[var(--m-text-secondary)] truncate">
+        <p className="text-xs text-[color:var(--m-text-secondary)] truncate">
           {tab?.url || 'No page loaded'}
         </p>
       </div>
 
       {/* Batch scrape */}
       <div className="bg-[var(--m-bg-card)] rounded-[var(--m-radius-lg)] border border-[var(--m-border)] p-3">
-        <span className="text-[var(--m-text-sm)] font-medium text-[var(--m-text-primary)] block mb-2">
+        <span className="text-sm font-medium text-[color:var(--m-text-primary)] block mb-2">
           Batch Scrape
         </span>
         <textarea
@@ -216,7 +216,7 @@ export function QuickScrapePanel() {
           onChange={(e) => setUrls(e.target.value)}
           placeholder="Paste URLs here (one per line)..."
           rows={4}
-          className="w-full px-3 py-2 text-[var(--m-text-xs)] bg-[var(--m-bg-inset)] border border-[var(--m-border)] rounded-[var(--m-radius-md)] text-[var(--m-text-primary)] placeholder:text-[var(--m-text-tertiary)] focus:outline-none focus:border-[var(--m-brand)] resize-none"
+          className="w-full px-3 py-2 text-xs bg-[var(--m-bg-inset)] border border-[var(--m-border)] rounded-[var(--m-radius-md)] text-[color:var(--m-text-primary)] placeholder:text-[color:var(--m-text-tertiary)] focus:outline-none focus:border-[var(--m-brand)] resize-none"
         />
         <div className="flex gap-2 mt-2">
           <Button size="sm" variant="primary" onClick={scrapeUrls} disabled={scraping || !urls.trim()}>
@@ -235,7 +235,7 @@ export function QuickScrapePanel() {
       {/* Results */}
       {results.length > 0 && (
         <div className="flex flex-col gap-2">
-          <span className="text-[var(--m-text-sm)] font-medium text-[var(--m-text-primary)]">
+          <span className="text-sm font-medium text-[color:var(--m-text-primary)]">
             Results ({results.filter((r) => r.status === 'done').length}/{results.length})
           </span>
           {results.map((result, i) => (
@@ -246,8 +246,8 @@ export function QuickScrapePanel() {
               {result.status === 'done' && <CheckCircle className="w-3.5 h-3.5 text-[var(--m-success-text)] shrink-0" />}
               {result.status === 'error' && <AlertCircle className="w-3.5 h-3.5 text-[var(--m-error)] shrink-0" />}
               {result.status === 'scraping' && <Loader2 className="w-3.5 h-3.5 animate-spin text-[var(--m-brand)] shrink-0" />}
-              {result.status === 'pending' && <Globe className="w-3.5 h-3.5 text-[var(--m-text-tertiary)] shrink-0" />}
-              <span className="text-[var(--m-text-xs)] text-[var(--m-text-secondary)] truncate flex-1">
+              {result.status === 'pending' && <Globe className="w-3.5 h-3.5 text-[color:var(--m-text-tertiary)] shrink-0" />}
+              <span className="text-xs text-[color:var(--m-text-secondary)] truncate flex-1">
                 {new URL(result.url).hostname}
               </span>
               {result.charCount !== undefined && (
@@ -257,7 +257,7 @@ export function QuickScrapePanel() {
                 <div className="flex items-center gap-1.5 shrink-0">
                   <button
                     onClick={() => copyResult(result)}
-                    className="text-[var(--m-text-xs)] text-[var(--m-brand)] hover:underline cursor-pointer"
+                    className="text-xs text-[var(--m-brand)] hover:underline cursor-pointer"
                   >
                     Copy
                   </button>
@@ -266,7 +266,7 @@ export function QuickScrapePanel() {
                       setShowAddToResearch(result);
                       setSubmitStatus('idle');
                     }}
-                    className="text-[var(--m-text-xs)] text-[var(--m-success-text)] hover:underline cursor-pointer flex items-center gap-0.5"
+                    className="text-xs text-[var(--m-success-text)] hover:underline cursor-pointer flex items-center gap-0.5"
                     title="Add to research topic"
                   >
                     <Plus className="w-2.5 h-2.5" />
@@ -275,7 +275,7 @@ export function QuickScrapePanel() {
                 </div>
               )}
               {result.error && (
-                <span className="text-[var(--m-text-xs)] text-[var(--m-error)]">{result.error}</span>
+                <span className="text-xs text-[var(--m-error)]">{result.error}</span>
               )}
             </div>
           ))}
@@ -293,7 +293,7 @@ export function QuickScrapePanel() {
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
                 <BookOpen className="w-4 h-4 text-[var(--m-brand)]" />
-                <span className="text-[var(--m-text-sm)] font-medium text-[var(--m-text-primary)]">
+                <span className="text-sm font-medium text-[color:var(--m-text-primary)]">
                   Add to Research
                 </span>
               </div>
@@ -301,17 +301,17 @@ export function QuickScrapePanel() {
                 onClick={() => setShowAddToResearch(null)}
                 className="p-1 rounded-[var(--m-radius-sm)] hover:bg-[var(--m-bg-hover)] cursor-pointer"
               >
-                <X className="w-3.5 h-3.5 text-[var(--m-text-tertiary)]" />
+                <X className="w-3.5 h-3.5 text-[color:var(--m-text-tertiary)]" />
               </button>
             </div>
 
-            <p className="text-[var(--m-text-xs)] text-[var(--m-text-secondary)] truncate mb-3">
+            <p className="text-xs text-[color:var(--m-text-secondary)] truncate mb-3">
               {showAddToResearch.url}
             </p>
 
             {/* Project selector */}
             <label className="block mb-2">
-              <span className="text-[var(--m-text-xs)] text-[var(--m-text-secondary)] mb-1 block">
+              <span className="text-xs text-[color:var(--m-text-secondary)] mb-1 block">
                 Project
               </span>
               <select
@@ -320,7 +320,7 @@ export function QuickScrapePanel() {
                   setSelectedProjectId(e.target.value);
                   setSelectedTopicId('');
                 }}
-                className="w-full px-2 py-1.5 text-[var(--m-text-xs)] bg-[var(--m-bg-inset)] border border-[var(--m-border)] rounded-[var(--m-radius-sm)] text-[var(--m-text-primary)] focus:outline-none focus:border-[var(--m-brand)]"
+                className="w-full px-2 py-1.5 text-xs bg-[var(--m-bg-inset)] border border-[var(--m-border)] rounded-[var(--m-radius-sm)] text-[color:var(--m-text-primary)] focus:outline-none focus:border-[var(--m-brand)]"
               >
                 <option value="">Select project...</option>
                 {projects.map((p) => (
@@ -333,14 +333,14 @@ export function QuickScrapePanel() {
 
             {/* Topic selector */}
             <label className="block mb-3">
-              <span className="text-[var(--m-text-xs)] text-[var(--m-text-secondary)] mb-1 block">
+              <span className="text-xs text-[color:var(--m-text-secondary)] mb-1 block">
                 Research Topic
               </span>
               <select
                 value={selectedTopicId}
                 onChange={(e) => setSelectedTopicId(e.target.value)}
                 disabled={!selectedProjectId || topics.length === 0}
-                className="w-full px-2 py-1.5 text-[var(--m-text-xs)] bg-[var(--m-bg-inset)] border border-[var(--m-border)] rounded-[var(--m-radius-sm)] text-[var(--m-text-primary)] focus:outline-none focus:border-[var(--m-brand)] disabled:opacity-50"
+                className="w-full px-2 py-1.5 text-xs bg-[var(--m-bg-inset)] border border-[var(--m-border)] rounded-[var(--m-radius-sm)] text-[color:var(--m-text-primary)] focus:outline-none focus:border-[var(--m-brand)] disabled:opacity-50"
               >
                 <option value="">Select topic...</option>
                 {topics.map((t) => (
@@ -355,7 +355,7 @@ export function QuickScrapePanel() {
             {submitStatus === 'success' && (
               <div className="flex items-center gap-1.5 mb-3 p-2 bg-[var(--m-success-subtle)] rounded-[var(--m-radius-sm)]">
                 <CheckCircle className="w-3.5 h-3.5 text-[var(--m-success-text)]" />
-                <span className="text-[var(--m-text-xs)] text-[var(--m-success-text)]">
+                <span className="text-xs text-[var(--m-success-text)]">
                   Content submitted to research topic
                 </span>
               </div>
@@ -363,7 +363,7 @@ export function QuickScrapePanel() {
             {submitStatus === 'error' && (
               <div className="flex items-center gap-1.5 mb-3 p-2 bg-[var(--m-error-subtle)] rounded-[var(--m-radius-sm)]">
                 <AlertCircle className="w-3.5 h-3.5 text-[var(--m-error)]" />
-                <span className="text-[var(--m-text-xs)] text-[var(--m-error)]">
+                <span className="text-xs text-[var(--m-error)]">
                   URL not found as a source in this topic. Add it as a source first via the Research tab.
                 </span>
               </div>

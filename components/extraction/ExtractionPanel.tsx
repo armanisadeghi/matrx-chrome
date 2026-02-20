@@ -129,7 +129,7 @@ export function ExtractionPanel() {
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2">
                 <Badge variant="success">Extracted</Badge>
-                <span className="text-[var(--m-text-xs)] text-[var(--m-text-tertiary)]">
+                <span className="text-xs text-[color:var(--m-text-tertiary)]">
                   {(result.size / 1024).toFixed(1)} KB
                 </span>
               </div>
@@ -146,7 +146,7 @@ export function ExtractionPanel() {
                 </Button>
               </div>
             </div>
-            <pre className="text-[var(--m-text-xs)] text-[var(--m-text-secondary)] bg-[var(--m-bg-inset)] p-2 rounded-[var(--m-radius-sm)] max-h-[200px] overflow-auto whitespace-pre-wrap break-words">
+            <pre className="text-xs text-[color:var(--m-text-secondary)] bg-[var(--m-bg-inset)] p-2 rounded-[var(--m-radius-sm)] max-h-[200px] overflow-auto whitespace-pre-wrap break-words">
               {result.html.substring(0, 2000)}
               {result.html.length > 2000 && '\n\n... (truncated)'}
             </pre>

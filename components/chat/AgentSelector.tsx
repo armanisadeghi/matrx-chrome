@@ -54,12 +54,12 @@ export function AgentSelector({
         {selectedAgent ? (
           <Bot className="w-3 h-3 text-[var(--m-brand)] shrink-0" />
         ) : (
-          <Cpu className="w-3 h-3 text-[var(--m-text-tertiary)] shrink-0" />
+          <Cpu className="w-3 h-3 text-[color:var(--m-text-tertiary)] shrink-0" />
         )}
-        <span className="text-[var(--m-text-xs)] font-medium text-[var(--m-text-primary)] truncate">
+        <span className="text-xs font-medium text-[color:var(--m-text-primary)] truncate">
           {displayName}
         </span>
-        <ChevronDown className="w-3 h-3 text-[var(--m-text-tertiary)] shrink-0" />
+        <ChevronDown className="w-3 h-3 text-[color:var(--m-text-tertiary)] shrink-0" />
       </button>
 
       {showPicker && (
@@ -73,10 +73,10 @@ export function AgentSelector({
             <div className="flex border-b border-[var(--m-border)]">
               <button
                 onClick={() => setPickerTab('agents')}
-                className={`flex-1 px-3 py-2 text-[var(--m-text-xs)] font-medium cursor-pointer transition-colors ${
+                className={`flex-1 px-3 py-2 text-xs font-medium cursor-pointer transition-colors ${
                   pickerTab === 'agents'
                     ? 'text-[var(--m-brand)] border-b-2 border-[var(--m-brand)]'
-                    : 'text-[var(--m-text-secondary)] hover:text-[var(--m-text-primary)]'
+                    : 'text-[color:var(--m-text-secondary)] hover:text-[color:var(--m-text-primary)]'
                 }`}
               >
                 <Bot className="w-3 h-3 inline mr-1" />
@@ -84,10 +84,10 @@ export function AgentSelector({
               </button>
               <button
                 onClick={() => setPickerTab('models')}
-                className={`flex-1 px-3 py-2 text-[var(--m-text-xs)] font-medium cursor-pointer transition-colors ${
+                className={`flex-1 px-3 py-2 text-xs font-medium cursor-pointer transition-colors ${
                   pickerTab === 'models'
                     ? 'text-[var(--m-brand)] border-b-2 border-[var(--m-brand)]'
-                    : 'text-[var(--m-text-secondary)] hover:text-[var(--m-text-primary)]'
+                    : 'text-[color:var(--m-text-secondary)] hover:text-[color:var(--m-text-primary)]'
                 }`}
               >
                 <Cpu className="w-3 h-3 inline mr-1" />
@@ -100,7 +100,7 @@ export function AgentSelector({
                 <div className="p-1.5">
                   {/* Built-in */}
                   <div className="px-2 py-1">
-                    <span className="text-[10px] font-semibold text-[var(--m-text-tertiary)] uppercase tracking-wider">
+                    <span className="text-[10px] font-semibold text-[color:var(--m-text-tertiary)] uppercase tracking-wider">
                       Built-in
                     </span>
                   </div>
@@ -120,11 +120,11 @@ export function AgentSelector({
                     >
                       <Sparkles className="w-3.5 h-3.5 text-[var(--m-brand)] shrink-0" />
                       <div className="min-w-0">
-                        <p className="text-[var(--m-text-xs)] font-medium text-[var(--m-text-primary)] truncate">
+                        <p className="text-xs font-medium text-[color:var(--m-text-primary)] truncate">
                           {agent.name}
                         </p>
                         {agent.description && (
-                          <p className="text-[10px] text-[var(--m-text-tertiary)] truncate">
+                          <p className="text-[10px] text-[color:var(--m-text-tertiary)] truncate">
                             {agent.description}
                           </p>
                         )}
@@ -136,7 +136,7 @@ export function AgentSelector({
                   {userAgents.length > 0 && (
                     <>
                       <div className="px-2 py-1 mt-1.5">
-                        <span className="text-[10px] font-semibold text-[var(--m-text-tertiary)] uppercase tracking-wider">
+                        <span className="text-[10px] font-semibold text-[color:var(--m-text-tertiary)] uppercase tracking-wider">
                           Your Agents
                         </span>
                       </div>
@@ -154,13 +154,13 @@ export function AgentSelector({
                               : 'hover:bg-[var(--m-bg-hover)]'
                           }`}
                         >
-                          <Bot className="w-3.5 h-3.5 text-[var(--m-text-secondary)] shrink-0" />
+                          <Bot className="w-3.5 h-3.5 text-[color:var(--m-text-secondary)] shrink-0" />
                           <div className="min-w-0">
-                            <p className="text-[var(--m-text-xs)] font-medium text-[var(--m-text-primary)] truncate">
+                            <p className="text-xs font-medium text-[color:var(--m-text-primary)] truncate">
                               {agent.name}
                             </p>
                             {agent.description && (
-                              <p className="text-[10px] text-[var(--m-text-tertiary)] truncate">
+                              <p className="text-[10px] text-[color:var(--m-text-tertiary)] truncate">
                                 {agent.description}
                               </p>
                             )}
@@ -178,7 +178,7 @@ export function AgentSelector({
                   {primaryModels.length > 0 && (
                     <>
                       <div className="px-2 py-1">
-                        <span className="text-[10px] font-semibold text-[var(--m-text-tertiary)] uppercase tracking-wider">
+                        <span className="text-[10px] font-semibold text-[color:var(--m-text-tertiary)] uppercase tracking-wider">
                           Recommended
                         </span>
                       </div>
@@ -201,7 +201,7 @@ export function AgentSelector({
                   {otherModels.length > 0 && (
                     <>
                       <div className="px-2 py-1 mt-1.5">
-                        <span className="text-[10px] font-semibold text-[var(--m-text-tertiary)] uppercase tracking-wider">
+                        <span className="text-[10px] font-semibold text-[color:var(--m-text-tertiary)] uppercase tracking-wider">
                           All Models
                         </span>
                       </div>
@@ -224,7 +224,7 @@ export function AgentSelector({
                   {premiumModels.length > 0 && (
                     <>
                       <div className="px-2 py-1 mt-1.5">
-                        <span className="text-[10px] font-semibold text-[var(--m-text-tertiary)] uppercase tracking-wider">
+                        <span className="text-[10px] font-semibold text-[color:var(--m-text-tertiary)] uppercase tracking-wider">
                           Premium
                         </span>
                       </div>
@@ -273,12 +273,12 @@ function ModelRow({
           : 'hover:bg-[var(--m-bg-hover)]'
       }`}
     >
-      <Cpu className="w-3.5 h-3.5 text-[var(--m-text-tertiary)] shrink-0" />
+      <Cpu className="w-3.5 h-3.5 text-[color:var(--m-text-tertiary)] shrink-0" />
       <div className="flex-1 min-w-0">
-        <p className="text-[var(--m-text-xs)] font-medium text-[var(--m-text-primary)] truncate">
+        <p className="text-xs font-medium text-[color:var(--m-text-primary)] truncate">
           {model.common_name}
         </p>
-        <p className="text-[10px] text-[var(--m-text-tertiary)] truncate">
+        <p className="text-[10px] text-[color:var(--m-text-tertiary)] truncate">
           {model.provider}
         </p>
       </div>

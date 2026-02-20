@@ -151,7 +151,7 @@ export function ToolBrowserPanel() {
           <Button size="sm" variant="ghost" icon onClick={() => setView('list')}>
             <ArrowLeft className="w-3.5 h-3.5" />
           </Button>
-          <span className="text-[var(--m-text-sm)] font-medium text-[var(--m-text-primary)] truncate">
+          <span className="text-sm font-medium text-[color:var(--m-text-primary)] truncate">
             {selectedTool.name}
           </span>
           {selectedTool.category && <Badge>{selectedTool.category}</Badge>}
@@ -159,14 +159,14 @@ export function ToolBrowserPanel() {
 
         <div className="flex-1 overflow-auto p-3">
           <div className="flex flex-col gap-3">
-            <p className="text-[var(--m-text-xs)] text-[var(--m-text-secondary)]">
+            <p className="text-xs text-[color:var(--m-text-secondary)]">
               {selectedTool.description}
             </p>
 
             {/* Parameters */}
             {propKeys.length > 0 && (
               <div>
-                <span className="text-[var(--m-text-xs)] font-medium text-[var(--m-text-primary)] block mb-2">
+                <span className="text-xs font-medium text-[color:var(--m-text-primary)] block mb-2">
                   Parameters
                 </span>
                 <div className="flex flex-col gap-2">
@@ -174,10 +174,10 @@ export function ToolBrowserPanel() {
                     const param = properties[key];
                     return (
                       <div key={key}>
-                        <label className="block text-[var(--m-text-xs)] text-[var(--m-text-secondary)] mb-0.5">
+                        <label className="block text-xs text-[color:var(--m-text-secondary)] mb-0.5">
                           {key}
                           {param?.type && (
-                            <span className="text-[var(--m-text-tertiary)]"> ({param.type})</span>
+                            <span className="text-[color:var(--m-text-tertiary)]"> ({param.type})</span>
                           )}
                         </label>
                         <input
@@ -185,7 +185,7 @@ export function ToolBrowserPanel() {
                           value={args[key] || ''}
                           onChange={(e) => setArgs((prev) => ({ ...prev, [key]: e.target.value }))}
                           placeholder={param?.description || `Enter ${key}...`}
-                          className="w-full px-2.5 py-1.5 text-[var(--m-text-xs)] bg-[var(--m-bg-inset)] border border-[var(--m-border)] rounded-[var(--m-radius-sm)] text-[var(--m-text-primary)] placeholder:text-[var(--m-text-tertiary)] focus:outline-none focus:border-[var(--m-brand)]"
+                          className="w-full px-2.5 py-1.5 text-xs bg-[var(--m-bg-inset)] border border-[var(--m-border)] rounded-[var(--m-radius-sm)] text-[color:var(--m-text-primary)] placeholder:text-[color:var(--m-text-tertiary)] focus:outline-none focus:border-[var(--m-brand)]"
                         />
                       </div>
                     );
@@ -209,14 +209,14 @@ export function ToolBrowserPanel() {
             {output && (
               <div>
                 <div className="flex items-center justify-between mb-1">
-                  <span className="text-[var(--m-text-xs)] font-medium text-[var(--m-text-primary)]">
+                  <span className="text-xs font-medium text-[color:var(--m-text-primary)]">
                     Output
                   </span>
                   <button onClick={copyOutput} className="p-1 hover:bg-[var(--m-bg-hover)] rounded cursor-pointer transition-colors">
-                    {copied ? <Check className="w-3 h-3 text-[var(--m-success)]" /> : <Copy className="w-3 h-3 text-[var(--m-text-tertiary)]" />}
+                    {copied ? <Check className="w-3 h-3 text-[var(--m-success)]" /> : <Copy className="w-3 h-3 text-[color:var(--m-text-tertiary)]" />}
                   </button>
                 </div>
-                <pre className="p-2.5 text-[var(--m-text-xs)] bg-[var(--m-bg-inset)] rounded-[var(--m-radius-md)] overflow-auto max-h-[300px] whitespace-pre-wrap break-words border border-[var(--m-border)]">
+                <pre className="p-2.5 text-xs bg-[var(--m-bg-inset)] rounded-[var(--m-radius-md)] overflow-auto max-h-[300px] whitespace-pre-wrap break-words border border-[var(--m-border)]">
                   {output}
                 </pre>
               </div>
@@ -231,7 +231,7 @@ export function ToolBrowserPanel() {
   return (
     <div className="flex flex-col gap-3 p-3">
       <div className="flex items-center justify-between">
-        <span className="text-[var(--m-text-sm)] font-medium text-[var(--m-text-primary)]">
+        <span className="text-sm font-medium text-[color:var(--m-text-primary)]">
           Tools ({tools.length})
         </span>
         <div className="flex items-center gap-2">
@@ -242,7 +242,7 @@ export function ToolBrowserPanel() {
                 setCategoryFilter(e.target.value);
                 loadTools(e.target.value);
               }}
-              className="px-2 py-1 text-[var(--m-text-xs)] bg-[var(--m-bg-inset)] border border-[var(--m-border)] rounded-[var(--m-radius-sm)] text-[var(--m-text-primary)] focus:outline-none focus:border-[var(--m-brand)]"
+              className="px-2 py-1 text-xs bg-[var(--m-bg-inset)] border border-[var(--m-border)] rounded-[var(--m-radius-sm)] text-[color:var(--m-text-primary)] focus:outline-none focus:border-[var(--m-brand)]"
             >
               <option value="">All categories</option>
               {categories.map((cat) => (
@@ -275,15 +275,15 @@ export function ToolBrowserPanel() {
         >
           <Wrench className="w-4 h-4 text-[var(--m-brand)] shrink-0" />
           <div className="flex-1 min-w-0">
-            <p className="text-[var(--m-text-sm)] font-medium text-[var(--m-text-primary)] truncate">
+            <p className="text-sm font-medium text-[color:var(--m-text-primary)] truncate">
               {tool.name}
             </p>
-            <p className="text-[var(--m-text-xs)] text-[var(--m-text-tertiary)] truncate">
+            <p className="text-xs text-[color:var(--m-text-tertiary)] truncate">
               {tool.description}
             </p>
           </div>
           {tool.category && <Badge>{tool.category}</Badge>}
-          <ChevronRight className="w-4 h-4 text-[var(--m-text-tertiary)] shrink-0" />
+          <ChevronRight className="w-4 h-4 text-[color:var(--m-text-tertiary)] shrink-0" />
         </button>
       ))}
     </div>

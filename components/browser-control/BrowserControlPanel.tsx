@@ -145,7 +145,7 @@ export function BrowserControlPanel() {
       {/* Quick Actions */}
       <Card>
         <CardBody className="!p-3 flex flex-col gap-2">
-          <span className="text-[var(--m-text-sm)] font-medium text-[var(--m-text-secondary)]">
+          <span className="text-sm font-medium text-[color:var(--m-text-secondary)]">
             Quick Actions
           </span>
           <Input
@@ -169,7 +169,7 @@ export function BrowserControlPanel() {
                   onClick={() => addAction(type)}
                   className="flex flex-col items-center gap-0.5 p-2
                     rounded-[var(--m-radius-md)] border border-[var(--m-border)]
-                    text-[var(--m-text-tertiary)] hover:text-[var(--m-brand)]
+                    text-[color:var(--m-text-tertiary)] hover:text-[var(--m-brand)]
                     hover:border-[var(--m-brand)] hover:bg-[var(--m-brand-subtle)]
                     transition-all cursor-pointer text-[10px]"
                 >
@@ -187,7 +187,7 @@ export function BrowserControlPanel() {
         <Card>
           <CardBody className="!p-3 flex flex-col gap-1.5">
             <div className="flex items-center justify-between">
-              <span className="text-[var(--m-text-sm)] font-medium text-[var(--m-text-secondary)]">
+              <span className="text-sm font-medium text-[color:var(--m-text-secondary)]">
                 Action Queue ({actions.length})
               </span>
               <div className="flex items-center gap-1">
@@ -218,12 +218,12 @@ export function BrowserControlPanel() {
                   key={i}
                   className="flex items-center gap-2 px-2 py-1.5 rounded-[var(--m-radius-sm)] bg-[var(--m-bg-inset)]"
                 >
-                  <GripVertical className="w-3 h-3 text-[var(--m-text-tertiary)]" />
-                  <Icon className="w-3.5 h-3.5 text-[var(--m-text-secondary)]" />
-                  <span className="text-[var(--m-text-sm)] flex-1 truncate">
+                  <GripVertical className="w-3 h-3 text-[color:var(--m-text-tertiary)]" />
+                  <Icon className="w-3.5 h-3.5 text-[color:var(--m-text-secondary)]" />
+                  <span className="text-sm flex-1 truncate">
                     {actionLabels[action.type]}
                     {action.selector && (
-                      <span className="text-[var(--m-text-tertiary)] ml-1">
+                      <span className="text-[color:var(--m-text-tertiary)] ml-1">
                         {action.selector}
                       </span>
                     )}
@@ -245,14 +245,14 @@ export function BrowserControlPanel() {
                   )}
                   <button
                     onClick={() => executeSingle(action)}
-                    className="text-[var(--m-text-tertiary)] hover:text-[var(--m-brand)] cursor-pointer"
+                    className="text-[color:var(--m-text-tertiary)] hover:text-[var(--m-brand)] cursor-pointer"
                     title="Run this action"
                   >
                     <Play className="w-3 h-3" />
                   </button>
                   <button
                     onClick={() => removeAction(i)}
-                    className="text-[var(--m-text-tertiary)] hover:text-[var(--m-error)] cursor-pointer"
+                    className="text-[color:var(--m-text-tertiary)] hover:text-[var(--m-error)] cursor-pointer"
                   >
                     <Trash2 className="w-3 h-3" />
                   </button>
