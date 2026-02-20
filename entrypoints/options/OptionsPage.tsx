@@ -1,20 +1,16 @@
 import { useState, useEffect } from 'react';
-import { Save, Moon, Sun, Monitor, Database, Globe, Shield, Folder, Wifi, WifiOff, Loader2 } from 'lucide-react';
+import { Moon, Sun, Monitor, Shield, Folder, Loader2 } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import { useTheme } from '../../hooks/useTheme';
 import {
-  Button,
   Card,
   CardHeader,
   CardBody,
-  Input,
   Badge,
 } from '../../components/ui';
-import { useToast } from '../../components/ui/Toast';
 import { LoginForm } from '../../components/auth/LoginForm';
 import { AuthStatus } from '../../components/auth/AuthStatus';
 import { fetchUserProjects } from '../../utils/supabase-queries';
-import { healthCheck, setApiBaseUrl as setGlobalApiBaseUrl } from '../../utils/api-client';
 import { getLocal, setLocal } from '../../utils/storage';
 
 const STORAGE_KEY_PROJECT = 'matrx_default_project_id';
@@ -22,27 +18,11 @@ const STORAGE_KEY_PROJECT = 'matrx_default_project_id';
 export function OptionsPage() {
   const { user, isAuthenticated } = useAuth();
   const { theme, setTheme } = useTheme();
-  const { toast } = useToast();
-
-  const [apiBaseUrl, setApiBaseUrl] = useState('');
-  const [tableName, setTableName] = useState('html_extractions');
-  const [saving, setSaving] = useState(false);
 
   // Project selection
   const [projects, setProjects] = useState<{ id: string; name: string }[]>([]);
   const [defaultProjectId, setDefaultProjectId] = useState('');
   const [loadingProjects, setLoadingProjects] = useState(false);
-
-  // API connection test
-  const [testingApi, setTestingApi] = useState(false);
-  const [apiTestResult, setApiTestResult] = useState<{ ok: boolean; message: string } | null>(null);
-
-  useEffect(() => {
-    chrome.storage.sync.get(['apiBaseUrl', 'supabaseTableName'], (result) => {
-      setApiBaseUrl(result.apiBaseUrl || '');
-      setTableName(result.supabaseTableName || 'html_extractions');
-    });
-  }, []);
 
   // Load projects + saved default project when authenticated
   useEffect(() => {
@@ -61,45 +41,10 @@ export function OptionsPage() {
     }).finally(() => setLoadingProjects(false));
   }, [isAuthenticated]);
 
-  const testApiConnection = async () => {
-    setTestingApi(true);
-    setApiTestResult(null);
-    // Temporarily set the global URL to test against the current input value
-    if (apiBaseUrl) setGlobalApiBaseUrl(apiBaseUrl);
-    try {
-      const res = await healthCheck();
-      if (res.success) {
-        setApiTestResult({ ok: true, message: `Connected — ${(res.data as { service?: string })?.service || 'API'} is healthy` });
-      } else {
-        setApiTestResult({ ok: false, message: res.error || 'Connection failed' });
-      }
-    } catch {
-      setApiTestResult({ ok: false, message: 'Network error — cannot reach API' });
-    }
-    setTestingApi(false);
-  };
-
   const handleProjectChange = async (projectId: string) => {
     setDefaultProjectId(projectId);
     if (projectId) {
       await setLocal(STORAGE_KEY_PROJECT, projectId);
-    }
-  };
-
-  const saveSettings = async () => {
-    setSaving(true);
-    try {
-      await new Promise<void>((resolve) => {
-        chrome.storage.sync.set(
-          { apiBaseUrl, supabaseTableName: tableName },
-          resolve,
-        );
-      });
-      toast('Settings saved', 'success');
-    } catch {
-      toast('Failed to save settings', 'error');
-    } finally {
-      setSaving(false);
     }
   };
 
@@ -110,8 +55,8 @@ export function OptionsPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-[var(--m-bg-page)] flex justify-center py-8 px-4">
-      <div className="w-full max-w-[520px] flex flex-col gap-4">
+    <div className="min-h-screen bg-[var(--m-bg-page)] flex justify-center py-8 px-6">
+      <div className="w-full max-w-xl flex flex-col gap-4">
         {/* Header */}
         <div className="flex items-center gap-3 mb-2">
           <div className="w-10 h-10 rounded-[var(--m-radius-lg)] bg-[var(--m-brand)] flex items-center justify-center">
@@ -162,7 +107,7 @@ export function OptionsPage() {
           </CardBody>
         </Card>
 
-        {/* Theme */}
+        {/* Appearance */}
         <Card elevated>
           <CardHeader>
             <div className="flex items-center gap-2">
@@ -190,56 +135,7 @@ export function OptionsPage() {
           </CardBody>
         </Card>
 
-        {/* API Configuration */}
-        <Card elevated>
-          <CardHeader>
-            <div className="flex items-center gap-2">
-              <Globe className="w-4 h-4 text-[var(--m-brand)]" />
-              <h2 className="text-[var(--m-text-md)] font-semibold">API Configuration</h2>
-            </div>
-          </CardHeader>
-          <CardBody className="flex flex-col gap-3">
-            <Input
-              id="apiBaseUrl"
-              label="API Base URL"
-              placeholder="https://api.aimatrx.com"
-              hint="FastAPI backend URL for AI processing and data endpoints"
-              value={apiBaseUrl}
-              onChange={(e) => {
-                setApiBaseUrl(e.target.value);
-                setApiTestResult(null);
-              }}
-            />
-            <div className="flex items-center gap-2">
-              <button
-                onClick={testApiConnection}
-                disabled={testingApi || !apiBaseUrl}
-                className="flex items-center gap-1.5 px-3 py-1.5 text-[var(--m-text-sm)] font-medium rounded-[var(--m-radius-md)] border border-[var(--m-border)] hover:bg-[var(--m-bg-hover)] cursor-pointer transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {testingApi ? (
-                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                ) : (
-                  <Wifi className="w-3.5 h-3.5" />
-                )}
-                Test Connection
-              </button>
-              {apiTestResult && (
-                <span className={`text-[var(--m-text-xs)] flex items-center gap-1 ${
-                  apiTestResult.ok ? 'text-[var(--m-success)]' : 'text-[var(--m-error)]'
-                }`}>
-                  {apiTestResult.ok ? (
-                    <Wifi className="w-3 h-3" />
-                  ) : (
-                    <WifiOff className="w-3 h-3" />
-                  )}
-                  {apiTestResult.message}
-                </span>
-              )}
-            </div>
-          </CardBody>
-        </Card>
-
-        {/* Default Project */}
+        {/* Default Project — only visible when signed in */}
         {isAuthenticated && (
           <Card elevated>
             <CardHeader>
@@ -283,34 +179,8 @@ export function OptionsPage() {
           </Card>
         )}
 
-        {/* Database */}
-        <Card elevated>
-          <CardHeader>
-            <div className="flex items-center gap-2">
-              <Database className="w-4 h-4 text-[var(--m-brand)]" />
-              <h2 className="text-[var(--m-text-md)] font-semibold">Database</h2>
-            </div>
-          </CardHeader>
-          <CardBody>
-            <Input
-              id="tableName"
-              label="Supabase Table Name"
-              placeholder="html_extractions"
-              hint="The database table for storing extractions"
-              value={tableName}
-              onChange={(e) => setTableName(e.target.value)}
-            />
-          </CardBody>
-        </Card>
-
-        {/* Save */}
-        <Button variant="primary" size="lg" block loading={saving} onClick={saveSettings}>
-          <Save className="w-4 h-4" />
-          Save Settings
-        </Button>
-
         {/* Version */}
-        <p className="text-center text-[var(--m-text-xs)] text-[var(--m-text-tertiary)]">
+        <p className="text-center text-[var(--m-text-xs)] text-[var(--m-text-tertiary)] mt-2">
           Matrx Extension v2.0.0
         </p>
       </div>

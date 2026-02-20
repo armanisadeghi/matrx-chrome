@@ -26,6 +26,8 @@ import type {
   ToolDefinition,
 } from './types';
 
+const DEFAULT_API_BASE_URL = 'https://api.aimatrx.com';
+
 let baseUrl = '';
 
 export function setApiBaseUrl(url: string) {
@@ -34,12 +36,8 @@ export function setApiBaseUrl(url: string) {
 
 export async function getApiBaseUrl(): Promise<string> {
   if (baseUrl) return baseUrl;
-  return new Promise((resolve) => {
-    chrome.storage.sync.get(['apiBaseUrl'], (result) => {
-      baseUrl = result.apiBaseUrl || '';
-      resolve(baseUrl);
-    });
-  });
+  baseUrl = DEFAULT_API_BASE_URL;
+  return baseUrl;
 }
 
 async function buildHeaders(): Promise<Record<string, string>> {

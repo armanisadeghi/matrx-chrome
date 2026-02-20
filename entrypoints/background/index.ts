@@ -15,9 +15,7 @@ export default defineBackground(() => {
   chrome.runtime.onInstalled.addListener((details) => {
     if (details.reason === 'install') {
       chrome.storage.sync.set({
-        supabaseTableName: 'html_extractions',
-        apiBaseUrl: '',
-        theme: 'dark',
+        theme: 'system',
       });
       chrome.tabs.create({ url: chrome.runtime.getURL('/options.html') });
     }
@@ -105,7 +103,7 @@ export default defineBackground(() => {
           sendResponse({
             tableName: result.supabaseTableName || 'html_extractions',
             apiBaseUrl: result.apiBaseUrl || '',
-            theme: result.theme || 'dark',
+            theme: result.theme || 'system',
           });
         },
       );

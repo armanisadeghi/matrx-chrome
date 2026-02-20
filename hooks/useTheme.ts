@@ -3,11 +3,11 @@ import { useState, useEffect, useCallback } from 'react';
 type Theme = 'light' | 'dark' | 'system';
 
 export function useTheme() {
-  const [theme, setThemeState] = useState<Theme>('dark');
+  const [theme, setThemeState] = useState<Theme>('system');
 
   useEffect(() => {
     chrome.storage.sync.get(['theme'], (result) => {
-      const t = (result.theme as Theme) || 'dark';
+      const t = (result.theme as Theme) || 'system';
       setThemeState(t);
       applyTheme(t);
     });
