@@ -4,13 +4,15 @@ import {
   FileText,
   Link2,
   ImageIcon,
-  Code,
   Target,
   MessageSquare,
   Globe,
   Scan,
   BarChart2,
-  Search,
+  Download,
+  ClipboardList,
+  BookOpen,
+  Wrench,
 } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import { useTheme } from '../../hooks/useTheme';
@@ -26,17 +28,26 @@ import { ExtractionPanel } from '../../components/extraction/ExtractionPanel';
 import { CustomRangePanel } from '../../components/extraction/CustomRangePanel';
 import { ChatPanel } from '../../components/chat/ChatPanel';
 import { BrowserControlPanel } from '../../components/browser-control/BrowserControlPanel';
+import { QuickScrapePanel } from '../../components/scraper/QuickScrapePanel';
+import { ScrapeQueuePanel } from '../../components/scraper/ScrapeQueuePanel';
+import { ResearchPanel } from '../../components/research/ResearchPanel';
+import { ToolBrowserPanel } from '../../components/tools/ToolBrowserPanel';
+import { SeoPanel } from '../../components/seo/SeoPanel';
 import { Badge } from '../../components/ui/Badge';
 
 const tabDefs = [
   { id: 'chat', label: 'AI Chat', icon: <MessageSquare className="w-3.5 h-3.5" /> },
+  { id: 'scrape', label: 'Scrape', icon: <Download className="w-3.5 h-3.5" /> },
+  { id: 'queue', label: 'Queue', icon: <ClipboardList className="w-3.5 h-3.5" /> },
+  { id: 'research', label: 'Research', icon: <BookOpen className="w-3.5 h-3.5" /> },
+  { id: 'extract', label: 'Extract', icon: <Scan className="w-3.5 h-3.5" /> },
+  { id: 'range', label: 'Range', icon: <Target className="w-3.5 h-3.5" /> },
   { id: 'headers', label: 'Headers', icon: <Heading1 className="w-3.5 h-3.5" /> },
   { id: 'text', label: 'Text', icon: <FileText className="w-3.5 h-3.5" /> },
   { id: 'links', label: 'Links', icon: <Link2 className="w-3.5 h-3.5" /> },
   { id: 'images', label: 'Images', icon: <ImageIcon className="w-3.5 h-3.5" /> },
-  { id: 'extract', label: 'Extract', icon: <Scan className="w-3.5 h-3.5" /> },
-  { id: 'range', label: 'Range', icon: <Target className="w-3.5 h-3.5" /> },
   { id: 'browser', label: 'Browser', icon: <Globe className="w-3.5 h-3.5" /> },
+  { id: 'tools', label: 'Tools', icon: <Wrench className="w-3.5 h-3.5" /> },
   { id: 'seo', label: 'SEO', icon: <BarChart2 className="w-3.5 h-3.5" /> },
 ];
 
@@ -105,6 +116,18 @@ export function SidePanel() {
           <ChatPanel />
         </TabPanel>
 
+        <TabPanel active={activeTab === 'scrape'} className="!p-0">
+          <QuickScrapePanel />
+        </TabPanel>
+
+        <TabPanel active={activeTab === 'queue'} className="!p-0">
+          <ScrapeQueuePanel />
+        </TabPanel>
+
+        <TabPanel active={activeTab === 'research'} className="!p-0 h-full">
+          <ResearchPanel />
+        </TabPanel>
+
         <TabPanel active={activeTab === 'headers'}>
           <HeaderAnalysis />
         </TabPanel>
@@ -133,16 +156,12 @@ export function SidePanel() {
           <BrowserControlPanel />
         </TabPanel>
 
+        <TabPanel active={activeTab === 'tools'} className="!p-0 h-full">
+          <ToolBrowserPanel />
+        </TabPanel>
+
         <TabPanel active={activeTab === 'seo'}>
-          <div className="flex flex-col items-center justify-center py-10">
-            <Search className="w-10 h-10 text-[var(--m-text-tertiary)] mb-3" />
-            <p className="text-[var(--m-text-md)] font-medium text-[var(--m-text-secondary)]">
-              SEO Analyzer
-            </p>
-            <p className="text-[var(--m-text-sm)] text-[var(--m-text-tertiary)]">
-              Coming soon
-            </p>
-          </div>
+          <SeoPanel />
         </TabPanel>
       </div>
     </div>

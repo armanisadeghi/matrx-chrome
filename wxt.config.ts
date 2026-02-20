@@ -15,6 +15,8 @@ export default defineConfig({
       'tabs',
       'scripting',
       'sidePanel',
+      'clipboardWrite',
+      'alarms',
     ],
     host_permissions: ['https://*/*', 'http://*/*'],
     action: {

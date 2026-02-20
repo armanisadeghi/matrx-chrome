@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Save, Moon, Sun, Monitor, Database, Globe, Shield } from 'lucide-react';
+import { Save, Moon, Sun, Monitor, Database, Globe, Shield, Folder, Wifi, WifiOff, Loader2 } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import { useTheme } from '../../hooks/useTheme';
 import {
@@ -7,14 +7,17 @@ import {
   Card,
   CardHeader,
   CardBody,
-  CardFooter,
   Input,
   Badge,
-  StatusMessage,
 } from '../../components/ui';
 import { useToast } from '../../components/ui/Toast';
 import { LoginForm } from '../../components/auth/LoginForm';
 import { AuthStatus } from '../../components/auth/AuthStatus';
+import { fetchUserProjects } from '../../utils/supabase-queries';
+import { healthCheck, setApiBaseUrl as setGlobalApiBaseUrl } from '../../utils/api-client';
+import { getLocal, setLocal } from '../../utils/storage';
+
+const STORAGE_KEY_PROJECT = 'matrx_default_project_id';
 
 export function OptionsPage() {
   const { user, isAuthenticated } = useAuth();
@@ -25,12 +28,63 @@ export function OptionsPage() {
   const [tableName, setTableName] = useState('html_extractions');
   const [saving, setSaving] = useState(false);
 
+  // Project selection
+  const [projects, setProjects] = useState<{ id: string; name: string }[]>([]);
+  const [defaultProjectId, setDefaultProjectId] = useState('');
+  const [loadingProjects, setLoadingProjects] = useState(false);
+
+  // API connection test
+  const [testingApi, setTestingApi] = useState(false);
+  const [apiTestResult, setApiTestResult] = useState<{ ok: boolean; message: string } | null>(null);
+
   useEffect(() => {
     chrome.storage.sync.get(['apiBaseUrl', 'supabaseTableName'], (result) => {
       setApiBaseUrl(result.apiBaseUrl || '');
       setTableName(result.supabaseTableName || 'html_extractions');
     });
   }, []);
+
+  // Load projects + saved default project when authenticated
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    setLoadingProjects(true);
+    Promise.all([
+      fetchUserProjects(),
+      getLocal<string>(STORAGE_KEY_PROJECT),
+    ]).then(([userProjects, savedId]) => {
+      setProjects(userProjects);
+      if (savedId && userProjects.some((p) => p.id === savedId)) {
+        setDefaultProjectId(savedId);
+      } else if (userProjects.length === 1) {
+        setDefaultProjectId(userProjects[0].id);
+      }
+    }).finally(() => setLoadingProjects(false));
+  }, [isAuthenticated]);
+
+  const testApiConnection = async () => {
+    setTestingApi(true);
+    setApiTestResult(null);
+    // Temporarily set the global URL to test against the current input value
+    if (apiBaseUrl) setGlobalApiBaseUrl(apiBaseUrl);
+    try {
+      const res = await healthCheck();
+      if (res.success) {
+        setApiTestResult({ ok: true, message: `Connected — ${(res.data as { service?: string })?.service || 'API'} is healthy` });
+      } else {
+        setApiTestResult({ ok: false, message: res.error || 'Connection failed' });
+      }
+    } catch {
+      setApiTestResult({ ok: false, message: 'Network error — cannot reach API' });
+    }
+    setTestingApi(false);
+  };
+
+  const handleProjectChange = async (projectId: string) => {
+    setDefaultProjectId(projectId);
+    if (projectId) {
+      await setLocal(STORAGE_KEY_PROJECT, projectId);
+    }
+  };
 
   const saveSettings = async () => {
     setSaving(true);
@@ -151,10 +205,83 @@ export function OptionsPage() {
               placeholder="https://api.aimatrx.com"
               hint="FastAPI backend URL for AI processing and data endpoints"
               value={apiBaseUrl}
-              onChange={(e) => setApiBaseUrl(e.target.value)}
+              onChange={(e) => {
+                setApiBaseUrl(e.target.value);
+                setApiTestResult(null);
+              }}
             />
+            <div className="flex items-center gap-2">
+              <button
+                onClick={testApiConnection}
+                disabled={testingApi || !apiBaseUrl}
+                className="flex items-center gap-1.5 px-3 py-1.5 text-[var(--m-text-sm)] font-medium rounded-[var(--m-radius-md)] border border-[var(--m-border)] hover:bg-[var(--m-bg-hover)] cursor-pointer transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {testingApi ? (
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                ) : (
+                  <Wifi className="w-3.5 h-3.5" />
+                )}
+                Test Connection
+              </button>
+              {apiTestResult && (
+                <span className={`text-[var(--m-text-xs)] flex items-center gap-1 ${
+                  apiTestResult.ok ? 'text-[var(--m-success)]' : 'text-[var(--m-error)]'
+                }`}>
+                  {apiTestResult.ok ? (
+                    <Wifi className="w-3 h-3" />
+                  ) : (
+                    <WifiOff className="w-3 h-3" />
+                  )}
+                  {apiTestResult.message}
+                </span>
+              )}
+            </div>
           </CardBody>
         </Card>
+
+        {/* Default Project */}
+        {isAuthenticated && (
+          <Card elevated>
+            <CardHeader>
+              <div className="flex items-center gap-2">
+                <Folder className="w-4 h-4 text-[var(--m-brand)]" />
+                <h2 className="text-[var(--m-text-md)] font-semibold">Default Project</h2>
+              </div>
+              {defaultProjectId && <Badge variant="info">Set</Badge>}
+            </CardHeader>
+            <CardBody>
+              <div className="flex flex-col gap-2">
+                <label className="text-[var(--m-text-sm)] font-medium text-[var(--m-text-primary)]">
+                  Project
+                </label>
+                {loadingProjects ? (
+                  <div className="flex items-center gap-2 text-[var(--m-text-sm)] text-[var(--m-text-tertiary)]">
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Loading projects...
+                  </div>
+                ) : projects.length === 0 ? (
+                  <p className="text-[var(--m-text-sm)] text-[var(--m-text-tertiary)]">
+                    No projects found. Create one in the Matrx web app.
+                  </p>
+                ) : (
+                  <select
+                    value={defaultProjectId}
+                    onChange={(e) => handleProjectChange(e.target.value)}
+                    className="w-full px-3 py-2 text-[var(--m-text-sm)] bg-[var(--m-bg-input)] text-[var(--m-text-primary)] border border-[var(--m-border)] rounded-[var(--m-radius-md)] focus:outline-none focus:ring-1 focus:ring-[var(--m-brand)]"
+                  >
+                    <option value="">Select a default project...</option>
+                    {projects.map((p) => (
+                      <option key={p.id} value={p.id}>{p.name}</option>
+                    ))}
+                  </select>
+                )}
+                <p className="text-[var(--m-text-xs)] text-[var(--m-text-tertiary)]">
+                  Used as the default in Research and Quick Scrape panels
+                </p>
+              </div>
+            </CardBody>
+          </Card>
+        )}
 
         {/* Database */}
         <Card elevated>

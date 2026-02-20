@@ -2,7 +2,7 @@
 // Chrome Storage Helpers
 // ============================================
 
-import type { ExtensionSettings, DEFAULT_SETTINGS } from './types';
+import type { ExtensionSettings } from './types';
 
 export async function getSettings(): Promise<ExtensionSettings> {
   return new Promise((resolve) => {
