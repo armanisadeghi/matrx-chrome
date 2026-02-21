@@ -55,18 +55,18 @@ export function OptionsPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-[var(--m-bg-page)] flex justify-center py-8 px-6">
-      <div className="w-full max-w-xl flex flex-col gap-4">
+    <div className="min-h-screen bg-[var(--m-bg-page)] flex justify-center px-4 py-6">
+      <div className="w-full max-w-lg flex flex-col gap-3">
         {/* Header */}
-        <div className="flex items-center gap-3 mb-2">
-          <div className="w-10 h-10 rounded-[var(--m-radius-lg)] bg-[var(--m-brand)] flex items-center justify-center">
-            <span className="text-white text-lg font-bold">M</span>
+        <div className="flex items-center gap-3 px-1">
+          <div className="w-9 h-9 rounded-[var(--m-radius-md)] bg-[var(--m-brand)] flex items-center justify-center shrink-0">
+            <span className="text-white font-bold" style={{ fontSize: '15px' }}>M</span>
           </div>
           <div>
-            <h1 className="text-xl font-bold text-[color:var(--m-text-primary)]">
+            <h1 className="font-bold text-[color:var(--m-text-primary)]" style={{ fontSize: '18px', lineHeight: '22px' }}>
               Matrx Settings
             </h1>
-            <p className="text-sm text-[color:var(--m-text-secondary)]">
+            <p className="text-[color:var(--m-text-secondary)]" style={{ fontSize: '12px' }}>
               Configure your extension preferences
             </p>
           </div>
@@ -77,24 +77,24 @@ export function OptionsPage() {
           <CardHeader>
             <div className="flex items-center gap-2">
               <Shield className="w-4 h-4 text-[var(--m-brand)]" />
-              <h2 className="text-md font-semibold">Authentication</h2>
+              <span className="font-semibold" style={{ fontSize: '13px' }}>Authentication</span>
             </div>
             {isAuthenticated && <Badge variant="success">Connected</Badge>}
           </CardHeader>
           <CardBody>
             {isAuthenticated ? (
               <div className="flex flex-col gap-3">
-                <div className="flex items-center gap-3 p-3 bg-[var(--m-bg-inset)] rounded-[var(--m-radius-md)]">
-                  <div className="w-10 h-10 rounded-full bg-[var(--m-brand-subtle)] flex items-center justify-center">
-                    <span className="text-[var(--m-brand)] font-semibold text-lg">
+                <div className="flex items-center gap-3 px-3 py-2.5 bg-[var(--m-bg-inset)] rounded-[var(--m-radius-md)]">
+                  <div className="w-9 h-9 rounded-full bg-[var(--m-brand-subtle)] flex items-center justify-center shrink-0">
+                    <span className="text-[var(--m-brand)] font-semibold" style={{ fontSize: '15px' }}>
                       {user?.email?.[0]?.toUpperCase() || '?'}
                     </span>
                   </div>
-                  <div>
-                    <p className="text-md font-medium text-[color:var(--m-text-primary)]">
+                  <div className="min-w-0">
+                    <p className="font-medium text-[color:var(--m-text-primary)] truncate" style={{ fontSize: '13px' }}>
                       {user?.email}
                     </p>
-                    <p className="text-xs text-[color:var(--m-text-tertiary)]">
+                    <p className="text-[color:var(--m-text-tertiary)]" style={{ fontSize: '11px' }}>
                       ID: {user?.id?.substring(0, 8)}...
                     </p>
                   </div>
@@ -112,7 +112,7 @@ export function OptionsPage() {
           <CardHeader>
             <div className="flex items-center gap-2">
               <Moon className="w-4 h-4 text-[var(--m-brand)]" />
-              <h2 className="text-md font-semibold">Appearance</h2>
+              <span className="font-semibold" style={{ fontSize: '13px' }}>Appearance</span>
             </div>
           </CardHeader>
           <CardBody>
@@ -121,14 +121,14 @@ export function OptionsPage() {
                 <button
                   key={value}
                   onClick={() => setTheme(value)}
-                  className={`flex flex-col items-center gap-1.5 p-3 rounded-[var(--m-radius-md)] border cursor-pointer transition-all ${
+                  className={`flex flex-col items-center gap-1.5 px-3 py-2.5 rounded-[var(--m-radius-md)] border cursor-pointer transition-all ${
                     theme === value
                       ? 'border-[var(--m-brand)] bg-[var(--m-brand-subtle)] text-[var(--m-brand)]'
                       : 'border-[var(--m-border)] text-[color:var(--m-text-tertiary)] hover:border-[var(--m-border-strong)] hover:text-[color:var(--m-text-secondary)]'
                   }`}
                 >
-                  <Icon className="w-5 h-5" />
-                  <span className="text-sm font-medium">{label}</span>
+                  <Icon className="w-4.5 h-4.5" />
+                  <span className="font-medium" style={{ fontSize: '12px' }}>{label}</span>
                 </button>
               ))}
             </div>
@@ -141,29 +141,30 @@ export function OptionsPage() {
             <CardHeader>
               <div className="flex items-center gap-2">
                 <Folder className="w-4 h-4 text-[var(--m-brand)]" />
-                <h2 className="text-md font-semibold">Default Project</h2>
+                <span className="font-semibold" style={{ fontSize: '13px' }}>Default Project</span>
               </div>
               {defaultProjectId && <Badge variant="info">Set</Badge>}
             </CardHeader>
             <CardBody>
               <div className="flex flex-col gap-2">
-                <label className="text-sm font-medium text-[color:var(--m-text-primary)]">
+                <label className="font-medium text-[color:var(--m-text-primary)]" style={{ fontSize: '12px' }}>
                   Project
                 </label>
                 {loadingProjects ? (
-                  <div className="flex items-center gap-2 text-sm text-[color:var(--m-text-tertiary)]">
-                    <Loader2 className="w-4 h-4 animate-spin" />
+                  <div className="flex items-center gap-2 text-[color:var(--m-text-tertiary)]" style={{ fontSize: '12px' }}>
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
                     Loading projects...
                   </div>
                 ) : projects.length === 0 ? (
-                  <p className="text-sm text-[color:var(--m-text-tertiary)]">
+                  <p className="text-[color:var(--m-text-tertiary)]" style={{ fontSize: '12px' }}>
                     No projects found. Create one in the Matrx web app.
                   </p>
                 ) : (
                   <select
                     value={defaultProjectId}
                     onChange={(e) => handleProjectChange(e.target.value)}
-                    className="w-full px-3 py-2 text-sm bg-[var(--m-bg-input)] text-[color:var(--m-text-primary)] border border-[var(--m-border)] rounded-[var(--m-radius-md)] focus:outline-none focus:ring-1 focus:ring-[var(--m-brand)]"
+                    className="w-full px-3 py-1.5 bg-[var(--m-bg-card)] text-[color:var(--m-text-primary)] border border-[var(--m-border)] rounded-[var(--m-radius-md)] focus:outline-none focus:border-[var(--m-brand)] focus:ring-2 focus:ring-[var(--m-brand-ring)]"
+                    style={{ fontSize: '13px' }}
                   >
                     <option value="">Select a default project...</option>
                     {projects.map((p) => (
@@ -171,7 +172,7 @@ export function OptionsPage() {
                     ))}
                   </select>
                 )}
-                <p className="text-xs text-[color:var(--m-text-tertiary)]">
+                <p className="text-[color:var(--m-text-tertiary)]" style={{ fontSize: '11px' }}>
                   Used as the default in Research and Quick Scrape panels
                 </p>
               </div>
@@ -180,7 +181,7 @@ export function OptionsPage() {
         )}
 
         {/* Version */}
-        <p className="text-center text-xs text-[color:var(--m-text-tertiary)] mt-2">
+        <p className="text-center text-[color:var(--m-text-tertiary)] mt-1" style={{ fontSize: '11px' }}>
           Matrx Extension v2.0.0
         </p>
       </div>

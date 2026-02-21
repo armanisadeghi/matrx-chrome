@@ -63,10 +63,10 @@ export function SidePanel() {
       {/* Header */}
       <header className="flex items-center justify-between px-3 py-2 bg-[var(--m-bg-card)] border-b border-[var(--m-border)]">
         <div className="flex items-center gap-2">
-          <div className="w-6 h-6 rounded-[var(--m-radius-sm)] bg-[var(--m-brand)] flex items-center justify-center">
-            <span className="text-white text-[10px] font-bold">M</span>
+          <div className="w-5 h-5 rounded-[var(--m-radius-sm)] bg-[var(--m-brand)] flex items-center justify-center shrink-0">
+            <span className="text-white font-bold" style={{ fontSize: '10px' }}>M</span>
           </div>
-          <span className="text-md font-semibold text-[color:var(--m-text-primary)]">
+          <span className="font-semibold text-[color:var(--m-text-primary)]" style={{ fontSize: '13px' }}>
             Matrx
           </span>
           <Badge>v2.0</Badge>
@@ -77,7 +77,8 @@ export function SidePanel() {
           ) : (
             <button
               onClick={() => setShowAuth(!showAuth)}
-              className="text-xs text-[var(--m-brand)] hover:underline cursor-pointer px-2 py-1"
+              className="text-[var(--m-brand)] hover:underline cursor-pointer px-2 py-1"
+              style={{ fontSize: '11px' }}
             >
               Sign In
             </button>
@@ -91,10 +92,10 @@ export function SidePanel() {
           {tab.favIconUrl && (
             <img src={tab.favIconUrl} className="w-3.5 h-3.5 rounded-sm" alt="" />
           )}
-          <span className="text-xs text-[color:var(--m-text-secondary)] truncate flex-1">
+          <span className="text-[color:var(--m-text-secondary)] truncate flex-1" style={{ fontSize: '11px' }}>
             {tab.domain}
           </span>
-          <span className="text-xs text-[color:var(--m-text-tertiary)] truncate max-w-[120px]">
+          <span className="text-[color:var(--m-text-tertiary)] truncate max-w-[120px]" style={{ fontSize: '11px' }}>
             {tab.title}
           </span>
         </div>
@@ -102,7 +103,7 @@ export function SidePanel() {
 
       {/* Auth Panel (expandable) */}
       {showAuth && !isAuthenticated && (
-        <div className="p-4 bg-[var(--m-bg-card)] border-b border-[var(--m-border)]">
+        <div className="px-3.5 py-3 bg-[var(--m-bg-card)] border-b border-[var(--m-border)]">
           <LoginForm />
         </div>
       )}

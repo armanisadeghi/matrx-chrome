@@ -24,12 +24,13 @@ export function Badge({
   return (
     <span
       className={`
-        inline-flex items-center px-2 py-0.5
-        text-xs font-medium
+        inline-flex items-center px-1.5 py-0.5
+        font-medium
         rounded-[var(--m-radius-full)]
         ${variantStyles[variant]}
         ${className}
       `.trim()}
+      style={{ fontSize: '10px' }}
     >
       {children}
     </span>

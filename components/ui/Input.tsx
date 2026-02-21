@@ -13,7 +13,8 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         {label && (
           <label
             htmlFor={id}
-            className="text-sm font-medium text-[color:var(--m-text-secondary)]"
+            className="font-medium text-[color:var(--m-text-secondary)]"
+            style={{ fontSize: '12px' }}
           >
             {label}
           </label>
@@ -22,7 +23,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           ref={ref}
           id={id}
           className={`
-            w-full px-3 py-2 text-md
+            w-full px-2.5 py-1.5
             bg-[var(--m-bg-card)] border border-[var(--m-border)]
             rounded-[var(--m-radius-md)] text-[color:var(--m-text-primary)]
             placeholder:text-[color:var(--m-text-tertiary)]
@@ -32,15 +33,16 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             ${error ? 'border-[var(--m-error)] focus:border-[var(--m-error)] focus:ring-[var(--m-error-subtle)]' : ''}
             ${className}
           `.trim()}
+          style={{ fontSize: '13px' }}
           {...props}
         />
         {hint && !error && (
-          <span className="text-xs text-[color:var(--m-text-tertiary)]">
+          <span className="text-[color:var(--m-text-tertiary)]" style={{ fontSize: '11px' }}>
             {hint}
           </span>
         )}
         {error && (
-          <span className="text-xs text-[var(--m-error)]">
+          <span className="text-[var(--m-error)]" style={{ fontSize: '11px' }}>
             {error}
           </span>
         )}
@@ -65,7 +67,8 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
         {label && (
           <label
             htmlFor={id}
-            className="text-sm font-medium text-[color:var(--m-text-secondary)]"
+            className="font-medium text-[color:var(--m-text-secondary)]"
+            style={{ fontSize: '12px' }}
           >
             {label}
           </label>
@@ -74,7 +77,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
           ref={ref}
           id={id}
           className={`
-            w-full px-3 py-2 text-md
+            w-full px-2.5 py-1.5
             bg-[var(--m-bg-card)] border border-[var(--m-border)]
             rounded-[var(--m-radius-md)] text-[color:var(--m-text-primary)]
             placeholder:text-[color:var(--m-text-tertiary)]
@@ -85,15 +88,16 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
             ${error ? 'border-[var(--m-error)]' : ''}
             ${className}
           `.trim()}
+          style={{ fontSize: '13px' }}
           {...props}
         />
         {hint && !error && (
-          <span className="text-xs text-[color:var(--m-text-tertiary)]">
+          <span className="text-[color:var(--m-text-tertiary)]" style={{ fontSize: '11px' }}>
             {hint}
           </span>
         )}
         {error && (
-          <span className="text-xs text-[var(--m-error)]">
+          <span className="text-[var(--m-error)]" style={{ fontSize: '11px' }}>
             {error}
           </span>
         )}

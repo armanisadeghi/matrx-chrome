@@ -27,8 +27,8 @@ export function Tabs({ tabs, activeTab, onTabChange, className = '' }: TabsProps
           key={tab.id}
           onClick={() => onTabChange(tab.id)}
           className={`
-            flex items-center gap-1.5 px-3 py-2
-            text-sm font-medium whitespace-nowrap
+            flex items-center gap-1 px-2.5 py-1.5
+            font-medium whitespace-nowrap
             border-b-2 cursor-pointer
             transition-all duration-[var(--m-transition)]
             ${
@@ -37,6 +37,7 @@ export function Tabs({ tabs, activeTab, onTabChange, className = '' }: TabsProps
                 : 'border-transparent text-[color:var(--m-text-tertiary)] hover:text-[color:var(--m-text-secondary)] hover:border-[var(--m-border)]'
             }
           `}
+          style={{ fontSize: '11px' }}
         >
           {tab.icon}
           {tab.label}
@@ -54,5 +55,5 @@ interface TabPanelProps {
 
 export function TabPanel({ children, active, className = '' }: TabPanelProps) {
   if (!active) return null;
-  return <div className={`p-4 ${className}`}>{children}</div>;
+  return <div className={`p-3 ${className}`}>{children}</div>;
 }

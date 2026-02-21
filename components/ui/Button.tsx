@@ -26,9 +26,15 @@ const variantStyles: Record<Variant, string> = {
 };
 
 const sizeStyles: Record<Size, string> = {
-  sm: 'px-2.5 py-1 text-sm gap-1 rounded-[var(--m-radius-sm)]',
-  md: 'px-3 py-1.5 text-sm gap-1.5 rounded-[var(--m-radius-md)]',
-  lg: 'px-4 py-2 text-md gap-2 rounded-[var(--m-radius-md)]',
+  sm: 'px-2 py-1 gap-1 rounded-[var(--m-radius-sm)]',
+  md: 'px-3 py-1.5 gap-1.5 rounded-[var(--m-radius-md)]',
+  lg: 'px-3.5 py-2 gap-2 rounded-[var(--m-radius-md)]',
+};
+
+const sizeFontSize: Record<Size, string> = {
+  sm: '11px',
+  md: '12px',
+  lg: '13px',
 };
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
@@ -61,6 +67,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           ${icon ? '!p-1.5' : ''}
           ${className}
         `.trim()}
+        style={{ fontSize: sizeFontSize[size] }}
         {...props}
       >
         {loading && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
