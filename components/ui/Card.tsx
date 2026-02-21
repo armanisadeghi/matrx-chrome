@@ -30,7 +30,7 @@ export function CardHeader({
 }) {
   return (
     <div
-      className={`px-3.5 py-2.5 border-b border-[var(--m-border)] flex items-center justify-between ${className}`}
+      className={`px-6 py-4 border-b border-[var(--m-border)] flex items-center justify-between ${className}`}
     >
       {children}
     </div>
@@ -44,7 +44,7 @@ export function CardBody({
   children: ReactNode;
   className?: string;
 }) {
-  return <div className={`px-3.5 py-3 ${className}`}>{children}</div>;
+  return <div className={`px-6 py-5 ${className}`}>{children}</div>;
 }
 
 export function CardFooter({
@@ -56,7 +56,7 @@ export function CardFooter({
 }) {
   return (
     <div
-      className={`px-3.5 py-2.5 border-t border-[var(--m-border)] flex items-center justify-end gap-2 ${className}`}
+      className={`px-6 py-4 border-t border-[var(--m-border)] flex items-center justify-end gap-2 ${className}`}
     >
       {children}
     </div>

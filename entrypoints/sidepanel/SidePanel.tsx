@@ -103,7 +103,7 @@ export function SidePanel() {
 
       {/* Auth Panel (expandable) */}
       {showAuth && !isAuthenticated && (
-        <div className="px-3.5 py-3 bg-[var(--m-bg-card)] border-b border-[var(--m-border)]">
+        <div className="p-4 bg-[var(--m-bg-card)] border-b border-[var(--m-border)]">
           <LoginForm />
         </div>
       )}

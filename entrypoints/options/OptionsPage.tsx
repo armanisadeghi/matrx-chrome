@@ -55,10 +55,10 @@ export function OptionsPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-[var(--m-bg-page)] flex justify-center px-4 py-6">
-      <div className="w-full max-w-lg flex flex-col gap-3">
+    <div className="min-h-screen px-8 py-8" style={{ background: 'red' }}>
+      <div className="w-full flex flex-col gap-5" style={{ background: 'lime', outline: '3px solid blue' }}>
         {/* Header */}
-        <div className="flex items-center gap-3 px-1">
+        <div className="flex items-center gap-3 mb-1">
           <div className="w-9 h-9 rounded-[var(--m-radius-md)] bg-[var(--m-brand)] flex items-center justify-center shrink-0">
             <span className="text-white font-bold" style={{ fontSize: '15px' }}>M</span>
           </div>
@@ -116,18 +116,18 @@ export function OptionsPage() {
             </div>
           </CardHeader>
           <CardBody>
-            <div className="grid grid-cols-3 gap-2">
+            <div className="grid grid-cols-3 gap-3">
               {themeOptions.map(({ value, icon: Icon, label }) => (
                 <button
                   key={value}
                   onClick={() => setTheme(value)}
-                  className={`flex flex-col items-center gap-1.5 px-3 py-2.5 rounded-[var(--m-radius-md)] border cursor-pointer transition-all ${
+                  className={`flex flex-col items-center gap-2 px-3 py-3.5 rounded-[var(--m-radius-md)] border cursor-pointer transition-all ${
                     theme === value
                       ? 'border-[var(--m-brand)] bg-[var(--m-brand-subtle)] text-[var(--m-brand)]'
                       : 'border-[var(--m-border)] text-[color:var(--m-text-tertiary)] hover:border-[var(--m-border-strong)] hover:text-[color:var(--m-text-secondary)]'
                   }`}
                 >
-                  <Icon className="w-4.5 h-4.5" />
+                  <Icon className="w-5 h-5" />
                   <span className="font-medium" style={{ fontSize: '12px' }}>{label}</span>
                 </button>
               ))}

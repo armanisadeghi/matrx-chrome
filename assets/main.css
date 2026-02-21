@@ -89,7 +89,7 @@
 /* Dark Mode */
 .dark,
 [data-theme='dark'] {
-  --m-bg-page: #0a0a0a;
+  --m-bg-page: #050505;
   --m-bg-card: #171717;
   --m-bg-elevated: #1e1e1e;
   --m-bg-inset: #141414;
