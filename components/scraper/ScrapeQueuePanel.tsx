@@ -90,7 +90,7 @@ export function ScrapeQueuePanel() {
   }
 
   return (
-    <div className="flex flex-col gap-3 p-3">
+    <div className="flex flex-col gap-3 p-4">
       {/* Background worker detected a queue match for current tab */}
       {matchBanner && (
         <div className="p-2.5 bg-[var(--m-warning-subtle)] border border-[var(--m-warning-text)]/20 rounded-[var(--m-radius-md)] flex items-center gap-2">

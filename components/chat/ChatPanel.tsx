@@ -347,7 +347,7 @@ export function ChatPanel() {
     return (
       <div className="flex flex-col h-full">
         {/* Top bar with agent selector and history */}
-        <div className="flex items-center justify-between px-3 py-2 border-b border-[var(--m-border)]">
+        <div className="flex items-center justify-between px-4 py-2.5 border-b border-[var(--m-border)]">
           <AgentSelector
             selectedAgent={selectedAgent}
             selectedModel={selectedModel}
@@ -390,7 +390,7 @@ export function ChatPanel() {
             </div>
           }
         />
-        <div className="mt-auto p-3 border-t border-[var(--m-border)]">
+        <div className="mt-auto p-4 border-t border-[var(--m-border)]">
           <ChatInput
             ref={inputRef}
             value={input}
@@ -408,7 +408,7 @@ export function ChatPanel() {
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
-      <div className="flex items-center justify-between px-3 py-2 border-b border-[var(--m-border)]">
+      <div className="flex items-center justify-between px-4 py-2.5 border-b border-[var(--m-border)]">
         <AgentSelector
           selectedAgent={selectedAgent}
           selectedModel={selectedModel}
@@ -446,7 +446,7 @@ export function ChatPanel() {
       )}
 
       {/* Messages */}
-      <div className="flex-1 overflow-auto p-3 flex flex-col gap-3">
+      <div className="flex-1 overflow-auto p-4 flex flex-col gap-3">
         {messages.map((msg) => (
           <div
             key={msg.id}
@@ -493,7 +493,7 @@ export function ChatPanel() {
       </div>
 
       {/* Input */}
-      <div className="p-3 border-t border-[var(--m-border)]">
+      <div className="p-4 border-t border-[var(--m-border)]">
         {streaming && (
           <div className="flex justify-center mb-2">
             <Button size="sm" variant="secondary" onClick={stopStreaming}>

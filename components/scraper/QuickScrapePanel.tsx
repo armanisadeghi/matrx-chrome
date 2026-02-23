@@ -184,7 +184,7 @@ export function QuickScrapePanel() {
   }
 
   return (
-    <div className="flex flex-col gap-3 p-3">
+    <div className="flex flex-col gap-3 p-4">
       {/* Scrape current page */}
       <div className="bg-[var(--m-bg-card)] rounded-[var(--m-radius-lg)] border border-[var(--m-border)] p-3">
         <div className="flex items-center justify-between mb-2">

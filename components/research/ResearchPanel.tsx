@@ -338,7 +338,7 @@ export function ResearchPanel() {
   // Topic list view
   if (view === 'topics') {
     return (
-      <div className="flex flex-col gap-3 p-3">
+      <div className="flex flex-col gap-3 p-4">
         <div className="flex items-center justify-between">
           <span className="text-sm font-medium text-[color:var(--m-text-primary)]">
             Research Topics
@@ -422,7 +422,7 @@ export function ResearchPanel() {
   if (view === 'new-topic') {
     return (
       <div className="flex flex-col h-full">
-        <div className="flex items-center gap-2 px-3 py-2 border-b border-[var(--m-border)]">
+        <div className="flex items-center gap-2 px-4 py-2.5 border-b border-[var(--m-border)]">
           <Button size="sm" variant="ghost" icon onClick={() => setView('topics')}>
             <ArrowLeft className="w-3.5 h-3.5" />
           </Button>
@@ -431,7 +431,7 @@ export function ResearchPanel() {
           </span>
         </div>
 
-        <div className="flex-1 overflow-auto p-3">
+        <div className="flex-1 overflow-auto p-4">
           <div className="flex flex-col gap-3">
             <div>
               <label className="block text-xs font-medium text-[color:var(--m-text-primary)] mb-1">
@@ -551,7 +551,7 @@ export function ResearchPanel() {
         </div>
       )}
 
-      <div className="flex-1 overflow-auto p-3">
+      <div className="flex-1 overflow-auto p-4">
         {loading ? (
           <div className="flex justify-center py-6">
             <Loader2 className="w-6 h-6 animate-spin text-[var(--m-brand)]" />

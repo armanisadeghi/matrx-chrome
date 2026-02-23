@@ -13,6 +13,18 @@ export function useTheme() {
     });
   }, []);
 
+  // Listen for system color scheme changes so 'system' mode reacts instantly
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    const handleChange = () => {
+      if (theme === 'system') {
+        applyTheme('system');
+      }
+    };
+    mediaQuery.addEventListener('change', handleChange);
+    return () => mediaQuery.removeEventListener('change', handleChange);
+  }, [theme]);
+
   const setTheme = useCallback((t: Theme) => {
     setThemeState(t);
     chrome.storage.sync.set({ theme: t });

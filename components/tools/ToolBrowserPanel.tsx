@@ -157,7 +157,7 @@ export function ToolBrowserPanel() {
           {selectedTool.category && <Badge>{selectedTool.category}</Badge>}
         </div>
 
-        <div className="flex-1 overflow-auto p-3">
+        <div className="flex-1 overflow-auto p-4">
           <div className="flex flex-col gap-3">
             <p className="text-xs text-[color:var(--m-text-secondary)]">
               {selectedTool.description}
@@ -229,7 +229,7 @@ export function ToolBrowserPanel() {
 
   // Tool list view
   return (
-    <div className="flex flex-col gap-3 p-3">
+    <div className="flex flex-col gap-3 p-4">
       <div className="flex items-center justify-between">
         <span className="text-sm font-medium text-[color:var(--m-text-primary)]">
           Tools ({tools.length})

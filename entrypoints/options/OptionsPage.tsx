@@ -55,8 +55,8 @@ export function OptionsPage() {
   ];
 
   return (
-    <div className="min-h-screen px-8 py-8" style={{ background: 'red' }}>
-      <div className="w-full flex flex-col gap-5" style={{ background: 'lime', outline: '3px solid blue' }}>
+    <div className="min-h-screen px-8 py-8">
+      <div className="max-w-xl mx-auto flex flex-col gap-5">
         {/* Header */}
         <div className="flex items-center gap-3 mb-1">
           <div className="w-9 h-9 rounded-[var(--m-radius-md)] bg-[var(--m-brand)] flex items-center justify-center shrink-0">
