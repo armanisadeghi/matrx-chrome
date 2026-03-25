@@ -338,7 +338,7 @@ export function ResearchPanel() {
   // Topic list view
   if (view === 'topics') {
     return (
-      <div className="flex flex-col gap-3 p-3">
+      <div className="flex flex-col gap-3 p-2">
         <div className="flex items-center justify-between">
           <span className="text-sm font-medium text-[color:var(--m-text-primary)]">
             Research Topics

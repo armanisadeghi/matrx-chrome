@@ -55,5 +55,5 @@ interface TabPanelProps {
 
 export function TabPanel({ children, active, className = '' }: TabPanelProps) {
   if (!active) return null;
-  return <div className={`p-3 ${className}`}>{children}</div>;
+  return <div className={`p-2 ${className}`}>{children}</div>;
 }

@@ -229,7 +229,7 @@ export function ToolBrowserPanel() {
 
   // Tool list view
   return (
-    <div className="flex flex-col gap-3 p-3">
+    <div className="flex flex-col gap-3 p-2">
       <div className="flex items-center justify-between">
         <span className="text-sm font-medium text-[color:var(--m-text-primary)]">
           Tools ({tools.length})
