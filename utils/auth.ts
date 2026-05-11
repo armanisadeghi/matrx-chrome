@@ -5,7 +5,7 @@
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import type { OAuthProvider, User, Session } from './types';
 
-const SUPABASE_URL = 'https://txzxabzwovsujtloxrus.supabase.co';
+const SUPABASE_URL = 'https://db.matrxserver.com';
 const SUPABASE_KEY = 'sb_publishable_4pvkRT-9-_dB0PWqF1sp1w_W9leRIoW';
 
 // Chrome storage adapter for Supabase auth persistence
